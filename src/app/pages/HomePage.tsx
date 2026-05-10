@@ -122,7 +122,7 @@ function HeroSection() {
       >
         <motion.span
           initial={{ opacity: 0, x: '-60vw', y: '-50vh' }}
-          animate={{ opacity: 0.18, x: '-5%', y: '-28%' }}
+          animate={{ opacity: 0.18, x: '-5%', y: '-48%' }}
           transition={{ duration: 1.6, ease, delay: 0.4 }}
           style={{
             position: 'absolute',
@@ -141,7 +141,7 @@ function HeroSection() {
         </motion.span>
         <motion.span
           initial={{ opacity: 0, x: '50vw', y: '100vh' }}
-          animate={{ opacity: 0.18, x: '13%', y: '-5%' }}
+          animate={{ opacity: 0.18, x: '13%', y: '-30%' }}
           transition={{ duration: 1.6, ease, delay: 0.4 }}
           style={{
             position: 'absolute',
@@ -149,9 +149,9 @@ function HeroSection() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             fontFamily: '"Luxurious Script", cursive',
-            fontSize: 'clamp(280px, 42vw, 620px)',
+            fontSize: 'clamp(240px, 36vw, 520px)',
             color: C.primary,
-            lineHeight: 1,
+            lineHeight: 1.6,
             fontWeight: 400,
             letterSpacing: '-0.04em',
           }}
