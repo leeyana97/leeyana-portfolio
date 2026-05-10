@@ -23,7 +23,29 @@ import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
 import neighbourlahImg from '../../imports/NeighbourLah_home_app.png';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
+function SplitWords({ text }: { text: string }) {
+  const words = text.split(/\s+/);
+  return (
+    <>
+      {words.map((word, i) => (
+        <span
+          key={i}
+          data-word
+          style={{ display: 'inline-block', willChange: 'transform, opacity' }}
+        >
+          {word}
+          {i < words.length - 1 ? ' ' : ''}
+        </span>
+      ))}
+    </>
+  );
+}
 
 // ─── Shared tokens ──────────────────────────────────────────────────────────
 const C = {
@@ -87,6 +109,60 @@ function TagPill({ label }: { label: string }) {
 
 // ─── Hero Section ───────────────────────────────────────────────────────────
 function HeroSection() {
+  const headlineRef = useRef<HTMLDivElement>(null);
+  const metaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const headline = headlineRef.current;
+    const meta = metaRef.current;
+    if (!headline || !meta) return;
+
+    const isMobile = window.innerWidth < 768;
+
+    const ctx = gsap.context(() => {
+      if (isMobile) {
+        gsap.set(headline, { opacity: 0, y: 20 });
+        gsap.set(meta, { opacity: 0, y: 15 });
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: headline,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+            },
+          })
+          .to(headline, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
+          .to(meta, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2');
+      } else {
+        const words = headline.querySelectorAll<HTMLElement>('[data-word]');
+        gsap.set(words, { opacity: 0, y: 30 });
+        gsap.set(meta, { opacity: 0, y: 15 });
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: headline,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+            },
+          })
+          .to(words, {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: 'power3.out',
+          })
+          .to(
+            meta,
+            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
+            '+=0.2'
+          );
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
       id="hero"
@@ -162,69 +238,56 @@ function HeroSection() {
 
       {/* Main content */}
       <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        {/* Name */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease, delay: 0.1 }}
-          style={{
-            fontFamily: F.editorial,
-            fontSize: 'clamp(48px, 8vw, 120px)',
-            color: C.primary,
-            margin: 0,
-            lineHeight: 0.95,
-            letterSpacing: '-0.02em',
-            fontWeight: 400,
-          }}
-        >
-          Leeyana
-        </motion.h1>
-
-        {/* Tagline */}
-        <div style={{ marginTop: 'clamp(20px, 2vw, 32px)' }}>
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease, delay: 0.28 }}
-            style={{
-              fontFamily: '"Luxurious Script", cursive',
-              fontStyle: 'italic',
-              fontSize: 'clamp(32px, 6vw, 64px)',
-              color: C.primary,
-              margin: 0,
-              lineHeight: 1.15,
-              letterSpacing: '-0.01em',
-              fontWeight: 400,
-            }}
-          >
-            Designing with empathy,
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease, delay: 0.42 }}
+        {/* Headline group */}
+        <div ref={headlineRef}>
+          <h1
             style={{
               fontFamily: F.editorial,
-              fontStyle: 'normal',
-              fontSize: 'clamp(28px, 4vw, 56px)',
+              fontSize: 'clamp(48px, 8vw, 120px)',
               color: C.primary,
               margin: 0,
-              lineHeight: 1.15,
-              letterSpacing: '-0.01em',
+              lineHeight: 0.95,
+              letterSpacing: '-0.02em',
               fontWeight: 400,
             }}
           >
-            building with purpose.
-          </motion.p>
+            <SplitWords text="Leeyana" />
+          </h1>
+
+          <div style={{ marginTop: 'clamp(20px, 2vw, 32px)' }}>
+            <p
+              style={{
+                fontFamily: '"Luxurious Script", cursive',
+                fontStyle: 'italic',
+                fontSize: 'clamp(32px, 6vw, 64px)',
+                color: C.primary,
+                margin: 0,
+                lineHeight: 1.15,
+                letterSpacing: '-0.01em',
+                fontWeight: 400,
+              }}
+            >
+              <SplitWords text="Designing with empathy," />
+            </p>
+            <p
+              style={{
+                fontFamily: F.editorial,
+                fontStyle: 'normal',
+                fontSize: 'clamp(28px, 4vw, 56px)',
+                color: C.primary,
+                margin: 0,
+                lineHeight: 1.15,
+                letterSpacing: '-0.01em',
+                fontWeight: 400,
+              }}
+            >
+              <SplitWords text="building with purpose." />
+            </p>
+          </div>
         </div>
 
         {/* Metadata */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease, delay: 0.62 }}
-          style={{ marginTop: 'clamp(32px, 4vw, 56px)' }}
-        >
+        <div ref={metaRef} style={{ marginTop: 'clamp(32px, 4vw, 56px)' }}>
           <p
             style={{
               fontFamily: F.sans,
@@ -236,9 +299,9 @@ function HeroSection() {
               lineHeight: 1.6,
             }}
           >
-            UI/UX Designer 
+            UI/UX Designer
           </p>
-        </motion.div>
+        </div>
       </div>
 
       {/* Bottom row */}
@@ -386,11 +449,11 @@ const projects = [
     slug: '/tripsync',
     name: 'TripSync',
     description: 'A group travel companion app that makes planning together feel effortless.',
-    tags: ['iOS App', 'UX Research', 'Usability Testing'],
-    image: tripsyncImg,
+    tags: [],
+    image: tripsyncHeroImg,
     imageHeight: 620,
-    alt: 'TripSync app screens on dark green background',
-    phoneFrame: true,
+    alt: 'TripSync hero photo — phones on a desk with travel objects',
+    phoneFrame: false,
     handMockupImg: tripsyncHeroImg,
     screenImg: tripsyncScreenImg,
   },
@@ -399,7 +462,7 @@ const projects = [
     slug: '/lumis',
     name: 'Lumis Skincare',
     description: 'A calm, considered shopping experience designed around how people actually discover and buy skincare.',
-    tags: ['Website', 'E-Commerce', 'Visual Design'],
+    tags: [],
     image: lumisImg,
     imageHeight: 620,
     alt: 'Lumis Skincare website on laptop mockup',
@@ -409,7 +472,7 @@ const projects = [
     slug: '/neighbourlah',
     name: 'NeighbourLah',
     description: 'A digital space that helps neighbours connect, share, and look out for each other.',
-    tags: ['iOS App', 'Community', 'UX Research'],
+    tags: [],
     image: neighbourlahImg,
     imageHeight: 520,
     alt: 'NeighbourLah app screens on warm toned background',
@@ -428,141 +491,84 @@ const projects = [
 
 function ProjectCard({ project, navigate }: { project: typeof projects[0]; navigate: ReturnType<typeof useNavigate> }) {
   return (
-    <motion.article
-      style={{ cursor: 'pointer' }}
+    <article
+      data-cursor="view"
+      className="project-card"
       onClick={() => navigate(project.slug)}
       role="button"
       tabIndex={0}
       onKeyDown={e => e.key === 'Enter' && navigate(project.slug)}
-      variants={cardVariants}
-      initial="rest"
-      whileHover="hover"
-      animate="rest"
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        backgroundColor: '#161616',
+      }}
     >
-      {/* Project image */}
       {project.image ? (
-        <div
+        <img
+          src={project.image}
+          alt={project.alt}
+          className="project-card-image"
           style={{
             width: '100%',
-            height: `${project.imageHeight}px`,
-            overflow: 'hidden',
-            position: 'relative',
-            backgroundColor: project.phoneFrame ? '#111' : 'transparent',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
           }}
-          className="max-md:!h-[280px] max-lg:!h-[380px]"
-        >
-          {project.phoneFrame ? (
-            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-              <motion.img
-                src={(project as any).handMockupImg}
-                alt=""
-                aria-hidden="true"
-                variants={imgScaleVariants}
-                transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  objectPosition: 'center',
-                  display: 'block',
-                }}
-              />
-            </div>
-          ) : (
-            <motion.img
-              src={project.image}
-              alt={project.alt}
-              variants={imgScaleVariants}
-              transition={{ duration: 0.65, ease: [0.25, 0.1, 0.25, 1] }}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-          )}
-          {/* Hover overlay */}
-          <motion.div
-            variants={overlayVariants}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)',
-              pointerEvents: 'none',
-            }}
-          >
-            <motion.div
-              variants={overlayCTAVariants}
-              style={{
-                position: 'absolute',
-                bottom: '28px',
-                left: '32px',
-                color: '#EBEBE5',
-                fontFamily: F.sans,
-                fontSize: '13px',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              View Case Study
-            </motion.div>
-          </motion.div>
-        </div>
+        />
       ) : (
-        /* AXS placeholder */
         <div
+          className="project-card-image"
           style={{
             width: '100%',
-            height: `${project.imageHeight}px`,
-            backgroundColor: '#161616',
-            border: '1px solid #222222',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            height: '100%',
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #262626 100%)',
           }}
-          className="max-md:!h-[280px] max-lg:!h-[380px]"
-        >
-          <span
-            style={{
-              fontFamily: F.editorial,
-              fontSize: '28px',
-              color: C.secondary,
-              letterSpacing: '-0.01em',
-              textAlign: 'center',
-            }}
-          >
-            AXS · Billing Feature
-          </span>
-        </div>
+        />
       )}
 
-      {/* Text row below image */}
+      {/* Bottom 35% gradient overlay for text readability */}
       <div
         style={{
-          marginTop: '24px',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '40px',
-          alignItems: 'flex-start',
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: '35%',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.75) 100%)',
+          pointerEvents: 'none',
         }}
-        className="max-md:!grid-cols-1 max-md:!gap-4 max-lg:!gap-6"
+      />
+
+      {/* Text overlay inside the card */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '40px',
+          right: '40px',
+          bottom: '36px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+          gap: '32px',
+          pointerEvents: 'none',
+        }}
+        className="max-md:!left-6 max-md:!right-6 max-md:!bottom-6 max-md:!flex-col max-md:!items-start max-md:!gap-3"
       >
-        {/* Left: Number + Name */}
         <div>
           <p
             style={{
               fontFamily: F.sans,
-              fontSize: '13px',
-              color: C.secondary,
-              margin: '0 0 8px 0',
-              letterSpacing: '0.05em',
+              fontSize: '11px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: '#EBEBE5',
+              opacity: 0.7,
+              margin: 0,
             }}
           >
             {project.id}
@@ -570,68 +576,131 @@ function ProjectCard({ project, navigate }: { project: typeof projects[0]; navig
           <h3
             style={{
               fontFamily: F.editorial,
-              fontSize: 'clamp(24px, 2.5vw, 32px)',
-              color: C.primary,
-              margin: 0,
+              fontSize: 'clamp(28px, 3vw, 32px)',
+              color: '#EBEBE5',
+              margin: '8px 0 0 0',
               letterSpacing: '-0.01em',
-              lineHeight: 1.2,
+              lineHeight: 1.15,
               fontWeight: 400,
             }}
+            className="max-md:!text-[24px]"
           >
             {project.name}
           </h3>
         </div>
-
-        {/* Right: Description + Tags */}
-        <div>
-          <p
-            style={{
-              fontFamily: F.sans,
-              fontSize: '17px',
-              color: C.secondary,
-              margin: '0 0 16px 0',
-              lineHeight: 1.6,
-            }}
-          >
-            {project.description}
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {project.tags.map(tag => (
-              <TagPill key={tag} label={tag} />
-            ))}
-          </div>
-        </div>
+        <p
+          style={{
+            fontFamily: F.sans,
+            fontSize: '15px',
+            color: '#EBEBE5',
+            opacity: 0.7,
+            margin: 0,
+            maxWidth: '420px',
+            lineHeight: 1.5,
+            textAlign: 'right',
+          }}
+          className="max-md:!text-[13px] max-md:!text-left max-md:!max-w-full"
+        >
+          {project.description}
+        </p>
       </div>
-    </motion.article>
+    </article>
   );
 }
 
 function ProjectsSection() {
   const navigate = useNavigate();
+  const sectionRef = useRef<HTMLElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const cards = cardRefs.current;
+    if (cards.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      cards.forEach((card, i) => {
+        if (!card) return;
+        gsap.set(card, {
+          transformOrigin: 'center center',
+          transformPerspective: 1200,
+          rotateX: 0,
+          scale: 1,
+        });
+
+        // Last card has no next card to push it back — it never tilts
+        if (i === cards.length - 1) return;
+
+        const nextCard = cards[i + 1];
+        if (!nextCard) return;
+        const nextSection = nextCard.parentElement;
+        if (!nextSection) return;
+
+        gsap.to(card, {
+          rotateX: 12,
+          scale: 0.95,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: nextSection,
+            start: 'top bottom',
+            end: 'top top+=72',
+            scrub: true,
+          },
+        });
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
       id="work"
-      style={{
-        backgroundColor: C.bg,
-        paddingTop: '120px',
-        paddingBottom: '80px',
-      }}
-      className="max-md:!py-16 max-lg:!py-14"
+      ref={sectionRef}
+      style={{ backgroundColor: C.bg, paddingTop: '120px' }}
+      className="max-md:!pt-16"
     >
       <div
         style={{ maxWidth: '1400px', margin: '0 auto', paddingLeft: '80px', paddingRight: '80px' }}
-        className="max-md:!px-6 max-lg:!px-10"
+        className="max-md:!px-6"
       >
         <SectionLabel text="Selected Work" />
+      </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }} className="max-md:!gap-16">
-          {projects.map((project, i) => (
-            <FadeUp key={project.slug} delay={0.05 * i} style={{ width: '100%' }}>
+      <div>
+        {projects.map((project, i) => (
+          <div
+            key={project.slug}
+            style={{
+              position: 'sticky',
+              top: '72px',
+              height: '100vh',
+              zIndex: i + 1,
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'center',
+              paddingLeft: '80px',
+              paddingRight: '80px',
+              backgroundColor: C.bg,
+              perspective: '1200px',
+            }}
+            className="max-md:!px-4"
+          >
+            <div
+              ref={el => { cardRefs.current[i] = el; }}
+              style={{
+                width: '100%',
+                maxWidth: '1240px',
+                height: 'calc(100vh - 72px)',
+                willChange: 'transform',
+              }}
+              className="max-md:!h-[calc(90vh_-_65px)]"
+            >
               <ProjectCard project={project} navigate={navigate} />
-            </FadeUp>
-          ))}
-        </div>
+            </div>
+          </div>
+        ))}
+        {/* Spacer so the last card has sticky time before the section unsticks */}
+        <div style={{ height: '100vh' }} aria-hidden="true" />
       </div>
     </section>
   );

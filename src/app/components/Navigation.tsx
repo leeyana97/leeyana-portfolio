@@ -1,22 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { X, Menu } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ContactModal } from './ContactModal';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface NavigationProps {
   showBack?: boolean;
 }
 
 export function Navigation({ showBack = false }: NavigationProps) {
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const navigate = useNavigate();
+  const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const navEl = navRef.current;
+    if (!navEl) return;
+
+    const heroEl = document.getElementById('hero');
+    const trigger = ScrollTrigger.create({
+      trigger: heroEl ?? document.documentElement,
+      start: heroEl ? 'bottom top+=80' : 'top top-=80',
+      onEnter: () => navEl.classList.add('is-scrolled'),
+      onLeaveBack: () => navEl.classList.remove('is-scrolled'),
+    });
+
+    return () => trigger.kill();
   }, []);
 
   useEffect(() => {
@@ -45,8 +58,10 @@ export function Navigation({ showBack = false }: NavigationProps) {
   return (
     <>
       <nav
+        ref={navRef}
+        className="site-nav max-md:!px-6"
         style={{
-          position: 'fixed',
+          position: 'sticky',
           top: 0,
           left: 0,
           right: 0,
@@ -58,11 +73,7 @@ export function Navigation({ showBack = false }: NavigationProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: scrolled ? 'rgba(13,13,13,0.92)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(12px)' : 'none',
-          transition: 'background-color 0.3s ease, backdrop-filter 0.3s ease',
         }}
-        className="max-md:!px-6"
       >
         {/* Left: Back arrow (case study pages) or just monogram */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -171,9 +182,9 @@ export function Navigation({ showBack = false }: NavigationProps) {
           <Link to="/" style={{ textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>
             <span
               style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
+                fontFamily: '"Luxurious Script", cursive',
                 fontStyle: 'italic',
-                fontSize: '28px',
+                fontSize: '36px',
                 color: '#EBEBE5',
                 letterSpacing: '-0.02em',
                 display: 'inline-flex',
@@ -181,8 +192,8 @@ export function Navigation({ showBack = false }: NavigationProps) {
                 lineHeight: 1,
               }}
             >
-              <span style={{ position: 'relative', top: '0px' }}>N</span>
-              <span style={{ position: 'relative', top: '10px', marginLeft: '-2px' }}>L</span>
+              <span style={{ position: 'relative', top: '2px', marginRight: '-6px', zIndex: 1 }}>N</span>
+              <span style={{ position: 'relative', top: '7px', marginLeft: '-2px' }}>L</span>
             </span>
           </Link>
           <button
