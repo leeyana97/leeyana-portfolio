@@ -21,7 +21,7 @@ import tripsyncHandImg from '../../imports/Gemini_Generated_Image_kpqnx2kpqnx2kp
 import tripsyncHandImg2 from '../../imports/ChatGPT_Image_Apr_29,_2026,_09_07_27_PM.png';
 import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
-import neighbourlahImg from '../../imports/NeighbourLah_home_app.png';
+import neighbourlahImg from '../../imports/Neighbourlah hero image copy.png';
 
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
@@ -540,7 +540,7 @@ const projects = [
     tags: [],
     image: neighbourlahImg,
     imageHeight: 520,
-    alt: 'NeighbourLah app screens on warm toned background',
+    alt: 'NeighbourLah hero photo',
   },
   {
     id: 'PRODUCT DESIGN',
