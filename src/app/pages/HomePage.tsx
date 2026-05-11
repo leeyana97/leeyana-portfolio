@@ -23,7 +23,7 @@ import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
 import neighbourlahImg from '../../imports/NeighbourLah_home_app.png';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -111,6 +111,45 @@ function TagPill({ label }: { label: string }) {
 function HeroSection() {
   const headlineRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
+  const nRef = useRef<HTMLSpanElement>(null);
+  const lRef = useRef<HTMLSpanElement>(null);
+  const bottomRowRef = useRef<HTMLDivElement>(null);
+
+  // Mount-time animations (was framer-motion before — moved to GSAP so they
+  // play correctly when AnimatePresence wraps the route. AnimatePresence
+  // suppresses initial animations on descendant motion components via
+  // PresenceContext, but plain DOM + GSAP is unaffected.)
+  useLayoutEffect(() => {
+    const n = nRef.current;
+    const l = lRef.current;
+    const bottom = bottomRowRef.current;
+
+    const ctx = gsap.context(() => {
+      if (n) {
+        gsap.fromTo(
+          n,
+          { opacity: 0, x: '-60vw', y: '-50vh' },
+          { opacity: 0.18, x: '-5%', y: '-48%', duration: 1.6, delay: 0.4, ease: 'power2.out' }
+        );
+      }
+      if (l) {
+        gsap.fromTo(
+          l,
+          { opacity: 0, x: '50vw', y: '100vh' },
+          { opacity: 0.18, x: '13%', y: '-30%', duration: 1.6, delay: 0.4, ease: 'power2.out' }
+        );
+      }
+      if (bottom) {
+        gsap.fromTo(
+          bottom,
+          { opacity: 0 },
+          { opacity: 1, duration: 1, delay: 0.9, ease: 'power2.out' }
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
 
   useEffect(() => {
     const headline = headlineRef.current;
@@ -196,50 +235,46 @@ function HeroSection() {
           mixBlendMode: 'screen',
         }}
       >
-        <motion.span
-          initial={{ opacity: 0, x: '-60vw', y: '-50vh' }}
-          animate={{ opacity: 0.18, x: '-5%', y: '-48%' }}
-          transition={{ duration: 1.6, ease, delay: 0.4 }}
+        <span
+          ref={nRef}
           style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%)',
             fontFamily: '"Luxurious Script", cursive',
             fontSize: 'clamp(280px, 42vw, 620px)',
             color: C.primary,
             lineHeight: 1,
             fontWeight: 400,
             letterSpacing: '-0.04em',
+            willChange: 'transform, opacity',
           }}
         >
           N
-        </motion.span>
-        <motion.span
-          initial={{ opacity: 0, x: '50vw', y: '100vh' }}
-          animate={{ opacity: 0.18, x: '13%', y: '-30%' }}
-          transition={{ duration: 1.6, ease, delay: 0.4 }}
+        </span>
+        <span
+          ref={lRef}
           style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%)',
             fontFamily: '"Luxurious Script", cursive',
             fontSize: 'clamp(240px, 36vw, 520px)',
             color: C.primary,
             lineHeight: 1.6,
             fontWeight: 400,
             letterSpacing: '-0.04em',
+            willChange: 'transform, opacity',
           }}
         >
           L
-        </motion.span>
+        </span>
       </div>
 
       {/* Main content */}
       <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {/* Headline group */}
-        <div ref={headlineRef}>
+        <div ref={headlineRef} style={{ willChange: 'transform, opacity' }}>
           <h1
             style={{
               fontFamily: F.editorial,
@@ -287,7 +322,7 @@ function HeroSection() {
         </div>
 
         {/* Metadata */}
-        <div ref={metaRef} style={{ marginTop: 'clamp(32px, 4vw, 56px)' }}>
+        <div ref={metaRef} style={{ marginTop: 'clamp(32px, 4vw, 56px)', willChange: 'transform, opacity' }}>
           <p
             style={{
               fontFamily: F.sans,
@@ -305,10 +340,8 @@ function HeroSection() {
       </div>
 
       {/* Bottom row */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.9 }}
+      <div
+        ref={bottomRowRef}
         style={{
           position: 'absolute',
           bottom: '48px',
@@ -321,7 +354,7 @@ function HeroSection() {
         className="max-md:!left-6 max-md:!right-6 max-lg:!left-10 max-lg:!right-10"
       >
 
-      </motion.div>
+      </div>
     </section>
   );
 }
@@ -329,9 +362,38 @@ function HeroSection() {
 // ─── About Section ──────────────────────────────────────────────────────────
 function AboutSection() {
   const skills = ['UIUX Design', 'Affinity mapping', 'Prototyping','User Research', 'Usability Testing','Figma','Claude AI', 'Healthcare Background'];
+  const sectionRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const content = contentRef.current;
+    if (!section || !content) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        content,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 80%',
+            toggleActions: 'play none none none',
+          },
+        }
+      );
+    });
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="about"
       style={{
         backgroundColor: C.bg,
@@ -341,7 +403,8 @@ function AboutSection() {
       className="max-md:!py-20 max-lg:!py-16"
     >
       <div
-        style={{ maxWidth: '1400px', margin: '0 auto', paddingLeft: '80px', paddingRight: '80px' }}
+        ref={contentRef}
+        style={{ maxWidth: '1400px', margin: '0 auto', paddingLeft: '80px', paddingRight: '80px', willChange: 'transform, opacity' }}
         className="max-md:!px-6 max-lg:!px-10"
       >
         <SectionLabel text="About" />
@@ -367,6 +430,8 @@ function AboutSection() {
             <img
               src={leeyanaPhoto}
               alt="Leeyana — UI/UX Designer"
+              loading="lazy"
+              decoding="async"
               style={{
                 width: '100%',
                 height: '100%',
@@ -513,6 +578,8 @@ function ProjectCard({ project, navigate }: { project: typeof projects[0]; navig
           src={project.image}
           alt={project.alt}
           className="project-card-image"
+          loading="lazy"
+          decoding="async"
           style={{
             width: '100%',
             height: '100%',

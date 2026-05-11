@@ -2,7 +2,7 @@ import { motion } from 'motion/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
-import { FadeUp, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
 
 const C = {
@@ -22,7 +22,18 @@ const F = {
 function SectionLabel({ text }: { text: string }) {
   return (
     <motion.div
-      style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '48px' }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '20px',
+        marginBottom: '48px',
+        position: 'sticky',
+        top: '72px',
+        zIndex: 5,
+        backgroundColor: 'inherit',
+        paddingTop: '12px',
+        paddingBottom: '12px',
+      }}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -39,7 +50,7 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       {label && <span style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary }}>{label}</span>}
       <div style={{ width: '100%', overflow: 'hidden', borderRadius: '12px', opacity }}>
-        <img src={lumisImg} alt={label || 'Lumis Skincare screen'} style={{ width: '100%', height: '340px', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+        <img src={lumisImg} alt={label || 'Lumis Skincare screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '340px', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
       </div>
     </div>
   );
@@ -126,7 +137,7 @@ function ResearchFindings() {
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Research Findings" />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
+      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
         {findings.map((f, i) => (
           <div key={f.title} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
             <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 14px 0', letterSpacing: '0.08em' }}>0{i + 1}</p>
@@ -134,7 +145,7 @@ function ResearchFindings() {
             <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{f.desc}</p>
           </div>
         ))}
-      </div>
+      </StaggerCards>
     </section>
   );
 }
@@ -181,7 +192,7 @@ function DesignDecisions() {
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Design Decisions" />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
+      <StaggerCards style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
         {features.map((feat) => (
           <div key={feat.number} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }} className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10">
             {feat.imageFirst ? (
@@ -217,7 +228,7 @@ function DesignDecisions() {
             )}
           </div>
         ))}
-      </div>
+      </StaggerCards>
     </section>
   );
 }
@@ -287,10 +298,12 @@ function Iterations() {
           <div key={issue.label}>
             <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', margin: '0 0 16px 0' }}>{issue.label}</p>
             <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0', maxWidth: '680px' }}>{issue.problem}</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px' }} className="max-md:!grid-cols-1 max-md:!gap-8 max-lg:!grid-cols-1 max-lg:!gap-8">
-              <ScreenMockup label="Before" opacity={0.45} />
-              <ScreenMockup label="After" opacity={1} />
-            </div>
+            <BeforeAfter
+              style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px' }}
+              className="max-md:!grid-cols-1 max-md:!gap-8 max-lg:!grid-cols-1 max-lg:!gap-8"
+              before={<ScreenMockup label="Before" />}
+              after={<ScreenMockup label="After" />}
+            />
             <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '680px' }}>{issue.solution}</p>
           </div>
         ))}
@@ -307,9 +320,9 @@ function Impact() {
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
-      <blockquote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, borderLeft: 'none', padding: 0 }}>
+      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
         "It feels like someone actually thought about how I shop, not how they wanted me to shop."
-      </blockquote>
+      </AnimatedQuote>
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 64px auto' }}>Usability Test Participant</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
         {outcomes.map((o) => (
@@ -333,7 +346,7 @@ function Reflections() {
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Reflections & Next Steps" />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
+      <StaggerCards style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {cards.map((card) => (
           <div key={card.number} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
             <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 16px 0', letterSpacing: '0.08em' }}>{card.number}</p>
@@ -341,7 +354,7 @@ function Reflections() {
             <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{card.body}</p>
           </div>
         ))}
-      </div>
+      </StaggerCards>
     </section>
   );
 }
