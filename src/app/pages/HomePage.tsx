@@ -642,7 +642,7 @@ function ProjectsSection() {
           scrollTrigger: {
             trigger: nextSection,
             start: 'top bottom',
-            end: 'top top+=72',
+            end: 'top top+=105',
             scrub: true,
           },
         });
@@ -672,7 +672,7 @@ function ProjectsSection() {
             key={project.slug}
             style={{
               position: 'sticky',
-              top: '72px',
+              top: '105px',
               height: '100vh',
               zIndex: i + 1,
               display: 'flex',
@@ -683,14 +683,14 @@ function ProjectsSection() {
               backgroundColor: C.bg,
               perspective: '1200px',
             }}
-            className="max-md:!px-4"
+            className="max-md:!px-4 max-md:!top-[72px]"
           >
             <div
               ref={el => { cardRefs.current[i] = el; }}
               style={{
                 width: '100%',
                 maxWidth: '1240px',
-                height: 'calc(100vh - 72px)',
+                height: 'calc(100vh - 105px)',
                 willChange: 'transform',
               }}
               className="max-md:!h-[calc(90vh_-_65px)]"
