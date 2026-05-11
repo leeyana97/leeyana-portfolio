@@ -162,6 +162,68 @@
     transform: scale(1.03);
   }
 
+  /* ─── Case-study typography hierarchy ─────────────────────────── */
+  /* Each case study page sets --accent-color on its root wrapper */
+  .cs-section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-color, #888884);
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .cs-divider-line {
+    flex: 1;
+    height: 1px;
+    background-color: var(--accent-color, #2A2A2A);
+    transform-origin: left;
+  }
+
+  .cs-section-header {
+    font-family: 'Editorial New', 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 48px;
+    color: #FFFFFF;
+    margin: 0 0 16px 0;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  @media (max-width: 767px) {
+    .cs-section-header {
+      font-size: 32px;
+    }
+  }
+
+  .cs-category-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent-color, #888884);
+    margin: 0 0 12px 0;
+  }
+
+  .cs-body-text {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #EBEBE5;
+    margin: 0;
+  }
+
+  @media (max-width: 767px) {
+    .cs-body-text {
+      font-size: 15px;
+    }
+  }
+
   /**
   * Default typography styles for HTML elements (h1-h4, p, label, button, input).
   * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.

@@ -42,11 +42,8 @@ function SectionLabel({ text }: { text: string }) {
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.6, ease }}
     >
-      <span style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-        {text}
-      </span>
-      <span style={{ width: '80px', height: '1px', backgroundColor: '#2E9461', flexShrink: 0 }} />
-      <AnimatedLine />
+      <span className="cs-section-label">{text}</span>
+      <AnimatedLine color="var(--accent-color, #2A2A2A)" />
     </motion.div>
   );
 }
@@ -159,7 +156,7 @@ function ProblemStatement() {
   ];
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 3.5vw, 42px)', color: C.primary, margin: '0 0 32px 0', lineHeight: 1.2, fontWeight: 400 }}>
+      <h2 className="cs-section-header">
         The Problem.
       </h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
@@ -264,7 +261,7 @@ function VisualDesignSystem() {
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '20px' }} className="max-md:!px-6 max-md:!pt-16 max-md:!pb-4 max-lg:!px-10 max-lg:!pt-14 max-lg:!pb-4">
       <SectionLabel text="Visual Design" />
-      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 3.5vw, 42px)', color: C.primary, margin: '0 0 64px 0', lineHeight: 1.2, fontWeight: 400 }}>
+      <h2 className="cs-section-header">
         Visual Design System
       </h2>
 
@@ -515,16 +512,14 @@ function Iterations() {
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Top Issues & Iterations" />
-      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 3.5vw, 42px)', color: C.primary, margin: '0 0 64px 0', lineHeight: 1.2, fontWeight: 400 }}>
+      <h2 className="cs-section-header">
         What Changed & Why
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
         {issues.map((issue) => (
           <div key={issue.label}>
-            <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', margin: '0 0 16px 0' }}>
-              {issue.label}
-            </p>
-            <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0', maxWidth: '680px' }}>
+            <p className="cs-category-label">{issue.label}</p>
+            <p className="cs-body-text" style={{ margin: '0 0 40px 0', maxWidth: '680px' }}>
               {issue.problem}
             </p>
             <BeforeAfter
@@ -533,7 +528,7 @@ function Iterations() {
               before={<ScreenMockup label="Before" />}
               after={<ScreenMockup label="After" />}
             />
-            <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '680px' }}>
+            <p className="cs-body-text" style={{ maxWidth: '680px' }}>
               {issue.solution}
             </p>
           </div>
@@ -739,7 +734,7 @@ function NextProject() {
 export function TripSyncPage() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
-    <div style={{ backgroundColor: C.bg, minHeight: '100vh' }}>
+    <div style={{ backgroundColor: C.bg, minHeight: '100vh', '--accent-color': '#4CAF50' } as React.CSSProperties}>
       <Navigation showBack />
       <CaseStudyHero />
       <FadeUp><StatsStrip /></FadeUp>

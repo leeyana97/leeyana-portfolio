@@ -163,7 +163,7 @@ export function AnimatedQuote({
           top: '4px',
           bottom: '4px',
           width: '3px',
-          backgroundColor: '#2E9461',
+          backgroundColor: 'var(--accent-color, #2E9461)',
           willChange: 'transform',
           transformOrigin: 'top center',
         }}
