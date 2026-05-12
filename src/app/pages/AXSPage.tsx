@@ -60,9 +60,19 @@ function ScreenPlaceholder({ label, opacity = 1, text }: { label?: string; opaci
 
 function CaseStudyHero() {
   return (
-    <section style={{ paddingTop: '160px', paddingBottom: '80px', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-28 max-md:!pb-16 max-lg:!px-10">
-      <motion.div variants={staggerContainer} initial="hidden" animate="show">
-        <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 20px 0' }}>04 · Case Study</motion.p>
+    <section style={{ paddingTop: '120px', paddingBottom: '80px', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-md:!pb-16 max-lg:!px-10">
+      {/* Intentional placeholder hero — no mockup provided */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease, delay: 0.55 }}
+        style={{ width: '100%', height: 'clamp(300px, 55vw, 640px)', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <span style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 3vw, 40px)', color: C.secondary, letterSpacing: '-0.01em', textAlign: 'center', padding: '40px' }}>
+          AXS · Billing Feature
+        </span>
+      </motion.div>
+      <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '60px' }}>
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           AXS · Billing
         </motion.h1>
@@ -72,17 +82,6 @@ function CaseStudyHero() {
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
           Duration: 2 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: iOS App · Feature Addition
         </motion.p>
-      </motion.div>
-      {/* Intentional placeholder hero — no mockup provided */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.55 }}
-        style={{ marginTop: '60px', width: '100%', height: 'clamp(300px, 55vw, 640px)', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <span style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 3vw, 40px)', color: C.secondary, letterSpacing: '-0.01em', textAlign: 'center', padding: '40px' }}>
-          AXS · Billing Feature
-        </span>
       </motion.div>
     </section>
   );

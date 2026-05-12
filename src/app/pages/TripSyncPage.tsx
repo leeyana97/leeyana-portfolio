@@ -148,9 +148,6 @@ function CaseStudyHero() {
         animate="show"
         style={{ marginTop: '60px' }}
       >
-        <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 20px 0' }}>
-          01 · Case Study
-        </motion.p>
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           TripSync
         </motion.h1>

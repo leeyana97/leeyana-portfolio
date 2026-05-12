@@ -58,9 +58,11 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
 
 function CaseStudyHero() {
   return (
-    <section style={{ paddingTop: '160px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-28 max-lg:!px-10">
-      <motion.div variants={staggerContainer} initial="hidden" animate="show">
-        <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 20px 0' }}>03 · Case Study</motion.p>
+    <section style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10">
+      <div style={{ width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', overflow: 'hidden', margin: '0 auto' }}>
+        <img src={neighbourlahImg} alt="NeighbourLah app overview" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+      </div>
+      <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '60px' }}>
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           NeighbourLah
         </motion.h1>
@@ -71,9 +73,6 @@ function CaseStudyHero() {
           Duration: 3 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: iOS App
         </motion.p>
       </motion.div>
-      <div style={{ marginTop: '60px', width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', overflow: 'hidden', margin: '60px auto 0' }}>
-        <img src={neighbourlahImg} alt="NeighbourLah app overview" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
-      </div>
     </section>
   );
 }
