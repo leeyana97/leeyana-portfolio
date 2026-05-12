@@ -4,7 +4,23 @@ import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import tripsyncImg from '../../imports/Tripsync_home_app.png';
-import tripsyncHeroV2Img from '../../imports/Tripsync_home_page_v2.png';
+import tripsyncPhone1 from '../../imports/tripsync-phone-1.png';
+import tripsyncPhone2 from '../../imports/tripsync-phone-2.png';
+import tripsyncPhone3 from '../../imports/tripsync-phone-3.png';
+import tripsyncPhone4 from '../../imports/tripsync-phone-4-v3.png';
+
+// Hero showcase: 4 phones layered with staggered reveal. Phone 4 (right,
+// held by hand) enters first; phone 1 (left) enters last.
+// All phones slide horizontally from the right. Phone 4 — the largest, most
+// visually dominant — uses a smaller slide distance, longer duration, and a
+// faint starting opacity so it feels like it "settles" rather than pops in.
+const PHONE_EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
+const heroPhones = [
+  { id: 1, src: tripsyncPhone1, alt: 'TripSync welcome screen',     height: '90%',  left: '-4%', top: '57%', z: 1, delay: 1.5, initialOpacity: 0,    initialX: 60, duration: 1.2 },
+  { id: 2, src: tripsyncPhone2, alt: 'TripSync Bangkok trip',       height: '78%',  left: '6%',  top: '38%', z: 2, delay: 1.0, initialOpacity: 0,    initialX: 60, duration: 1.2 },
+  { id: 3, src: tripsyncPhone3, alt: 'TripSync Overlap Dashboard',  height: '86%',  left: '32%', top: '46%', z: 3, delay: 0.5, initialOpacity: 0,    initialX: 60, duration: 1.2 },
+  { id: 4, src: tripsyncPhone4, alt: 'TripSync app overview',       height: '168%', left: '65%', top: '52%', z: 4, delay: 0,   initialOpacity: 0.15, initialX: 20, duration: 1.8 },
+];
 
 const C = {
   bg: '#0D0D0D',
@@ -88,11 +104,49 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
 // ─── 1. Case Study Hero ─────────────────────────────────────────────────────
 function CaseStudyHero() {
   return (
-    <section style={{ paddingTop: '160px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-28 max-lg:!px-10">
+    <section style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10">
+      {/* Layered 4-phone showcase. Each phone slides in from the right and
+          fades up, staggered right → left, triggered when the showcase
+          enters the viewport. */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '1280px',
+          height: 'clamp(440px, 58vw, 660px)',
+          position: 'relative',
+          margin: '0 auto',
+        }}
+      >
+        {heroPhones.map((p) => (
+          <motion.img
+            key={p.id}
+            src={p.src}
+            alt={p.alt}
+            aria-hidden={p.id !== 4}
+            initial={{ opacity: p.initialOpacity, x: p.initialX, y: '-50%' }}
+            whileInView={{ opacity: 1, x: 0, y: '-50%' }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: p.duration, ease: PHONE_EASE, delay: p.delay }}
+            style={{
+              position: 'absolute',
+              height: p.height,
+              left: p.left,
+              top: p.top,
+              zIndex: p.z,
+              width: 'auto',
+              objectFit: 'contain',
+              display: 'block',
+              pointerEvents: 'none',
+              willChange: 'transform, opacity',
+            }}
+          />
+        ))}
+      </div>
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="show"
+        style={{ marginTop: '60px' }}
       >
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: '0 0 20px 0' }}>
           01 · Case Study
@@ -108,13 +162,6 @@ function CaseStudyHero() {
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#4ADE80', border: '1px solid #1B7A4E', backgroundColor: 'rgba(74, 222, 128, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
         </motion.p>
       </motion.div>
-      <div style={{ marginTop: '60px', width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', margin: '60px auto 0' }}>
-        <img
-          src={tripsyncHeroV2Img}
-          alt="TripSync app overview"
-          style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center', display: 'block', mixBlendMode: 'lighten' }}
-        />
-      </div>
     </section>
   );
 }
