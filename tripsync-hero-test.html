@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TripSync Hero — Scroll Reveal Test</title>
+<style>
+  :root {
+    --bg: #0D0D0D;
+    --fg: #F5F5F5;
+    --muted: #888;
+    --accent: #4ADE80;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Spacer above so you have to scroll to see the section trigger */
+  .scroll-spacer {
+    height: 30vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 13px;
+  }
+
+  .hero {
+    padding: 60px 80px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hero__eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 20px;
+  }
+
+  .hero__title {
+    font-family: 'Times New Roman', 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: clamp(48px, 7vw, 96px);
+    letter-spacing: -0.02em;
+    line-height: 0.95;
+    margin: 0 0 16px;
+  }
+
+  .hero__tagline {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--muted);
+    margin: 0 0 48px;
+    line-height: 1.5;
+  }
+
+  /* ── Phone showcase ──────────────────────────────────────────────── */
+
+  .showcase {
+    position: relative;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    /* Bigger frame so the phones can be staggered vertically without
+       fighting each other. */
+    height: clamp(440px, 58vw, 660px);
+  }
+
+  .phone {
+    position: absolute;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    /* start hidden + offset to the right for the entrance */
+    opacity: 0;
+    transform: translate(100px, -50%);
+    transition:
+      opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+    pointer-events: none;
+  }
+
+  /* Layered showcase composition (matches the reference image):
+     - Each phone has its OWN vertical center (top %) so they stagger up/down
+       instead of sitting on a single baseline.
+     - Heights ramp up left → right: phones 1 & 2 are smaller, phone 3
+       is larger, phone 4 (the held iPhone) is the largest.
+     - Horizontal overlaps create the layered "showcase" look; z-index
+       stacks from back (phone 1) to front (phone 4). */
+
+  .phone--1 { /* tilted left,  welcome — smaller, sits lower      */
+    height: 90%;  left: -4%;  top: 57%;  z-index: 1;
+  }
+  .phone--2 { /* tilted right, Bangkok — smaller, sits higher     */
+    height: 78%;  left:  6%;  top: 38%;  z-index: 2;
+  }
+  .phone--3 { /* upright,      Overlap — larger, mid-vertical     */
+    height: 86%;  left: 32%;  top: 46%;  z-index: 3;
+  }
+  .phone--4 { /* held by hand, landing — largest, anchored lower  */
+    height: 118%; left: 64%;  top: 52%;  z-index: 4;
+  }
+
+  /* Reveal state — set by JS once per element, with a per-phone delay */
+  .phone.is-in {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+
+  /* Stagger delays (300ms each, right → left).
+     Phone 4 first, then 3, 2, 1. */
+  .phone--4.is-in { transition-delay: 0ms; }
+  .phone--3.is-in { transition-delay: 300ms; }
+  .phone--2.is-in { transition-delay: 600ms; }
+  .phone--1.is-in { transition-delay: 900ms; }
+
+  /* ── Responsive ─────────────────────────────────────────────────── */
+
+  @media (max-width: 1024px) {
+    .hero { padding: 100px 40px 60px; }
+    .showcase { height: clamp(360px, 62vw, 520px); }
+    .phone--1 { left: -2%; }
+    .phone--2 { left: 17%; }
+    .phone--3 { left: 39%; }
+    .phone--4 { left: 64%; }
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 80px 16px 40px; }
+    .showcase { height: clamp(260px, 70vw, 360px); }
+    .phone--1 { left: -4%; }
+    .phone--2 { left: 16%; }
+    .phone--3 { left: 38%; }
+    .phone--4 { left: 64%; }
+  }
+
+  /* Honor reduced-motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .phone {
+      transition: none;
+      opacity: 1;
+      transform: translate(0, -50%);
+    }
+  }
+</style>
+</head>
+<body>
+
+  <section class="scroll-spacer">↓ Scroll down to trigger the hero reveal ↓</section>
+
+  <section class="hero" id="hero">
+    <p class="hero__eyebrow">01 · Case Study</p>
+    <h1 class="hero__title">TripSync</h1>
+    <p class="hero__tagline">A Travel Companion App for Group Trip Planners</p>
+
+    <div class="showcase" id="showcase">
+      <img class="phone phone--1" src="./src/imports/tripsync-phone-1.png" alt="TripSync welcome screen" />
+      <img class="phone phone--2" src="./src/imports/tripsync-phone-2.png" alt="TripSync Bangkok trip details" />
+      <img class="phone phone--3" src="./src/imports/tripsync-phone-3.png" alt="TripSync Overlap Dashboard" />
+      <img class="phone phone--4" src="./src/imports/tripsync-phone-4.png" alt="TripSync landing page" />
+    </div>
+  </section>
+
+<script>
+  (() => {
+    const showcase = document.getElementById('showcase');
+    const phones = showcase.querySelectorAll('.phone');
+    if (!showcase || !phones.length) return;
+
+    const reveal = () => {
+      phones.forEach(el => el.classList.add('is-in'));
+    };
+
+    // Fallback for browsers without IntersectionObserver
+    if (!('IntersectionObserver' in window)) {
+      reveal();
+      return;
+    }
+
+    const io = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          reveal();
+          observer.unobserve(entry.target); // fire once
+        }
+      });
+    }, {
+      // Trigger when ~25% of the showcase is in view, so the reveal feels
+      // tied to the user scrolling INTO the hero, not just barely seeing it.
+      threshold: 0.25,
+    });
+
+    io.observe(showcase);
+  })();
+</script>
+
+</body>
+</html>

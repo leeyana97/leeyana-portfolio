@@ -108,14 +108,13 @@ function CaseStudyHero() {
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#4ADE80', border: '1px solid #1B7A4E', backgroundColor: 'rgba(74, 222, 128, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
         </motion.p>
       </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.55 }}
-        style={{ marginTop: '60px', width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', overflow: 'hidden', margin: '60px auto 0' }}
-      >
-        <img src={tripsyncHeroV2Img} alt="TripSync app overview" style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center', display: 'block', mixBlendMode: 'lighten' }} />
-      </motion.div>
+      <div style={{ marginTop: '60px', width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', margin: '60px auto 0' }}>
+        <img
+          src={tripsyncHeroV2Img}
+          alt="TripSync app overview"
+          style={{ width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center', display: 'block', mixBlendMode: 'lighten' }}
+        />
+      </div>
     </section>
   );
 }
