@@ -4,6 +4,12 @@ import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import tripsyncImg from '../../imports/Tripsync_home_app.png';
+import tripsyncActivityFoodImg from '../../imports/tripsync-Activity-and-Food-Overview-new.png';
+import tripsyncOptOutImg from '../../imports/tripsync-opt-out-new.png';
+import tripsyncProfileQuizImg from '../../imports/profile-preference-quiz-new-v2.png';
+import tripsyncProfileOldImg from '../../imports/tripsync-profile-old.png';
+import tripsyncPrefQuizOldImg from '../../imports/tripsync-pref-quiz-old.png';
+import tripsyncPrefQuizNewImg from '../../imports/tripsync-pref-quiz-new.png';
 import tripsyncPhone1 from '../../imports/tripsync-phone-1.png';
 import tripsyncPhone2 from '../../imports/tripsync-phone-2.png';
 import tripsyncPhone3 from '../../imports/tripsync-phone-3-v2.png';
@@ -73,7 +79,7 @@ function TagPill({ label }: { label: string }) {
 }
 
 // ─── Screen Mockup placeholder ──────────────────────────────────────────────
-function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number }) {
+function ScreenMockup({ label, opacity = 1, src = tripsyncImg }: { label?: string; opacity?: number; src?: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
       {label && (
@@ -90,7 +96,7 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
         }}
       >
         <img
-          src={tripsyncImg}
+          src={src}
           alt={label || 'TripSync screen'}
           loading="lazy"
           decoding="async"
@@ -434,7 +440,7 @@ function DesignDecisions() {
               opacity: 0.85,
             }}
           >
-            <ScreenMockup />
+            <ScreenMockup src={tripsyncOptOutImg} />
           </div>
           <div
             style={{
@@ -446,7 +452,7 @@ function DesignDecisions() {
               zIndex: 2,
             }}
           >
-            <ScreenMockup />
+            <ScreenMockup src={tripsyncActivityFoodImg} />
           </div>
         </div>
 
@@ -525,16 +531,20 @@ function UsabilityTesting() {
 
 // ─── 7. Top Issues & Iterations ──────────────────────────────────────────────
 function Iterations() {
-  const issues = [
+  const issues: { label: string; problem: string; solution: string; beforeImg?: string; afterImg?: string }[] = [
     {
       label: 'Group Profile Builder',
       problem: 'Users questioned why planners were filling in details on behalf of members who had not yet joined the trip.',
       solution: 'Removed the standalone step and integrated it into the preference quiz flow, streamlining onboarding with a clearer user journey.',
+      beforeImg: tripsyncProfileOldImg,
+      afterImg: tripsyncProfileQuizImg,
     },
     {
       label: 'Activity Preferences in Quiz',
       problem: 'Drag handles caused users to attempt dragging instead of the intended tap-to-assign interaction.',
       solution: 'Replaced with a tap-to-assign system with a clear instruction box and Tap to Remove labels, making it discoverable at a glance.',
+      beforeImg: tripsyncPrefQuizOldImg,
+      afterImg: tripsyncPrefQuizNewImg,
     },
     {
       label: 'Accommodation Preference in Quiz',
@@ -568,8 +578,8 @@ function Iterations() {
             <BeforeAfter
               style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px' }}
               className="max-md:!grid-cols-1 max-md:!gap-8 max-lg:!grid-cols-1 max-lg:!gap-8"
-              before={<ScreenMockup label="Before" />}
-              after={<ScreenMockup label="After" />}
+              before={<ScreenMockup label="Before" src={issue.beforeImg} />}
+              after={<ScreenMockup label="After" src={issue.afterImg} />}
             />
             <p className="cs-body-text" style={{ maxWidth: '680px' }}>
               {issue.solution}
