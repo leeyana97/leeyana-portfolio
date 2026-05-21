@@ -49,7 +49,7 @@ function ScreenPlaceholder({ label, opacity = 1, text }: { label?: string; opaci
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
       {label && <span style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, alignSelf: 'flex-start' }}>{label}</span>}
-      <div style={{ width: '100%', maxWidth: '280px', aspectRatio: '9/16', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity }}>
+      <div style={{ width: '100%', maxWidth: '260px', aspectRatio: '9 / 19.5', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity }}>
         <p style={{ fontFamily: F.editorial, fontSize: '15px', color: C.secondary, textAlign: 'center', padding: '20px', lineHeight: 1.4, margin: 0 }}>
           {text || 'AXS · Billing Feature'}
         </p>

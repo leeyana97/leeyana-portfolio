@@ -176,10 +176,10 @@ export function AnimatedQuote({
 }
 
 // ─── BeforeAfter ─────────────────────────────────────────────────────────────
-// Side-by-side before/after comparison. As the user scrolls through the block,
-// the "before" image fades from opacity 1 → 0.3 and the "after" image fades
-// from 0 → 1 — both scrubbed to scroll progress. On mobile (<768px), the
-// effect is skipped and both images render at full opacity.
+// Static side-by-side before/after comparison. Both images render at full
+// opacity at the same time so they can be compared directly. The grid layout
+// and responsive stacking (side-by-side on desktop, stacked on mobile) come
+// from the `style`/`className` passed by the call site.
 export function BeforeAfter({
   before,
   after,
@@ -191,49 +191,10 @@ export function BeforeAfter({
   className?: string;
   style?: CSSProperties;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const beforeRef = useRef<HTMLDivElement>(null);
-  const afterRef = useRef<HTMLDivElement>(null);
-
-  useLayoutEffect(() => {
-    if (window.innerWidth < 768) return; // mobile: static, both at full opacity
-    const el = ref.current;
-    const beforeEl = beforeRef.current;
-    const afterEl = afterRef.current;
-    if (!el || !beforeEl || !afterEl) return;
-
-    const ctx = gsap.context(() => {
-      gsap.set(beforeEl, { opacity: 1 });
-      gsap.set(afterEl, { opacity: 0 });
-      gsap.to(beforeEl, {
-        opacity: 0.3,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 80%',
-          end: 'bottom 20%',
-          scrub: true,
-        },
-      });
-      gsap.to(afterEl, {
-        opacity: 1,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 80%',
-          end: 'bottom 20%',
-          scrub: true,
-        },
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <div ref={ref} className={className} style={style}>
-      <div ref={beforeRef} style={{ willChange: 'opacity' }}>{before}</div>
-      <div ref={afterRef} style={{ willChange: 'opacity' }}>{after}</div>
+    <div className={className} style={style}>
+      <div>{before}</div>
+      <div>{after}</div>
     </div>
   );
 }

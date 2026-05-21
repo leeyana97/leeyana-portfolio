@@ -6,7 +6,7 @@ import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, stagger
 import tripsyncImg from '../../imports/Tripsync_home_app.png';
 import tripsyncPhone1 from '../../imports/tripsync-phone-1.png';
 import tripsyncPhone2 from '../../imports/tripsync-phone-2.png';
-import tripsyncPhone3 from '../../imports/tripsync-phone-3.png';
+import tripsyncPhone3 from '../../imports/tripsync-phone-3-v2.png';
 import tripsyncPhone4 from '../../imports/tripsync-phone-4-v3.png';
 
 // Hero showcase: 4 phones layered with staggered reveal. Phone 4 (right,
@@ -82,10 +82,10 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
       <div
         style={{
           width: '100%',
-          maxWidth: '280px',
-          aspectRatio: '9/16',
+          maxWidth: '260px',
+          aspectRatio: '9 / 19.5',
           overflow: 'hidden',
-          borderRadius: '20px',
+          borderRadius: '24px',
           opacity,
         }}
       >
@@ -137,7 +137,6 @@ function CaseStudyHero() {
               objectFit: 'contain',
               display: 'block',
               pointerEvents: 'none',
-              willChange: 'transform, opacity',
             }}
           />
         ))}
@@ -234,7 +233,7 @@ function ResearchFindings() {
     },
     {
       title: 'AI & Social Already in the Mix',
-      desc: "Several participants were already using ChatGPT for itinerary suggestions and expected a travel app to offer similar intelligence, integrated naturally into the planning flow.",
+      desc: "TikTok & Instagram drive destination discovery; ChatGPT helps with itinerary generation but users still manually piece everything together across separate tools.",
     },
     {
       title: 'Unified Platform Demand',
@@ -395,6 +394,7 @@ function DesignDecisions() {
         'Members raise objections directly in the app without group chat confrontation.',
         "Objections are flagged immediately on the planner's view.",
         'Gives the planner clear tools to resolve conflicts without requiring direct confrontation.',
+        'Updated itinerary is instantly visible to the whole group once confirmed.',
       ],
       imageFirst: true,
     },
@@ -528,28 +528,28 @@ function Iterations() {
   const issues = [
     {
       label: 'Group Profile Builder',
-      problem: 'Users struggled to identify trip participants at a glance. Profile thumbnails were too small and lacked name labels, making it unclear who had completed their preferences.',
-      solution: 'Increased profile avatar size, added display names below each thumbnail, and introduced a completion status indicator, so the planner can see at a glance who still needs to submit.',
+      problem: 'Users questioned why planners were filling in details on behalf of members who had not yet joined the trip.',
+      solution: 'Removed the standalone step and integrated it into the preference quiz flow, streamlining onboarding with a clearer user journey.',
     },
     {
       label: 'Activity Preferences in Quiz',
-      problem: 'Abstract category names like "cultural experiences" didn\'t help users make confident choices. Two participants skipped questions because they weren\'t sure what the category covered.',
-      solution: 'Added example imagery and 2–3 descriptive tags to each preference category, giving users enough context to make clear, considered choices without over-explaining.',
+      problem: 'Drag handles caused users to attempt dragging instead of the intended tap-to-assign interaction.',
+      solution: 'Replaced with a tap-to-assign system with a clear instruction box and Tap to Remove labels, making it discoverable at a glance.',
     },
     {
       label: 'Accommodation Preference in Quiz',
-      problem: 'The accommodation question offered only "hotel" and "Airbnb" as options, too binary for a decision with significant nuance and personal variation.',
-      solution: 'Expanded to six accommodation types (hotel, boutique, serviced apartment, hostel, villa, flexible), each with a short descriptor and a relative price indicator.',
+      problem: 'Insufficient visual distinction between single-select and multi-select fields caused wrong interaction patterns.',
+      solution: 'Standardised radio buttons for single-select and checkboxes for multi-select. The consistent and familiar input patterns eliminate interaction ambiguity.',
     },
     {
       label: 'Planner Activity Shortlisting',
-      problem: 'The shortlist view showed activities without explaining why they were recommended, making it hard for the planner to justify choices to the rest of the group.',
-      solution: 'Added a "voted by X members" label and an expandable breakdown of who rated each activity, giving the planner context to make and communicate confident decisions.',
+      problem: 'Users expected an add-to-cart model rather than an explicit remove action.',
+      solution: 'Switched to a selection model where tapping includes activities, matching user expectations intuitively.',
     },
     {
       label: 'Planner Objection View',
-      problem: 'Objection notifications appeared as a small badge on the itinerary icon, which 2 out of 5 participants missed entirely during testing.',
-      solution: 'Introduced a dedicated objection notification card at the top of the planner dashboard, surfacing the affected activity, the member who raised it, and suggested alternatives inline.',
+      problem: 'Unclear options caused users to avoid the primary action entirely.',
+      solution: "Removed 'Replace and Keep Original'. 'Return to Review & Edit' is now the single primary action, reducing decision paralysis with a clearer call to action.",
     },
   ];
   return (
@@ -587,40 +587,40 @@ function FinalScreens() {
     {
       name: 'Preference Quiz',
       highlights: [
-        'Clean, minimal question cards with clear visual affordances and a progress indicator.',
-        'Private until everyone submits, removing social pressure from the preference-gathering stage.',
-        'Results feed directly into the overlap dashboard; no individual answers are ever exposed.',
-        'One question at a time keeps the experience focused and prevents decision fatigue.',
+        { heading: '3-Section Guided Flow', text: 'Members complete the quiz across 3 sections (Your Profile, Activity Preferences, and Accommodation), each privately capturing a different dimension of personal preference.' },
+        { heading: 'Private Preference Collection', text: 'Collects individual preferences independently, avoiding groupthink or peer pressure.' },
+        { heading: 'Personal Input First', text: 'Enables honest personal input before any group coordination or discussion begins.' },
+        { heading: 'Data-Driven Planning', text: "Quiz results across all 3 sections feed directly into the overlap dashboard to surface group consensus and guide the planner's shortlisting decisions." },
       ],
       imageFirst: false,
     },
     {
       name: 'Overlap Dashboard',
       highlights: [
-        'Visual matrix of group preferences across all activity categories in a single view.',
-        'Colour intensity shows strength of consensus; darker weight indicates stronger group alignment.',
-        'Each overlapping preference is immediately actionable: tap to add to the trip shortlist.',
-        'Group profile thumbnails at the top provide context without cluttering the main content.',
+        { heading: 'Group Interest Ranking', text: 'Activities are ranked by percentage of group interest, with a threshold indicator to guide strong shortlist picks.' },
+        { heading: 'Consensus at a Glance', text: 'Each activity shows the percentage of members who rated it positively, colour-coded as High, Mixed, or Low.' },
+        { heading: 'Data-Driven Shortlisting', text: 'Planner taps to include activities for the itinerary based on group ratings, with the highest-rated items pre-highlighted.' },
+        { heading: 'Planner Override', text: 'Planner can include or exclude any activity regardless of rating before proceeding to confirm the shortlist.' },
       ],
       imageFirst: true,
     },
     {
       name: 'Objection Handling',
       highlights: [
-        'Structured objection flow surfaces the affected activity and the member who raised it.',
-        'Alternatives are generated automatically from the group\'s existing shortlist.',
-        'Resolution options: reschedule, replace, or remove, all handled in-app, not in WhatsApp.',
-        'The planner retains decision authority while the process stays transparent to everyone.',
+        { heading: 'Streamlined Conflict Resolution', text: 'Group members raise objections to planned activities directly in the app without needing a group chat confrontation.' },
+        { heading: 'Two-Way Communication', text: "Objections surface immediately on the planner's view, flagged on the relevant itinerary item in real time." },
+        { heading: 'Smart Alternative Suggestions', text: 'Planner receives app-suggested alternatives based on group preferences, or can input a custom replacement.' },
+        { heading: 'Reduced Group Friction', text: 'Once confirmed, the updated itinerary is instantly visible to the whole group with no manual re-sharing needed.' },
       ],
       imageFirst: false,
     },
     {
       name: 'Final Itinerary',
       highlights: [
-        'Day-by-day view with activity cards showing which group members voted for each item.',
-        'The itinerary reflects genuine consensus. Nothing is on there that the group didn\'t collectively choose.',
-        'One-tap sharing to messaging apps for easy distribution before the trip.',
-        'Editable and live until the day of departure.',
+        { heading: 'Day-by-Day Itinerary View', text: 'The confirmed itinerary is laid out chronologically by day, with each activity and meal showing the time, location, duration, and attending members at a glance.' },
+        { heading: 'Transparent Opt-Out Indicators', text: 'Each activity card displays who has opted out, visible to the whole group — so attendance is clear and no one is caught off guard on the day.' },
+        { heading: 'Live Edit Mode for Planners', text: 'Planners can enter Edit Mode to swap or remove any activity or meal directly in the itinerary. All changes are broadcast to the group instantly via an in-app notification.' },
+        { heading: 'Smart Import Bookings', text: 'Once the itinerary is finalised, planners can paste a booking link or forward a confirmation email and TripSync auto-fills the details — consolidating flights, accommodation, and activity bookings in one place.' },
       ],
       imageFirst: true,
     },
@@ -644,9 +644,10 @@ function FinalScreens() {
                   <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     {screen.highlights.map((h, hi) => (
-                      <li key={hi} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
+                      <li key={hi} style={{ fontFamily: F.sans, fontSize: '17px', lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
                         <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>
-                        {h}
+                        <span style={{ display: 'block', color: C.primary, fontWeight: 600, marginBottom: '2px' }}>{h.heading}</span>
+                        <span style={{ display: 'block', color: C.secondary }}>{h.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -658,9 +659,10 @@ function FinalScreens() {
                   <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     {screen.highlights.map((h, hi) => (
-                      <li key={hi} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
+                      <li key={hi} style={{ fontFamily: F.sans, fontSize: '17px', lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
                         <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>
-                        {h}
+                        <span style={{ display: 'block', color: C.primary, fontWeight: 600, marginBottom: '2px' }}>{h.heading}</span>
+                        <span style={{ display: 'block', color: C.secondary }}>{h.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -680,9 +682,9 @@ function FinalScreens() {
 // ─── 9. Impact ───────────────────────────────────────────────────────────────
 function Impact() {
   const outcomes = [
-    { title: 'Core Objective Validated', desc: 'The preference quiz and overlap dashboard achieved exactly what they were designed for. All 5 participants said the process felt fairer than their usual approach to group planning.' },
+    { title: 'Core Objective Validated', desc: 'All 5 participants confirmed the app successfully surfaces individual preferences without requiring full group consensus, directly addressing the problem statement.' },
     { title: '3 of 4 Key Screens Iterated', desc: 'Direct feedback from usability testing drove meaningful design changes to the quiz, the shortlist view, and the objection notification, each revision grounded in observed behaviour.' },
-    { title: 'Concept Resonated', desc: 'Every participant said they would use TripSync for their next group trip if it were available. The response wasn\'t polite enthusiasm. It was specific, actionable feedback that assumed the product was real.' },
+    { title: 'Concept Resonated', desc: 'The opt-out feature was specifically highlighted as valuable for making individual preferences visible to the group without requiring confrontation, addressing a real social dynamic that often creates friction in group travel planning.' },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
@@ -700,6 +702,12 @@ function Impact() {
           </div>
         ))}
       </div>
+      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(20px, 3vw, 32px)', color: C.primary, margin: '80px auto 32px auto', lineHeight: 1.35, maxWidth: '860px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
+        "The structured preference flow reduces the chaos of simultaneous, unstructured group input."
+      </AnimatedQuote>
+      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>
+        Usability Test Participant
+      </p>
     </section>
   );
 }
@@ -708,9 +716,9 @@ function Impact() {
 function Reflections() {
   const cards = [
     { number: '01', title: 'Edge Case Complexity', body: "Group travel has enormous variety: trip size, duration, and social dynamic all affect what planning looks like. Designing for edge cases like last-minute additions or partial group attendance would require significant further iteration." },
-    { number: '02', title: 'Multi-Role Design', body: "The planner and participant roles have genuinely different needs and mental models. The dual-role design worked, but deeper personalisation per role, including different dashboards and notifications, would meaningfully improve the experience." },
-    { number: '03', title: 'Iterative Testing', body: "Two rounds of testing surfaced different categories of issues, confirming that a single test round would have missed several important problems. Iteration cycles are not optional; they are the work." },
-    { number: '04', title: 'Preference Structure', body: "The structure of preference questions significantly affected answer quality. Richer input mechanisms: images, sliders, ranked choices, could produce more nuanced group overlap data and reduce the gap between stated and actual preference." },
+    { number: '02', title: 'Multi-Role Design', body: "Syncing two interconnected flows was the core challenge. Future iterations will explore deeper role-specific features for both planner and joiner." },
+    { number: '03', title: 'Iterative Testing', body: "Usability testing validated the core flow while surfacing interaction-level improvements. Continued testing with a larger, more diverse group will uncover more real-world scenarios and edge cases to address in v2." },
+    { number: '04', title: 'Preference Structure', body: "Structured preference collection proved to be the most validated feature. Expanding data inputs and personalisation will sharpen recommendation quality in v2." },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">

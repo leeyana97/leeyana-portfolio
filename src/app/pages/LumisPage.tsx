@@ -4,6 +4,12 @@ import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
+import lumisIpadImg from '../../imports/Lumis_ipad.png';
+import lumisLaptopImg from '../../imports/Lumis_laptop_v2.png';
+
+// Hero entrance lives in CSS keyframes (see CaseStudyHero) rather than
+// framer-motion, because the route-level <AnimatePresence> in routes.tsx
+// suppresses inner motion mount animations.
 
 const C = {
   bg: '#0D0D0D',
@@ -47,20 +53,87 @@ function SectionLabel({ text }: { text: string }) {
 
 function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {label && <span style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary }}>{label}</span>}
-      <div style={{ width: '100%', overflow: 'hidden', borderRadius: '12px', opacity }}>
-        <img src={lumisImg} alt={label || 'Lumis Skincare screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '340px', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+      {label && <span style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, alignSelf: 'flex-start' }}>{label}</span>}
+      <div style={{ width: '100%', maxWidth: '260px', aspectRatio: '9 / 19.5', overflow: 'hidden', borderRadius: '24px', opacity }}>
+        <img src={lumisImg} alt={label || 'Lumis Skincare screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
       </div>
     </div>
   );
 }
 
 function CaseStudyHero() {
+  // The site's <AnimatePresence> in PageTransitionLayout suppresses inner
+  // framer-motion mount animations. Use plain CSS keyframes for the hero
+  // slide-in — those fire on mount unconditionally.
   return (
     <section style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10">
-      <div style={{ width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', overflow: 'hidden', margin: '0 auto' }}>
-        <img src={lumisImg} alt="Lumis Skincare website" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+      <style>{`
+        @keyframes lumisSlideInLeft {
+          from { opacity: 0; transform: translate(-100vw, calc(-50% + 20px)); }
+          to   { opacity: 1; transform: translate(0, -50%); }
+        }
+        @keyframes lumisSlideInRight {
+          from { opacity: 0; transform: translate(100vw, calc(-50% + 20px)); }
+          to   { opacity: 1; transform: translate(0, -50%); }
+        }
+        .lumis-device {
+          opacity: 0;
+          animation-duration: 1.2s;
+          animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          animation-delay: 0.3s;
+          animation-fill-mode: forwards;
+          will-change: transform, opacity;
+        }
+        .lumis-device--ipad   { animation-name: lumisSlideInLeft;  }
+        .lumis-device--laptop { animation-name: lumisSlideInRight; }
+        @media (prefers-reduced-motion: reduce) {
+          .lumis-device { animation: none; opacity: 1; transform: translateY(-50%); }
+        }
+      `}</style>
+      {/* iPad + MacBook showcase. */}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '1280px',
+          margin: '0 auto',
+          height: 'clamp(440px, 58vw, 660px)',
+        }}
+      >
+        {/* MacBook — behind, right side, slides in from the right edge. */}
+        <img
+          src={lumisLaptopImg}
+          alt="Lumis Skin Match page on a MacBook"
+          aria-hidden="true"
+          className="lumis-device lumis-device--laptop"
+          style={{
+            position: 'absolute',
+            top: '30%',
+            left: '38%',
+            width: '72.6%',
+            zIndex: 1,
+            height: 'auto',
+            display: 'block',
+            pointerEvents: 'none',
+          }}
+        />
+        {/* iPad — front, left side, slides in from the left edge. */}
+        <img
+          src={lumisIpadImg}
+          alt="Lumis Skincare website on an iPad"
+          className="lumis-device lumis-device--ipad"
+          style={{
+            position: 'absolute',
+            top: '35%',
+            left: '0%',
+            width: '59.4%',
+            zIndex: 2,
+            height: 'auto',
+            display: 'block',
+            pointerEvents: 'none',
+          }}
+        />
       </div>
       <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '60px' }}>
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
