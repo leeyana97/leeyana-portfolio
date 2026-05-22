@@ -109,7 +109,7 @@ function CaseStudyHero() {
           className="lumis-device lumis-device--laptop"
           style={{
             position: 'absolute',
-            top: '30%',
+            top: '40%',
             left: '38%',
             width: '72.6%',
             zIndex: 1,
@@ -125,7 +125,7 @@ function CaseStudyHero() {
           className="lumis-device lumis-device--ipad"
           style={{
             position: 'absolute',
-            top: '35%',
+            top: '45%',
             left: '0%',
             width: '59.4%',
             zIndex: 2,
