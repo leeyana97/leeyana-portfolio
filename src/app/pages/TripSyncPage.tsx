@@ -81,27 +81,30 @@ function TagPill({ label }: { label: string }) {
 // ─── Screen Mockup placeholder ──────────────────────────────────────────────
 function ScreenMockup({ label, opacity = 1, src = tripsyncImg }: { label?: string; opacity?: number; src?: string }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
-      {label && (
-        <span style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, alignSelf: 'flex-start' }}>{label}</span>
-      )}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '260px',
-          aspectRatio: '9 / 19.5',
-          overflow: 'hidden',
-          borderRadius: '24px',
-          opacity,
-        }}
-      >
-        <img
-          src={src}
-          alt={label || 'TripSync screen'}
-          loading="lazy"
-          decoding="async"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
-        />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      {/* Label + image share an image-width column so the label sits
+          directly on top of the image rather than off at the cell edge. */}
+      <div style={{ width: '100%', maxWidth: '260px' }}>
+        {label && (
+          <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>
+        )}
+        <div
+          style={{
+            width: '100%',
+            aspectRatio: '9 / 19.5',
+            overflow: 'hidden',
+            borderRadius: '24px',
+            opacity,
+          }}
+        >
+          <img
+            src={src}
+            alt={label || 'TripSync screen'}
+            loading="lazy"
+            decoding="async"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -177,7 +180,7 @@ function StatsStrip() {
     { number: '4', label: 'Core Features' },
   ];
   return (
-    <section style={{ backgroundColor: C.statsBg, paddingTop: '60px', paddingBottom: '60px', paddingLeft: '80px', paddingRight: '80px' }} className="max-md:!px-6 max-lg:!px-10">
+    <section style={{ backgroundColor: C.statsBg, marginTop: '10vh', paddingTop: '60px', paddingBottom: '60px', paddingLeft: '80px', paddingRight: '80px' }} className="max-md:!px-6 max-lg:!px-10">
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px' }} className="max-md:!grid-cols-2 max-md:!gap-8 max-lg:!grid-cols-2 max-lg:!gap-8">
         {stats.map((s) => (
           <div key={s.label}>

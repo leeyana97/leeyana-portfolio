@@ -53,10 +53,12 @@ function SectionLabel({ text }: { text: string }) {
 
 function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
-      {label && <span style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, alignSelf: 'flex-start' }}>{label}</span>}
-      <div style={{ width: '100%', maxWidth: '260px', aspectRatio: '9 / 19.5', overflow: 'hidden', borderRadius: '24px', opacity }}>
-        <img src={lumisImg} alt={label || 'Lumis Skincare screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ width: '100%', maxWidth: '260px' }}>
+        {label && <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>}
+        <div style={{ width: '100%', aspectRatio: '9 / 19.5', overflow: 'hidden', borderRadius: '24px', opacity }}>
+          <img src={lumisImg} alt={label || 'Lumis Skincare screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+        </div>
       </div>
     </div>
   );
