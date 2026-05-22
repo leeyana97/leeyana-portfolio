@@ -138,19 +138,57 @@
   }
 
   .site-nav {
+    display: flex;
+    justify-content: center;
+    padding-top: 16px;
     background-color: transparent;
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
     transition:
       background-color 0.3s ease,
       backdrop-filter 0.3s ease,
       -webkit-backdrop-filter 0.3s ease;
   }
 
-  .site-nav.is-scrolled {
-    background-color: rgba(13, 13, 13, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  .site-nav__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+
+  /* Mobile: full-width bar; dark backdrop fades in on scroll (existing behaviour) */
+  @media (max-width: 767px) {
+    .site-nav {
+      padding-top: 0;
+    }
+    .site-nav__bar {
+      padding: 18px 24px;
+    }
+    .site-nav.is-scrolled {
+      background-color: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  }
+
+  /* Desktop: centred floating pill bar */
+  @media (min-width: 768px) {
+    .site-nav {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .site-nav__bar {
+      max-width: 1080px;
+      padding: 12px 18px 12px 28px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+    .site-nav.is-scrolled .site-nav__bar {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
   }
 
   .project-card .project-card-image {
@@ -274,4 +312,122 @@
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
   }
+}
+
+/* ── Hero ambient gradient glow ────────────────────────────────────────────
+   Warm, diffused colourful glow at the top of the hero, behind the text.
+   ::before = the blurred multi-radial glow with a slow breathing animation.
+   ::after  = a vertical fade so the glow dissolves cleanly into #0D0D0D and
+   everything below the hero stays solid black. Both sit below the hero's
+   main content (which is z-index: 1). */
+.hero-glow::before {
+  content: '';
+  position: absolute;
+  top: -8%;
+  left: 0;
+  right: 0;
+  height: 78%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 50% at 26% 16%, rgba(180, 80, 120, 0.35) 0%, rgba(180, 80, 120, 0) 70%),
+    radial-gradient(38% 46% at 54% 10%, rgba(120, 60, 180, 0.30) 0%, rgba(120, 60, 180, 0) 70%),
+    radial-gradient(44% 50% at 78% 20%, rgba(200, 120, 60, 0.20) 0%, rgba(200, 120, 60, 0) 72%);
+  filter: blur(60px);
+  transform-origin: 50% 0%;
+  animation: heroGlowBreathe 12s ease-in-out infinite alternate;
+}
+
+.hero-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(13, 13, 13, 0) 42%, #0D0D0D 86%);
+}
+
+@keyframes heroGlowBreathe {
+  0%   { transform: scale(1) translateY(0);     opacity: 0.8; }
+  100% { transform: scale(1.12) translateY(-2%); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow::before { animation: none; }
+}
+
+/* ── Research findings sticky notes ────────────────────────────────────────
+   Per-card colour/rotation come in via CSS custom properties set inline.
+   The rotation lives on this element (not the StaggerCards wrapper) so it
+   doesn't fight the GSAP fade-up transform on the wrapper. */
+.sticky-note {
+  position: relative;
+  height: 100%;
+  padding: 30px 22px 26px;
+  border-radius: 4px;
+  background: linear-gradient(150deg, var(--note-from, #2A2520), var(--note-to, #1E1B17));
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.38);
+  transform: rotate(var(--note-rot, 0deg));
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s ease;
+  overflow: hidden;
+}
+
+.sticky-note:hover {
+  transform: rotate(0deg) translateY(-6px);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.55);
+}
+
+/* Tape strip, centred at the top */
+.sticky-note::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--note-tape, rgba(255, 255, 255, 0.5));
+}
+
+/* Folded corner, bottom-right */
+.sticky-note::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 18px 18px;
+  border-color: transparent transparent rgba(255, 255, 255, 0.08) transparent;
+}
+
+.sticky-note__num {
+  font-family: 'Editorial New', 'Playfair Display', Georgia, serif;
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 400;
+  color: #FFFFFF;
+  opacity: 0.15;
+  margin: 0 0 10px 0;
+}
+
+.sticky-note__title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #EBEBE5;
+  line-height: 1.3;
+  margin: 0 0 10px 0;
+}
+
+.sticky-note__body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #888884;
+  line-height: 1.55;
+  margin: 0;
 }

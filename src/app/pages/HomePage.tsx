@@ -218,7 +218,7 @@ function HeroSection() {
         position: 'relative',
         overflow: 'hidden',
       }}
-      className="max-md:!px-6 max-md:!pt-16 max-md:!pb-16 max-lg:!px-10"
+      className="hero-glow max-md:!px-6 max-md:!pt-16 max-md:!pb-16 max-lg:!px-10"
     >
       {/* Faint NL watermark — N and L converge diagonally */}
       <div

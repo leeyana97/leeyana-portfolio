@@ -246,23 +246,39 @@ function ResearchFindings() {
       desc: 'The strongest research signal: users wanted one place that held everything: preferences, itinerary, communication, and bookings, so nothing fell through the cracks.',
     },
   ];
+  // Per-note colour + rotation. Five dark tints (brown, teal, purple, red,
+  // blue), each with a matching tape colour and a slight rotation.
+  const noteStyles = [
+    { from: '#2A2520', to: '#1E1B17', tape: 'rgba(190, 150, 100, 0.5)', rot: '-1.5deg' },
+    { from: '#1C2A28', to: '#141E1C', tape: 'rgba(90, 185, 170, 0.5)',  rot: '0.8deg'  },
+    { from: '#251F2E', to: '#1A1622', tape: 'rgba(160, 120, 200, 0.5)', rot: '-0.6deg' },
+    { from: '#2C1E1E', to: '#1F1515', tape: 'rgba(200, 95, 95, 0.5)',   rot: '1.2deg'  },
+    { from: '#1C2230', to: '#141923', tape: 'rgba(95, 135, 205, 0.5)',  rot: '-1.0deg' },
+  ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Research Findings" />
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
-        {findings.map((f, i) => (
-          <div key={f.title} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
-            <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#2E9461', margin: '0 0 14px 0', letterSpacing: '0.08em' }}>
-              0{i + 1}
-            </p>
-            <h3 style={{ fontFamily: F.editorial, fontSize: '18px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>
-              {f.title}
-            </h3>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>
-              {f.desc}
-            </p>
-          </div>
-        ))}
+      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
+        {findings.map((f, i) => {
+          const s = noteStyles[i % noteStyles.length];
+          return (
+            <div key={f.title}>
+              <div
+                className="sticky-note"
+                style={{
+                  '--note-from': s.from,
+                  '--note-to': s.to,
+                  '--note-tape': s.tape,
+                  '--note-rot': s.rot,
+                } as React.CSSProperties}
+              >
+                <p className="sticky-note__num">0{i + 1}</p>
+                <h3 className="sticky-note__title">{f.title}</h3>
+                <p className="sticky-note__body">{f.desc}</p>
+              </div>
+            </div>
+          );
+        })}
       </StaggerCards>
     </section>
   );

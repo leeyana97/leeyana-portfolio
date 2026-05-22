@@ -59,24 +59,37 @@ export function Navigation({ showBack = false }: NavigationProps) {
     <>
       <nav
         ref={navRef}
-        className="site-nav max-md:!px-6"
+        className="site-nav"
         style={{
-          position: 'sticky',
+          position: 'fixed',
           top: 0,
           left: 0,
           right: 0,
           zIndex: 100,
-          paddingTop: '20px',
-          paddingBottom: '20px',
-          paddingLeft: '80px',
-          paddingRight: '80px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
         }}
       >
-        {/* Left: Back arrow (case study pages) or just monogram */}
+        <div className="site-nav__bar">
+        {/* Left: monogram, then Back link on its right (case study pages) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          {/* NL Monogram */}
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <span
+              style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontStyle: 'italic',
+                fontSize: '28px',
+                color: '#EBEBE5',
+                letterSpacing: '-0.02em',
+                display: 'inline-flex',
+                alignItems: 'flex-start',
+                lineHeight: 1,
+                transform: 'translateY(-5px)',
+              }}
+            >
+              <span className="font-[Luxurious_Script]" style={{ position: 'relative', top: '2px', marginRight: '-6px', zIndex: 1 }}>N</span>
+              <span className="font-[Luxurious_Script]" style={{ position: 'relative', top: '7px', marginLeft: '-2px' }}>L</span>
+            </span>
+          </Link>
           {showBack && (
             <Link
               to="/"
@@ -97,24 +110,6 @@ export function Navigation({ showBack = false }: NavigationProps) {
               Back
             </Link>
           )}
-          {/* NL Monogram */}
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <span
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontStyle: 'italic',
-                fontSize: '28px',
-                color: '#EBEBE5',
-                letterSpacing: '-0.02em',
-                display: 'inline-flex',
-                alignItems: 'flex-start',
-                lineHeight: 1,
-              }}
-            >
-              <span className="font-[Luxurious_Script]" style={{ position: 'relative', top: '2px', marginRight: '-6px', zIndex: 1 }}>N</span>
-              <span className="font-[Luxurious_Script]" style={{ position: 'relative', top: '7px', marginLeft: '-2px' }}>L</span>
-            </span>
-          </Link>
         </div>
 
         {/* Right: Nav links (desktop) */}
@@ -154,7 +149,6 @@ export function Navigation({ showBack = false }: NavigationProps) {
             padding: '4px',
             minWidth: '44px',
             minHeight: '44px',
-            display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -162,6 +156,7 @@ export function Navigation({ showBack = false }: NavigationProps) {
         >
           <Menu size={22} />
         </button>
+        </div>
       </nav>
 
       {/* Mobile fullscreen overlay menu */}
