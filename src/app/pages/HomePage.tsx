@@ -1,6 +1,6 @@
 import leeyanaPhoto from '../../imports/Leeyana_profile_photo.jpg';
 import nlMonogram from '../../imports/image.png';
-import { useNavigate } from 'react-router';
+import { useRouteTransition } from '../routeTransition';
 import { Navigation } from '../components/Navigation';
 import { motion } from 'motion/react';
 import {
@@ -151,55 +151,60 @@ function HeroSection() {
     return () => ctx.revert();
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const headline = headlineRef.current;
     const meta = metaRef.current;
     if (!headline || !meta) return;
 
-    const isMobile = window.innerWidth < 768;
+    // Scramble/decode each heading line: characters cycle through random
+    // glyphs and resolve left → right. Line 1 over ~1.2s; line 2 starts
+    // 0.3s later. The meta (subtext/badge) fades up once both finish.
+    const GLYPHS = '!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const TICK = 30;
+    const DURATION = 1200;
 
-    const ctx = gsap.context(() => {
-      if (isMobile) {
-        gsap.set(headline, { opacity: 0, y: 20 });
-        gsap.set(meta, { opacity: 0, y: 15 });
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: headline,
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-            },
-          })
-          .to(headline, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' })
-          .to(meta, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.2');
-      } else {
-        const words = headline.querySelectorAll<HTMLElement>('[data-word]');
-        gsap.set(words, { opacity: 0, y: 30 });
-        gsap.set(meta, { opacity: 0, y: 15 });
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: headline,
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-            },
-          })
-          .to(words, {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: 'power3.out',
-          })
-          .to(
-            meta,
-            { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' },
-            '+=0.2'
-          );
-      }
-    });
+    const scramble = (el: HTMLElement, text: string, startDelay: number) => {
+      let elapsed = 0;
+      const render = (revealed: number) => {
+        let out = '';
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          if (ch === ' ') { out += ' '; continue; }
+          out += i < revealed ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+        }
+        el.textContent = out;
+      };
+      render(0); // jumbled before first paint
+      const id = window.setInterval(() => {
+        elapsed += TICK;
+        if (elapsed >= startDelay + DURATION) {
+          el.textContent = text;
+          clearInterval(id);
+          return;
+        }
+        const progress = Math.max(0, (elapsed - startDelay) / DURATION);
+        render(Math.floor(progress * text.length));
+      }, TICK);
+      return () => clearInterval(id);
+    };
 
-    return () => ctx.revert();
+    const els = Array.from(headline.querySelectorAll<HTMLElement>('.scramble-text'));
+    gsap.set(meta, { opacity: 0, y: 20 });
+
+    const cleanups = els.map((el, i) =>
+      scramble(el, el.dataset.text ?? el.textContent ?? '', i * 300)
+    );
+
+    // Last line finishes at (lastDelay + DURATION); fade the meta in after.
+    const lastDelay = (els.length - 1) * 300;
+    const metaTimer = window.setTimeout(() => {
+      gsap.to(meta, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' });
+    }, lastDelay + DURATION + 80);
+
+    return () => {
+      cleanups.forEach((fn) => fn());
+      clearTimeout(metaTimer);
+    };
   }, []);
 
   return (
@@ -273,8 +278,8 @@ function HeroSection() {
 
       {/* Main content */}
       <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        {/* Headline group */}
-        <div ref={headlineRef} style={{ willChange: 'transform, opacity' }}>
+        {/* Headline group — each line rises up from behind a clip edge */}
+        <div ref={headlineRef}>
           <h1
             style={{
               fontFamily: F.editorial,
@@ -286,7 +291,7 @@ function HeroSection() {
               fontWeight: 400,
             }}
           >
-            <SplitWords text="Leeyana" />
+            Leeyana
           </h1>
 
           <div style={{ marginTop: 'clamp(20px, 2vw, 32px)' }}>
@@ -302,7 +307,7 @@ function HeroSection() {
                 fontWeight: 400,
               }}
             >
-              <SplitWords text="Designing with empathy," />
+              <span className="scramble-text" data-text="Designing with empathy," aria-label="Designing with empathy," />
             </p>
             <p
               style={{
@@ -316,7 +321,7 @@ function HeroSection() {
                 fontWeight: 400,
               }}
             >
-              <SplitWords text="building with purpose." />
+              <span className="scramble-text" data-text="building with purpose." aria-label="building with purpose." />
             </p>
           </div>
         </div>
@@ -554,15 +559,17 @@ const projects = [
   },
 ];
 
-function ProjectCard({ project, navigate }: { project: typeof projects[0]; navigate: ReturnType<typeof useNavigate> }) {
+function ProjectCard({ project }: { project: typeof projects[0] }) {
+  const { startTransition } = useRouteTransition();
+  const go = () => startTransition(project.slug);
   return (
     <article
       data-cursor="view"
       className="project-card"
-      onClick={() => navigate(project.slug)}
+      onClick={go}
       role="button"
       tabIndex={0}
-      onKeyDown={e => e.key === 'Enter' && navigate(project.slug)}
+      onKeyDown={e => e.key === 'Enter' && go()}
       style={{
         position: 'relative',
         width: '100%',
@@ -676,7 +683,6 @@ function ProjectCard({ project, navigate }: { project: typeof projects[0]; navig
 }
 
 function ProjectsSection() {
-  const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -762,7 +768,7 @@ function ProjectsSection() {
               }}
               className="max-md:!h-[calc(90vh_-_65px)]"
             >
-              <ProjectCard project={project} navigate={navigate} />
+              <ProjectCard project={project} />
             </div>
           </div>
         ))}

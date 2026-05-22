@@ -444,6 +444,30 @@
   min-width: 0;
 }
 
+/* ── Route transition spinner ──────────────────────────────────────────────
+   Minimal ring with a highlighted arc, shown on the full-screen overlay
+   while navigating into a case study. */
+.route-spinner {
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(235, 235, 229, 0.18);
+  border-top-color: #EBEBE5;
+  border-radius: 50%;
+  animation: route-spin 0.7s linear infinite;
+}
+
+@keyframes route-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-spinner {
+    animation-duration: 1.4s;
+  }
+}
+
 .cs-sidebar {
   display: none;
 }
