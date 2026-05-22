@@ -152,7 +152,7 @@ export function CustomCursor() {
         width: 30,
         height: 30,
         pointerEvents: 'none',
-        zIndex: 9999,
+        zIndex: 100000,
         mixBlendMode: 'normal',
         willChange: 'transform',
       }}

@@ -186,8 +186,14 @@
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
     }
+    /* Once scrolled, page content sits behind the pill — give it a solid
+       frosted-dark fill (and a heavier blur) so content reads as cleanly
+       behind the bar rather than bleeding through the translucent glass. */
     .site-nav.is-scrolled .site-nav__bar {
-      background-color: rgba(255, 255, 255, 0.08);
+      background-color: rgba(13, 13, 13, 0.9);
+      border-color: rgba(255, 255, 255, 0.1);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
     }
   }
 

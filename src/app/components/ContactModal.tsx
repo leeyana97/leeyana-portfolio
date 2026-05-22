@@ -75,7 +75,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
           style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 300,
+            zIndex: 10001,
             backgroundColor: C.bg,
             overflowY: 'auto',
             display: 'flex',

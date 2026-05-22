@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
-import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import neighbourlahImg from '../../imports/NeighbourLah_home_app.png';
 
 const C = {
@@ -289,19 +289,36 @@ function Iterations() {
       <SectionLabel text="Top Issues & Iterations" />
       <h2 className="cs-section-header">What Changed & Why</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
-        {issues.map((issue) => (
-          <div key={issue.label}>
-            <p className="cs-category-label">{issue.label}</p>
-            <p className="cs-body-text" style={{ margin: '0 0 40px 0', maxWidth: '680px' }}>{issue.problem}</p>
-            <BeforeAfter
-              style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px' }}
-              className="max-md:!grid-cols-1 max-md:!gap-8 max-lg:!grid-cols-1 max-lg:!gap-8"
-              before={<ScreenMockup label="Before" />}
-              after={<ScreenMockup label="After" />}
-            />
-            <p className="cs-body-text" style={{ maxWidth: '680px' }}>{issue.solution}</p>
-          </div>
-        ))}
+        {issues.map((issue, i) => {
+          // Alternate sides on desktop: odd issues (1st, 3rd…) keep text left /
+          // mockups right; even issues flip to mockups left / text right via
+          // order. Below lg the grid collapses to one column with text first.
+          const mockLeft = i % 2 === 1;
+          return (
+            <div
+              key={issue.label}
+              style={i > 0 ? { borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' } : undefined}
+            >
+              <div
+                style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}
+                className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10"
+              >
+                <div className={mockLeft ? 'lg:order-2' : undefined}>
+                  <p className="cs-category-label">{issue.label}</p>
+                  <p className="cs-body-text" style={{ margin: '0 0 16px 0' }}>{issue.problem}</p>
+                  <p className="cs-body-text" style={{ margin: 0 }}>{issue.solution}</p>
+                </div>
+                <div
+                  className={mockLeft ? 'lg:order-1' : undefined}
+                  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}
+                >
+                  <ScreenMockup label="Before" />
+                  <ScreenMockup label="After" />
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

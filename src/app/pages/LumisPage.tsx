@@ -65,6 +65,29 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
   );
 }
 
+// Lumis is a website project, so its before/after comparisons render inside a
+// browser-window frame (chrome bar + address pill) rather than a phone shell.
+function WebsiteMockup({ label, opacity = 1 }: { label?: string; opacity?: number }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ width: '100%' }}>
+        {label && <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>}
+        <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', border: `1px solid ${C.cardBorder}`, backgroundColor: '#161616', opacity }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '11px 14px', backgroundColor: '#1E1E1E', borderBottom: `1px solid ${C.cardBorder}` }}>
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#FF5F57' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#FEBC2E' }} />
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#28C840' }} />
+            <div style={{ flex: 1, marginLeft: '8px', height: '18px', borderRadius: '6px', backgroundColor: '#2A2A2A' }} />
+          </div>
+          <div style={{ width: '100%', aspectRatio: '16 / 10', overflow: 'hidden' }}>
+            <img src={lumisImg} alt={label || 'Lumis Skincare website'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CaseStudyHero() {
   // The site's <AnimatePresence> in PageTransitionLayout suppresses inner
   // framer-motion mount animations. Use plain CSS keyframes for the hero
@@ -372,14 +395,16 @@ function Iterations() {
         {issues.map((issue) => (
           <div key={issue.label}>
             <p className="cs-category-label">{issue.label}</p>
-            <p className="cs-body-text" style={{ margin: '0 0 40px 0', maxWidth: '680px' }}>{issue.problem}</p>
+            {/* Problem + solution sit together at the top… */}
+            <p className="cs-body-text" style={{ margin: '0 0 16px 0', maxWidth: '680px' }}>{issue.problem}</p>
+            <p className="cs-body-text" style={{ margin: '0 0 40px 0', maxWidth: '680px' }}>{issue.solution}</p>
+            {/* …then the before/after website frames below */}
             <BeforeAfter
-              style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginBottom: '40px' }}
+              style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}
               className="max-md:!grid-cols-1 max-md:!gap-8 max-lg:!grid-cols-1 max-lg:!gap-8"
-              before={<ScreenMockup label="Before" />}
-              after={<ScreenMockup label="After" />}
+              before={<WebsiteMockup label="Before" />}
+              after={<WebsiteMockup label="After" />}
             />
-            <p className="cs-body-text" style={{ maxWidth: '680px' }}>{issue.solution}</p>
           </div>
         ))}
       </div>

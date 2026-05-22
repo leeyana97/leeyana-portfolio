@@ -1,11 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { X, Menu } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ContactModal } from './ContactModal';
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface NavigationProps {
   showBack?: boolean;
@@ -17,19 +13,28 @@ export function Navigation({ showBack = false }: NavigationProps) {
   const navigate = useNavigate();
   const navRef = useRef<HTMLElement>(null);
 
+  // Solidify the floating pill once the user scrolls past the hero (homepage)
+  // or a small threshold (case-study pages have no #hero), so page content
+  // never bleeds through the translucent glass. A plain scroll listener is used
+  // rather than a ScrollTrigger — it fires reliably regardless of rAF state.
   useEffect(() => {
     const navEl = navRef.current;
     if (!navEl) return;
 
     const heroEl = document.getElementById('hero');
-    const trigger = ScrollTrigger.create({
-      trigger: heroEl ?? document.documentElement,
-      start: heroEl ? 'bottom top+=80' : 'top top-=80',
-      onEnter: () => navEl.classList.add('is-scrolled'),
-      onLeaveBack: () => navEl.classList.remove('is-scrolled'),
-    });
+    const getThreshold = () => (heroEl ? heroEl.offsetHeight - 80 : 80);
+    let threshold = getThreshold();
 
-    return () => trigger.kill();
+    const onScroll = () => navEl.classList.toggle('is-scrolled', window.scrollY > threshold);
+    const onResize = () => { threshold = getThreshold(); onScroll(); };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -65,7 +70,7 @@ export function Navigation({ showBack = false }: NavigationProps) {
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 100,
+          zIndex: 9999,
         }}
       >
         <div className="site-nav__bar">
@@ -164,7 +169,7 @@ export function Navigation({ showBack = false }: NavigationProps) {
         style={{
           position: 'fixed',
           inset: 0,
-          zIndex: 200,
+          zIndex: 10000,
           backgroundColor: '#0D0D0D',
           display: 'flex',
           flexDirection: 'column',

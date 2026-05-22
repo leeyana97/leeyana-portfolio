@@ -92,7 +92,7 @@ function PageTransitionLayout() {
           justifyContent: 'center',
           backgroundColor: '#0D0D0D',
           opacity: 0,
-          zIndex: 9999,
+          zIndex: 10010,
         }}
       >
         {/* Thin arc that orbits the monogram for the duration of the overlay.
