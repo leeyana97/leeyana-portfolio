@@ -356,6 +356,25 @@
   .hero-glow::before { animation: none; }
 }
 
+/* ── Page-transition orbit arc ─────────────────────────────────────────────
+   A thin arc segment that spins continuously around the NL monogram while the
+   transition overlay is up. The arc is the inner <circle>; the dash pattern
+   shows only ~28% of the circumference, and we rotate the stroke about its own
+   centre. transform-box: fill-box anchors transform-origin to the circle. */
+.nl-orbit-arc {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: nlOrbitSpin 1.2s linear infinite;
+}
+
+@keyframes nlOrbitSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nl-orbit-arc { animation: none; }
+}
+
 /* ── Research findings sticky notes ────────────────────────────────────────
    Per-card colour/rotation come in via CSS custom properties set inline.
    The rotation lives on this element (not the StaggerCards wrapper) so it
@@ -444,29 +463,6 @@
   min-width: 0;
 }
 
-/* ── Route transition spinner ──────────────────────────────────────────────
-   Minimal ring with a highlighted arc, shown on the full-screen overlay
-   while navigating into a case study. */
-.route-spinner {
-  width: 40px;
-  height: 40px;
-  border: 2px solid rgba(235, 235, 229, 0.18);
-  border-top-color: #EBEBE5;
-  border-radius: 50%;
-  animation: route-spin 0.7s linear infinite;
-}
-
-@keyframes route-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .route-spinner {
-    animation-duration: 1.4s;
-  }
-}
 
 .cs-sidebar {
   display: none;
