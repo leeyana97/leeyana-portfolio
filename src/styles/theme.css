@@ -431,3 +431,58 @@
   line-height: 1.55;
   margin: 0;
 }
+
+/* ── Case study sticky side navigation ─────────────────────────────────────
+   Two-column layout: a 220px sticky left rail + the main content. Hidden
+   below 1024px so content returns to full width. */
+.cs-layout {
+  display: flex;
+}
+
+.cs-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.cs-sidebar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .cs-sidebar {
+    display: block;
+    width: 220px;
+    flex-shrink: 0;
+  }
+  .cs-sidebar__nav {
+    position: sticky;
+    top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 0 24px 0 40px;
+  }
+  .cs-sidebar__link {
+    background: none;
+    border: none;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+    text-align: left;
+    padding: 0 0 0 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    line-height: 1.4;
+    color: #5A5A54;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .cs-sidebar__link:hover {
+    color: #EBEBE5;
+  }
+  .cs-sidebar__link.is-active {
+    color: #EBEBE5;
+    border-left-color: #EBEBE5;
+  }
+}

@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
+import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import tripsyncImg from '../../imports/Tripsync_home_app.png';
 import tripsyncActivityFoodImg from '../../imports/tripsync-Activity-and-Food-Overview-new.png';
@@ -811,24 +812,41 @@ function NextProject() {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
+const sidebarItems: SidebarItem[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'problem', label: 'Problem' },
+  { id: 'research', label: 'Research' },
+  { id: 'design-decisions', label: 'Design Decisions' },
+  { id: 'usability-testing', label: 'Usability Testing' },
+  { id: 'iterations', label: 'Issues & Changes' },
+  { id: 'final-screens', label: 'Final Screens' },
+  { id: 'impact', label: 'Impact' },
+  { id: 'reflections', label: 'Reflections' },
+];
+
 export function TripSyncPage() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
     <div style={{ backgroundColor: C.bg, minHeight: '100vh', '--accent-color': '#4CAF50' } as React.CSSProperties}>
       <Navigation showBack />
-      <CaseStudyHero />
-      <FadeUp><StatsStrip /></FadeUp>
-      <FadeUp><ProblemStatement /></FadeUp>
-      <FadeUp><ResearchFindings /></FadeUp>
-      <FadeUp><VisualDesignSystem /></FadeUp>
-      <FadeUp><DesignDecisions /></FadeUp>
-      <FadeUp><UsabilityTesting /></FadeUp>
-      <FadeUp><Iterations /></FadeUp>
-      <FadeUp><FinalScreens /></FadeUp>
-      <FadeUp><Impact /></FadeUp>
-      <FadeUp><Reflections /></FadeUp>
-      <FadeUp><PrototypeCTA /></FadeUp>
-      <FadeUp><NextProject /></FadeUp>
+      <div className="cs-layout">
+        <CaseStudySidebar items={sidebarItems} />
+        <div className="cs-content">
+          <div id="overview"><CaseStudyHero /></div>
+          <FadeUp><StatsStrip /></FadeUp>
+          <FadeUp id="problem"><ProblemStatement /></FadeUp>
+          <FadeUp id="research"><ResearchFindings /></FadeUp>
+          <FadeUp><VisualDesignSystem /></FadeUp>
+          <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
+          <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
+          <FadeUp id="iterations"><Iterations /></FadeUp>
+          <FadeUp id="final-screens"><FinalScreens /></FadeUp>
+          <FadeUp id="impact"><Impact /></FadeUp>
+          <FadeUp id="reflections"><Reflections /></FadeUp>
+          <FadeUp><PrototypeCTA /></FadeUp>
+          <FadeUp><NextProject /></FadeUp>
+        </div>
+      </div>
     </div>
   );
 }

@@ -17,11 +17,13 @@ export function FadeUp({
   delay = 0,
   className,
   style,
+  id,
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
   style?: CSSProperties;
+  id?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -50,7 +52,7 @@ export function FadeUp({
   }, [delay]);
 
   return (
-    <div ref={ref} className={className} style={{ willChange: 'transform, opacity', ...style }}>
+    <div ref={ref} id={id} className={className} style={{ willChange: 'transform, opacity', ...style }}>
       {children}
     </div>
   );
