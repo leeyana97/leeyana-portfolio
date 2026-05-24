@@ -804,8 +804,8 @@ function Reflections() {
   const cards = [
     { number: '01', title: 'Edge Case Complexity', body: "Group travel has enormous variety: trip size, duration, and social dynamic all affect what planning looks like. Designing for edge cases like last-minute additions or partial group attendance would require significant further iteration." },
     { number: '02', title: 'Multi-Role Design', body: "Syncing two interconnected flows was the core challenge. Future iterations will explore deeper role-specific features for both planner and joiner." },
-    { number: '03', title: 'Iterative Testing', body: "Usability testing validated the core flow while surfacing interaction-level improvements. Continued testing with a larger, more diverse group will uncover more real-world scenarios and edge cases to address in v2." },
-    { number: '04', title: 'Preference Structure', body: "Structured preference collection proved to be the most validated feature. Expanding data inputs and personalisation will sharpen recommendation quality in v2." },
+    { number: '03', title: 'Iterative Testing', body: "Usability testing validated the core flow while surfacing interaction-level improvements. Continued testing with a larger, more diverse group will uncover more real-world scenarios and edge cases to address in future iterations." },
+    { number: '04', title: 'Preference Structure', body: "Structured preference collection proved to be the most validated feature. Expanding data inputs and personalisation will sharpen recommendation quality in future iterations." },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -893,7 +893,7 @@ export function TripSyncPage() {
           <FadeUp><StatsStrip /></FadeUp>
           <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
-          <FadeUp><VisualDesignSystem /></FadeUp>
+          {/* Visual Design System hidden */}
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>
