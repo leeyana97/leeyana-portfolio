@@ -229,6 +229,7 @@ function HeroSection() {
       {/* Faint NL watermark — N and L converge diagonally */}
       <div
         aria-hidden="true"
+        className="nl-hero-monogram"
         style={{
           position: 'absolute',
           top: '45%',
@@ -345,9 +346,11 @@ function HeroSection() {
         </div>
       </div>
 
-      {/* Soft gradient at the bottom so the NL monogram fades out instead of hard-clipping */}
+      {/* Soft gradient at the bottom so the NL monogram fades out instead of hard-clipping.
+          Hidden on mobile — the monogram is repositioned to fit within the hero there. */}
       <div
         aria-hidden="true"
+        className="nl-hero-gradient"
         style={{
           position: 'absolute',
           bottom: 0,

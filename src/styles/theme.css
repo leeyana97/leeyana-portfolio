@@ -513,3 +513,20 @@
   }
 }
 
+/* ── Hero NL monogram — mobile repositioning ───────────────────────────────
+   Desktop: centred via top/left/translate (unchanged).
+   Mobile: anchored to the lower-right, scaled to fit, rendered above the
+   bottom gradient via z-index so mix-blend-mode: screen composites
+   correctly against the dark background.                                    */
+@media (max-width: 768px) {
+  .nl-hero-monogram {
+    top: auto !important;
+    left: auto !important;
+    bottom: calc(280px - 10vh) !important;
+    right: calc(20px + 10vw) !important;
+    transform: scale(0.715) !important;
+    transform-origin: bottom right;
+    z-index: 2 !important;
+  }
+}
+
