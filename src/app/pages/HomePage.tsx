@@ -231,7 +231,7 @@ function HeroSection() {
         aria-hidden="true"
         style={{
           position: 'absolute',
-          top: '50%',
+          top: '45%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
           pointerEvents: 'none',
@@ -248,7 +248,7 @@ function HeroSection() {
             top: '50%',
             left: '50%',
             fontFamily: '"Luxurious Script", cursive',
-            fontSize: 'clamp(280px, 42vw, 620px)',
+            fontSize: 'clamp(227px, 34vw, 502px)',
             color: C.primary,
             lineHeight: 1,
             fontWeight: 400,
@@ -265,7 +265,7 @@ function HeroSection() {
             top: '50%',
             left: '50%',
             fontFamily: '"Luxurious Script", cursive',
-            fontSize: 'clamp(240px, 36vw, 520px)',
+            fontSize: 'clamp(194px, 29.2vw, 421px)',
             color: C.primary,
             lineHeight: 1.6,
             fontWeight: 400,
@@ -278,7 +278,7 @@ function HeroSection() {
       </div>
 
       {/* Main content */}
-      <div style={{ position: 'relative', zIndex: 1, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div style={{ position: 'relative', zIndex: 2, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {/* Headline group — each line rises up from behind a clip edge */}
         <div ref={headlineRef}>
           <h1
@@ -344,6 +344,21 @@ function HeroSection() {
           </p>
         </div>
       </div>
+
+      {/* Soft gradient at the bottom so the NL monogram fades out instead of hard-clipping */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '40%',
+          background: `linear-gradient(to bottom, transparent, ${C.bg})`,
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
 
       {/* Bottom row */}
       <div
