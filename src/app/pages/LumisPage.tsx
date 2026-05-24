@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
+import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
@@ -529,6 +530,7 @@ const sidebarItems: SidebarItem[] = [
 export function LumisPage() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
+    <PasswordGate storageKey="lumis-unlocked">
     <div style={{ backgroundColor: C.bg, minHeight: '100vh', '--accent-color': '#C4A265' } as React.CSSProperties}>
       <Navigation showBack />
       <div className="cs-layout">
@@ -548,5 +550,6 @@ export function LumisPage() {
         </div>
       </div>
     </div>
+    </PasswordGate>
   );
 }

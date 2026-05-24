@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
+import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import neighbourlahImg from '../../imports/NeighbourLah_home_app.png';
@@ -441,6 +442,7 @@ const sidebarItems: SidebarItem[] = [
 export function NeighbourLahPage() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
+    <PasswordGate storageKey="neighbourlah-unlocked">
     <div style={{ backgroundColor: C.bg, minHeight: '100vh', '--accent-color': '#E8632B' } as React.CSSProperties}>
       <Navigation showBack />
       <div className="cs-layout">
@@ -460,5 +462,6 @@ export function NeighbourLahPage() {
         </div>
       </div>
     </div>
+    </PasswordGate>
   );
 }
