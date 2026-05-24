@@ -666,6 +666,7 @@ function FinalScreens() {
     {
       name: 'Preference Quiz',
       image: tripsyncProfileQuizImg,
+      video: 'https://res.cloudinary.com/dvunn40le/video/upload/preference-quiz-final-screen_ywzqzz.mp4',
       highlights: [
         { heading: '3-Section Guided Flow', text: 'Members complete the quiz across 3 sections (Your Profile, Activity Preferences, and Accommodation), each privately capturing a different dimension of personal preference.' },
         { heading: 'Private Preference Collection', text: 'Collects individual preferences independently, avoiding groupthink or peer pressure.' },
@@ -677,6 +678,7 @@ function FinalScreens() {
     {
       name: 'Overlap Dashboard',
       image: tripsyncActivityShortlistNewImg,
+      video: 'https://res.cloudinary.com/dvunn40le/video/upload/Overlap-dashboard-final-screen_xjsodu.mp4',
       highlights: [
         { heading: 'Group Interest Ranking', text: 'Activities are ranked by percentage of group interest, with a threshold indicator to guide strong shortlist picks.' },
         { heading: 'Consensus at a Glance', text: 'Each activity shows the percentage of members who rated it positively, colour-coded as High, Mixed, or Low.' },
@@ -688,7 +690,7 @@ function FinalScreens() {
     {
       name: 'Objection Handling',
       image: tripsyncObjectionNewImg,
-      video: objectionFinalVideo,
+      video: 'https://res.cloudinary.com/dvunn40le/video/upload/Objection-final-screen_x8hdta.mp4',
       highlights: [
         { heading: 'Streamlined Conflict Resolution', text: 'Group members raise objections to planned activities directly in the app without needing a group chat confrontation.' },
         { heading: 'Two-Way Communication', text: "Objections surface immediately on the planner's view, flagged on the relevant itinerary item in real time." },
@@ -700,7 +702,7 @@ function FinalScreens() {
     {
       name: 'Final Itinerary',
       image: tripsyncOptOutImg,
-      video: finalItineraryVideo,
+      video: 'https://res.cloudinary.com/dvunn40le/video/upload/final-itinerary-final-screen_pzykkv.mp4',
       highlights: [
         { heading: 'Day-by-Day Itinerary View', text: 'The confirmed itinerary is laid out chronologically by day, with each activity and meal showing the time, location, duration, and attending members at a glance.' },
         { heading: 'Transparent Opt-Out Indicators', text: 'Each activity card displays who has opted out, visible to the whole group — so attendance is clear and no one is caught off guard on the day.' },
