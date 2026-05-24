@@ -834,7 +834,9 @@ function PrototypeCTA() {
         Explore the full interactive prototype: preference quizzes, overlap dashboards, and group coordination in action.
       </p>
       <a
-        href="#"
+        href="https://iso-pond-75627619.figma.site/splash"
+        target="_blank"
+        rel="noopener noreferrer"
         style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${C.border}`, paddingBottom: '4px', transition: 'border-color 0.2s' }}
         onMouseEnter={e => (e.currentTarget.style.borderColor = C.primary)}
         onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
