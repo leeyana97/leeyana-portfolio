@@ -22,6 +22,7 @@ import tripsyncHandImg2 from '../../imports/ChatGPT_Image_Apr_29,_2026,_09_07_27
 import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
 import neighbourlahImg from '../../imports/Neighbourlah hero image copy.png';
+import axsHeroImg from '../../imports/AXS_hero_image.png';
 
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
@@ -553,9 +554,9 @@ const projects = [
     name: 'AXS · Billing Feature',
     description: 'Smart billing: split, track, and manage payments together, designed for individuals and couples.',
     tags: ['iOS App', 'Fintech', 'Feature Design', 'Collaboration'],
-    image: null,
+    image: axsHeroImg,
     imageHeight: 520,
-    alt: 'AXS Billing Feature placeholder',
+    alt: 'AXS Billing Feature',
   },
 ];
 

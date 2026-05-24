@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
@@ -11,6 +11,14 @@ import tripsyncProfileQuizImg from '../../imports/profile-preference-quiz-new-v2
 import tripsyncProfileOldImg from '../../imports/tripsync-profile-old.png';
 import tripsyncPrefQuizOldImg from '../../imports/tripsync-pref-quiz-old.png';
 import tripsyncPrefQuizNewImg from '../../imports/tripsync-pref-quiz-new.png';
+import tripsyncPrefAccomOldImg from '../../imports/tripsync-pref-accom-old.png';
+import tripsyncAccomPrefNewImg from '../../imports/tripsync-accom-pref-new.png';
+import tripsyncActivityShortlistNewImg from '../../imports/tripsync-activity-shortlist-new-v2.png';
+import tripsyncActivityShortlistOldImg from '../../imports/tripsync-activity-shortlist-old.png';
+import tripsyncObjectionOldImg from '../../imports/tripsync-objection-old.png';
+import tripsyncObjectionNewImg from '../../imports/tripsync-objection-new.png';
+import finalItineraryVideo from '../../imports/final-itinerary-final-screen.mp4';
+import objectionFinalVideo from '../../imports/Objection-final-screen.mp4';
 import tripsyncPhone1 from '../../imports/tripsync-phone-1.png';
 import tripsyncPhone2 from '../../imports/tripsync-phone-2.png';
 import tripsyncPhone3 from '../../imports/tripsync-phone-3-v2.png';
@@ -80,7 +88,20 @@ function TagPill({ label }: { label: string }) {
 }
 
 // ─── Screen Mockup placeholder ──────────────────────────────────────────────
-function ScreenMockup({ label, opacity = 1, src = tripsyncImg }: { label?: string; opacity?: number; src?: string }) {
+function ScreenMockup({ label, opacity = 1, src = tripsyncImg, videoSrc }: { label?: string; opacity?: number; src?: string; videoSrc?: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { entry.isIntersecting ? video.play() : video.pause(); },
+      { threshold: 0.3 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [videoSrc]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Label + image share an image-width column so the label sits
@@ -98,13 +119,24 @@ function ScreenMockup({ label, opacity = 1, src = tripsyncImg }: { label?: strin
             opacity,
           }}
         >
-          <img
-            src={src}
-            alt={label || 'TripSync screen'}
-            loading="lazy"
-            decoding="async"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
-          />
+          {videoSrc ? (
+            <video
+              ref={videoRef}
+              src={videoSrc}
+              loop
+              muted
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+            />
+          ) : (
+            <img
+              src={src}
+              alt={label || 'TripSync screen'}
+              loading="lazy"
+              decoding="async"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -212,7 +244,7 @@ function ProblemStatement() {
         The Problem.
       </h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        Planning a group trip sounds exciting, until the WhatsApp thread becomes unmanageable. Preferences clash, decisions stall, and someone always ends up feeling like their voice didn't matter. Existing tools weren't designed for collective decision-making; they were built for individuals. TripSync was designed to bridge that gap: to make planning together feel as easy as planning alone.
+        Group trip planners managing travel for 3 or more people struggle to accommodate diverse individual preferences without requiring full consensus. Through user interviews with experienced group trip planners, four recurring pain points surfaced: planning scattered across multiple apps with no single source of truth, no structured way to collect individual preferences, slow group decision making that drags on for days, and the social discomfort of opting out of activities once the group has committed. Existing tools like WhatsApp threads, shared Google Docs, and scattered booking apps weren't designed for collective decision making. They were built for individuals.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {painPoints.map((p) => (
@@ -387,9 +419,7 @@ function DesignDecisions() {
       number: '01',
       name: 'Individual Preference Quiz',
       bullets: [
-        'Every member privately inputs preferences before the group sees results.',
-        'Removes lengthy group discussions to surface what everyone wants.',
-        "Ensures no one's preference gets lost in a group chat.",
+        'Every member privately inputs preferences before the group sees results. Interviewees consistently described dietary needs and budget constraints getting buried in group chats. Private input eliminates groupthink and ensures critical needs aren\'t overlooked.',
       ],
       imageFirst: false,
     },
@@ -397,9 +427,7 @@ function DesignDecisions() {
       number: '02',
       name: 'Activity Rating & Shortlist',
       bullets: [
-        'Members privately rate activities before results are shared with the planner.',
-        'Ratings are aggregated so the planner can see group consensus at a glance.',
-        'Planner shortlists based on ratings and can override before confirming.',
+        'Members privately rate activities. Ratings are aggregated so the planner sees group consensus at a glance, colour coded as High, Mixed, or Low. The planner shortlists based on data, not whoever replies fastest. Override control is retained.',
       ],
       imageFirst: true,
     },
@@ -407,9 +435,7 @@ function DesignDecisions() {
       number: '03',
       name: 'Opt-Out Feature',
       bullets: [
-        'Members flag solo time for specific activities during planning.',
-        'Reduces awkward last-minute declines when the group is already committed.',
-        'Individual preferences are visible to the whole group without confrontation.',
+        'Members flag solo time during planning, not after. Interviewees described this as the most socially uncomfortable part of group travel: declining an activity once plans are set. Building opt out into planning makes preferences visible without confrontation.',
       ],
       imageFirst: false,
     },
@@ -417,10 +443,7 @@ function DesignDecisions() {
       number: '04',
       name: 'Objection Handling',
       bullets: [
-        'Members raise objections directly in the app without group chat confrontation.',
-        "Objections are flagged immediately on the planner's view.",
-        'Gives the planner clear tools to resolve conflicts without requiring direct confrontation.',
-        'Updated itinerary is instantly visible to the whole group once confirmed.',
+        'Members raise objections directly in the app. The planner sees flagged items with suggested alternatives. This came from research where interviewees described not wanting to be the person to derail plans in the group chat.',
       ],
       imageFirst: true,
     },
@@ -554,32 +577,38 @@ function Iterations() {
   const issues: { label: string; problem: string; solution: string; beforeImg?: string; afterImg?: string }[] = [
     {
       label: 'Group Profile Builder',
-      problem: 'Users questioned why planners were filling in details on behalf of members who had not yet joined the trip.',
-      solution: 'Removed the standalone step and integrated it into the preference quiz flow, streamlining onboarding with a clearer user journey.',
+      problem: "Users questioned why planners were filling in details for members who hadn't joined yet.",
+      solution: 'Removed the standalone step so each member now fills in their own profile upon joining.',
       beforeImg: tripsyncProfileOldImg,
       afterImg: tripsyncProfileQuizImg,
     },
     {
       label: 'Activity Preferences in Quiz',
-      problem: 'Drag handles caused users to attempt dragging instead of the intended tap-to-assign interaction.',
-      solution: 'Replaced with a tap-to-assign system with a clear instruction box and Tap to Remove labels, making it discoverable at a glance.',
+      problem: 'Drag handles misled every participant into attempting to drag.',
+      solution: 'Replaced with tap to rank: tap to assign priority, tap again to remove. Understood at a glance without guidance.',
       beforeImg: tripsyncPrefQuizOldImg,
       afterImg: tripsyncPrefQuizNewImg,
     },
     {
       label: 'Accommodation Preference in Quiz',
-      problem: 'Insufficient visual distinction between single-select and multi-select fields caused wrong interaction patterns.',
-      solution: 'Standardised radio buttons for single-select and checkboxes for multi-select. The consistent and familiar input patterns eliminate interaction ambiguity.',
+      problem: 'No visual distinction between single select and multi select caused wrong interaction patterns.',
+      solution: 'Standardised to radio buttons and checkboxes. Familiar conventions, zero ambiguity.',
+      beforeImg: tripsyncPrefAccomOldImg,
+      afterImg: tripsyncAccomPrefNewImg,
     },
     {
       label: 'Planner Activity Shortlisting',
-      problem: 'Users expected an add-to-cart model rather than an explicit remove action.',
-      solution: 'Switched to a selection model where tapping includes activities, matching user expectations intuitively.',
+      problem: 'Users expected tap to include (add to cart model), not tap to exclude.',
+      solution: 'Flipped the model to match their expectation.',
+      beforeImg: tripsyncActivityShortlistOldImg,
+      afterImg: tripsyncActivityShortlistNewImg,
     },
     {
       label: 'Planner Objection View',
-      problem: 'Unclear options caused users to avoid the primary action entirely.',
-      solution: "Removed 'Replace and Keep Original'. 'Return to Review & Edit' is now the single primary action, reducing decision paralysis with a clearer call to action.",
+      problem: 'Two equal buttons caused hesitation.',
+      solution: 'Reduced to one primary action: Return to Review & Edit. Decision paralysis resolved immediately.',
+      beforeImg: tripsyncObjectionOldImg,
+      afterImg: tripsyncObjectionNewImg,
     },
   ];
   return (
@@ -636,6 +665,7 @@ function FinalScreens() {
   const screens = [
     {
       name: 'Preference Quiz',
+      image: tripsyncProfileQuizImg,
       highlights: [
         { heading: '3-Section Guided Flow', text: 'Members complete the quiz across 3 sections (Your Profile, Activity Preferences, and Accommodation), each privately capturing a different dimension of personal preference.' },
         { heading: 'Private Preference Collection', text: 'Collects individual preferences independently, avoiding groupthink or peer pressure.' },
@@ -646,6 +676,7 @@ function FinalScreens() {
     },
     {
       name: 'Overlap Dashboard',
+      image: tripsyncActivityShortlistNewImg,
       highlights: [
         { heading: 'Group Interest Ranking', text: 'Activities are ranked by percentage of group interest, with a threshold indicator to guide strong shortlist picks.' },
         { heading: 'Consensus at a Glance', text: 'Each activity shows the percentage of members who rated it positively, colour-coded as High, Mixed, or Low.' },
@@ -656,6 +687,8 @@ function FinalScreens() {
     },
     {
       name: 'Objection Handling',
+      image: tripsyncObjectionNewImg,
+      video: objectionFinalVideo,
       highlights: [
         { heading: 'Streamlined Conflict Resolution', text: 'Group members raise objections to planned activities directly in the app without needing a group chat confrontation.' },
         { heading: 'Two-Way Communication', text: "Objections surface immediately on the planner's view, flagged on the relevant itinerary item in real time." },
@@ -666,6 +699,8 @@ function FinalScreens() {
     },
     {
       name: 'Final Itinerary',
+      image: tripsyncOptOutImg,
+      video: finalItineraryVideo,
       highlights: [
         { heading: 'Day-by-Day Itinerary View', text: 'The confirmed itinerary is laid out chronologically by day, with each activity and meal showing the time, location, duration, and attending members at a glance.' },
         { heading: 'Transparent Opt-Out Indicators', text: 'Each activity card displays who has opted out, visible to the whole group — so attendance is clear and no one is caught off guard on the day.' },
@@ -688,7 +723,7 @@ function FinalScreens() {
             {screen.imageFirst ? (
               <>
                 <div className="max-md:!order-2">
-                  <ScreenMockup />
+                  <ScreenMockup src={screen.image} videoSrc={screen.video} />
                 </div>
                 <div className="max-md:!order-1">
                   <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
@@ -718,7 +753,7 @@ function FinalScreens() {
                   </ul>
                 </div>
                 <div>
-                  <ScreenMockup />
+                  <ScreenMockup src={screen.image} videoSrc={screen.video} />
                 </div>
               </>
             )}
