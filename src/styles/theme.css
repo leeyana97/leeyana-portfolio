@@ -546,20 +546,42 @@
     margin-bottom: 48px !important;
   }
 
+  /* Shrink the sticky wrapper to match the card height so there is no
+     invisible dead space at the bottom of each container */
+  .project-card-sticky {
+    height: 67vh !important;
+  }
+
   /* 67 vh — compact and browsable, not full-screen */
   .project-card-inner {
     height: 67vh !important;
     max-width: 100% !important;
   }
 
-  /* Rounded corners — overflow:hidden on the article clips the image too */
+  /* Rounded corners — GPU layer promotion via translateZ(0) + will-change
+     forces the browser to composite the overflow:hidden clipping correctly,
+     eliminating sub-pixel dark bleed at the curved edges.
+     background-color matches the page so any sub-pixel gap is invisible.   */
   .project-card-sticky .project-card {
     border-radius: 16px !important;
+    background-color: #0D0D0D !important;
+    transform: translateZ(0);
+    will-change: transform;
+    isolation: isolate;
   }
 
-  /* Last card needs no trailing gap */
+  /* Collapse the trailing spacer — desktop needs 100vh for the sticky exit
+     scroll budget, but mobile just needs a small breathing room */
   .project-cards-spacer {
-    margin-top: -48px !important;
+    height: 48px !important;
+    margin-top: 0 !important;
   }
+
+  /* TripSync: pan image so the phone stand, table, and rightmost phone
+     are all visible — split the difference between centre and far-right */
+  .project-card--tripsync .project-card-image {
+    object-position: 65% center !important;
+  }
+
 }
 

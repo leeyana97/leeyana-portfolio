@@ -21,7 +21,8 @@ import tripsyncHandImg from '../../imports/Gemini_Generated_Image_kpqnx2kpqnx2kp
 import tripsyncHandImg2 from '../../imports/ChatGPT_Image_Apr_29,_2026,_09_07_27_PM.png';
 import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
-import neighbourlahImg from '../../imports/Neighbourlah hero image copy.png';
+import lumisPhoneImg from '../../imports/lumis skincare hero phone.png';
+import neighbourlahImg from '../../imports/neighbourlah hero phone.png';
 import axsHeroImg from '../../imports/AXS_hero_image.png';
 
 import { useState, useEffect, useLayoutEffect, useRef } from 'react';
@@ -552,9 +553,9 @@ const projects = [
     name: 'Lumis Skincare',
     description: 'A calm, considered shopping experience designed around how people actually discover and buy skincare.',
     tags: [],
-    image: lumisImg,
+    image: lumisPhoneImg,
     imageHeight: 620,
-    alt: 'Lumis Skincare website on laptop mockup',
+    alt: 'Lumis Skincare hero phone mockup',
   },
   {
     id: 'PRODUCT DESIGN',
@@ -584,7 +585,7 @@ function ProjectCard({ project }: { project: typeof projects[0] }) {
   return (
     <article
       data-cursor="view"
-      className="project-card"
+      className={`project-card project-card--${project.slug.replace('/', '')}`}
       onClick={go}
       role="button"
       tabIndex={0}
