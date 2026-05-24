@@ -530,3 +530,36 @@
   }
 }
 
+/* ── Mobile project cards: compact sticky stack ────────────────────────────
+   Cards stay sticky (preserving the scroll-triggered 3-D tilt) but are
+   shorter than full-screen so they feel browsable, with visible breathing
+   room below each card before the next one slides up.                       */
+@media (max-width: 768px) {
+  /* 16 px side padding → dark bg visible on both sides of each card;
+     top override adds ~5 vh clearance below the nav so the tilted card
+     never overlaps the navigation bar;
+     margin-bottom adds scroll budget so there is a brief pause between cards */
+  .project-card-sticky {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    top: calc(72px + 5vh) !important;
+    margin-bottom: 48px !important;
+  }
+
+  /* 67 vh — compact and browsable, not full-screen */
+  .project-card-inner {
+    height: 67vh !important;
+    max-width: 100% !important;
+  }
+
+  /* Rounded corners — overflow:hidden on the article clips the image too */
+  .project-card-sticky .project-card {
+    border-radius: 16px !important;
+  }
+
+  /* Last card needs no trailing gap */
+  .project-cards-spacer {
+    margin-top: -48px !important;
+  }
+}
+

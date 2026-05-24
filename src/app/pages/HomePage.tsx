@@ -709,6 +709,13 @@ function ProjectsSection() {
     const cards = cardRefs.current;
     if (cards.length === 0) return;
 
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    // Mobile: nav is 72 px + 5 vh clearance (matches the CSS top override).
+    // Desktop: cards stick at 105 px (nav height).
+    const stickyOffset = isMobile
+      ? Math.round(72 + window.innerHeight * 0.05)
+      : 105;
+
     const ctx = gsap.context(() => {
       cards.forEach((card, i) => {
         if (!card) return;
@@ -734,7 +741,7 @@ function ProjectsSection() {
           scrollTrigger: {
             trigger: nextSection,
             start: 'top bottom',
-            end: 'top top+=105',
+            end: `top top+=${stickyOffset}`,
             scrub: true,
           },
         });
@@ -758,10 +765,11 @@ function ProjectsSection() {
         <SectionLabel text="Selected Work" />
       </div>
 
-      <div>
+      <div className="project-cards-feed">
         {projects.map((project, i) => (
           <div
             key={project.slug}
+            className="project-card-sticky"
             style={{
               position: 'sticky',
               top: '105px',
@@ -775,24 +783,23 @@ function ProjectsSection() {
               backgroundColor: C.bg,
               perspective: '1200px',
             }}
-            className="max-md:!px-4 max-md:!top-[72px]"
           >
             <div
               ref={el => { cardRefs.current[i] = el; }}
+              className="project-card-inner"
               style={{
                 width: '100%',
                 maxWidth: '1240px',
                 height: 'calc(100vh - 105px)',
                 willChange: 'transform',
               }}
-              className="max-md:!h-[calc(90vh_-_65px)]"
             >
               <ProjectCard project={project} />
             </div>
           </div>
         ))}
         {/* Spacer so the last card has sticky time before the section unsticks */}
-        <div style={{ height: '100vh' }} aria-hidden="true" />
+        <div className="project-cards-spacer" style={{ height: '100vh' }} aria-hidden="true" />
       </div>
     </section>
   );
