@@ -25,7 +25,7 @@ import lumisPhoneImg from '../../imports/lumis skincare hero phone.png';
 import neighbourlahImg from '../../imports/neighbourlah hero phone.png';
 import axsHeroImg from '../../imports/AXS_hero_image.png';
 
-import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -808,31 +808,28 @@ function ProjectsSection() {
 
 // ─── Contact Section ─────────────────────────────────────────────────────────
 function ContactSection() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const subject = encodeURIComponent(`Portfolio Enquiry from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.open(`mailto:nurleeyana2209@gmail.com?subject=${subject}&body=${body}`, '_blank');
-    setSubmitted(true);
+  const btnStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '10px',
+    fontFamily: F.sans,
+    fontSize: '15px',
+    color: C.primary,
+    textDecoration: 'none',
+    border: `1px solid #2A2A2A`,
+    borderRadius: '2px',
+    padding: '14px 24px',
+    transition: 'border-color 0.2s, background-color 0.2s',
+    whiteSpace: 'nowrap' as const,
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    backgroundColor: 'transparent',
-    border: 'none',
-    borderBottom: `1px solid #2A2A2A`,
-    padding: '14px 0',
-    fontFamily: F.sans,
-    fontSize: '17px',
-    color: C.primary,
-    outline: 'none',
-    transition: 'border-color 0.2s',
-    boxSizing: 'border-box',
+  const onEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.borderColor = C.primary;
+    e.currentTarget.style.backgroundColor = 'rgba(235,235,229,0.05)';
+  };
+  const onLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.borderColor = '#2A2A2A';
+    e.currentTarget.style.backgroundColor = 'transparent';
   };
 
   return (
@@ -906,64 +903,15 @@ function ContactSection() {
               fontSize: '17px',
               color: C.secondary,
               lineHeight: 1.7,
-              margin: '0 0 48px 0',
+              margin: 0,
               maxWidth: '360px',
             }}
           >
-            Whether you have a project in mind, a role to fill, or just want to talk design, I'd love to hear from you.
+            Whether you're hiring, collaborating, or just want to talk design, I'd love to connect.
           </motion.p>
-
-          <motion.div variants={fadeUpItem} style={{ width: '40px', height: '1px', backgroundColor: '#2A2A2A', margin: '0 0 48px 0' }} />
-
-          {/* LinkedIn */}
-          <motion.div variants={fadeUpItem}>
-            <p
-              style={{
-                fontFamily: F.sans,
-                fontSize: '13px',
-                color: C.secondary,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                margin: '0 0 16px 0',
-              }}
-            >
-              Or connect on LinkedIn
-            </p>
-            <a
-              href="https://www.linkedin.com/in/nur-leeyana-bte-roslee"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                fontFamily: F.sans,
-                fontSize: '15px',
-                color: C.primary,
-                textDecoration: 'none',
-                border: `1px solid #2A2A2A`,
-                borderRadius: '2px',
-                padding: '14px 24px',
-                transition: 'border-color 0.2s, background-color 0.2s',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = C.primary;
-                e.currentTarget.style.backgroundColor = 'rgba(235,235,229,0.05)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#2A2A2A';
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-              </svg>
-              Let's Connect
-            </a>
-          </motion.div>
         </motion.div>
 
-        {/* ── Right: Form ── */}
+        {/* ── Right: Contact links ── */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -977,122 +925,40 @@ function ContactSection() {
           }}
           className="max-md:!px-6 max-md:!pt-10 max-md:!pb-16 max-lg:!px-10 max-lg:!pt-10 max-lg:!pb-16"
         >
-          {submitted ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease }}
-              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+          <motion.div
+            variants={fadeUpItem}
+            style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}
+            className="max-md:!flex-col max-md:!items-start"
+          >
+            {/* LinkedIn */}
+            <a
+              href="https://www.linkedin.com/in/nur-leeyana-bte-roslee"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={btnStyle}
+              onMouseEnter={onEnter}
+              onMouseLeave={onLeave}
             >
-              <h3
-                style={{
-                  fontFamily: F.editorial,
-                  fontSize: 'clamp(32px, 3.5vw, 48px)',
-                  color: C.primary,
-                  margin: 0,
-                  lineHeight: 1.1,
-                  letterSpacing: '-0.02em',
-                  fontWeight: 400,
-                }}
-              >
-                Message sent.
-              </h3>
-              <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, lineHeight: 1.7, margin: 0 }}>
-                Your email client should be open. Send when you're ready. I'll get back to you as soon as possible.
-              </p>
-              <button
-                onClick={() => setSubmitted(false)}
-                style={{
-                  marginTop: '8px',
-                  fontFamily: F.sans,
-                  fontSize: '15px',
-                  color: C.secondary,
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  textDecoration: 'underline',
-                  textAlign: 'left',
-                  transition: 'color 0.2s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.color = C.primary)}
-                onMouseLeave={e => (e.currentTarget.style.color = C.secondary)}
-              >
-                Send another message
-              </button>
-            </motion.div>
-          ) : (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-              <motion.div variants={fadeUpItem} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Jane Smith"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = C.primary)}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = '#2A2A2A')}
-                />
-              </motion.div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+              Let's Connect
+            </a>
 
-              <motion.div variants={fadeUpItem} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Your Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="e.g. jane@company.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  style={inputStyle}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = C.primary)}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = '#2A2A2A')}
-                />
-              </motion.div>
-
-              <motion.div variants={fadeUpItem} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  Message
-                </label>
-                <textarea
-                  required
-                  rows={6}
-                  placeholder="Tell me about your project, role, or just say hi..."
-                  value={message}
-                  onChange={e => setMessage(e.target.value)}
-                  style={{ ...inputStyle, resize: 'none', paddingTop: '14px', lineHeight: 1.6 }}
-                  onFocus={e => (e.currentTarget.style.borderBottomColor = C.primary)}
-                  onBlur={e => (e.currentTarget.style.borderBottomColor = '#2A2A2A')}
-                />
-              </motion.div>
-
-              <motion.div variants={fadeUpItem}>
-                <button
-                  type="submit"
-                  style={{
-                    fontFamily: F.sans,
-                    fontSize: '15px',
-                    color: C.bg,
-                    backgroundColor: C.primary,
-                    border: 'none',
-                    padding: '18px 40px',
-                    cursor: 'pointer',
-                    letterSpacing: '0.06em',
-                    transition: 'opacity 0.2s',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                >
-                  Send Message
-                </button>
-              </motion.div>
-            </form>
-          )}
+            {/* Email */}
+            <a
+              href="mailto:nurleeyana2209@gmail.com"
+              style={btnStyle}
+              onMouseEnter={onEnter}
+              onMouseLeave={onLeave}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+              Send an Email
+            </a>
+          </motion.div>
         </motion.div>
       </div>
 

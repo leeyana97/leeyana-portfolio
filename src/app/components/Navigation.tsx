@@ -228,7 +228,7 @@ export function Navigation({ showBack = false }: NavigationProps) {
               }}
               style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
-                fontSize: '48px',
+                fontSize: '38px',
                 color: '#EBEBE5',
                 letterSpacing: '-0.02em',
                 background: 'none',
