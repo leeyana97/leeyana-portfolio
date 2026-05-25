@@ -836,6 +836,7 @@ function FinalScreens() {
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/Overlap-dashboard-final-screen_xjsodu.mp4',
       highlights: [
         { heading: 'Group Interest Ranking', text: 'Activities ranked by group interest percentage, colour-coded as High, Mixed, or Low.' },
+        { heading: 'Data-Driven Shortlisting', text: 'Planner taps to include activities for the itinerary based on group ratings, with the highest-rated items pre-highlighted.' },
         { heading: 'Planner Override', text: 'Planner can override any rating before confirming the shortlist.' },
       ],
       imageFirst: true,
@@ -846,6 +847,7 @@ function FinalScreens() {
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/Objection-final-screen_x8hdta.mp4',
       highlights: [
         { heading: 'In-App Conflict Resolution', text: 'Members raise objections in-app; planner sees flagged items with suggested alternatives.' },
+        { heading: 'Smart Alternative Suggestions', text: 'Planner receives app-suggested alternatives based on group preferences, or can input a custom replacement.' },
         { heading: 'Live Group Sync', text: 'Updated itinerary is instantly visible to the whole group — no manual re-sharing.' },
       ],
       imageFirst: false,
@@ -856,6 +858,7 @@ function FinalScreens() {
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/final-itinerary-final-screen_pzykkv.mp4',
       highlights: [
         { heading: 'Day-by-Day View', text: 'Day-by-day view with time, location, duration, and opt-out indicators per activity.' },
+        { heading: 'Live Edit Mode for Planners', text: 'Planners can enter Edit Mode to swap or remove any activity or meal directly in the itinerary. All changes are broadcast to the group instantly via an in-app notification.' },
         { heading: 'Smart Import Bookings', text: 'Planners can paste booking links to auto-fill flight and accommodation details.' },
       ],
       imageFirst: true,
