@@ -1,4 +1,5 @@
 import leeyanaPhoto from '../../imports/Leeyana_profile_photo.jpg';
+import leeyanaHeroPhoto from '../../imports/Leeyana hero photo v2.JPG';
 import nlMonogram from '../../imports/image.png';
 import { useRouteTransition } from '../routeTransition';
 import { Navigation } from '../components/Navigation';
@@ -227,19 +228,72 @@ function HeroSection() {
       }}
       className="hero-glow max-md:!px-6 max-md:!pt-16 max-md:!pb-16 max-lg:!px-10"
     >
-      {/* Faint NL watermark — N and L converge diagonally */}
+      {/* ── Hero photo — right half on desktop, full-bleed on mobile ── */}
+      <div
+        aria-hidden="true"
+        className="hero-photo-wrap"
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '55%',
+          height: '100%',
+          zIndex: 1,
+          overflow: 'hidden',
+          /* mask-image makes the photo itself fade to transparent on the left so
+             the background + glow show through naturally — no painted-dark overlay
+             that creates a colour mismatch seam. */
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 18%, rgba(0,0,0,0.5) 32%, rgba(0,0,0,0.82) 48%, black 65%)',
+          maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.15) 18%, rgba(0,0,0,0.5) 32%, rgba(0,0,0,0.82) 48%, black 65%)',
+        }}
+      >
+        <img
+          src={leeyanaHeroPhoto}
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: '40% 20%',
+            filter: 'contrast(1.12) brightness(0.88) saturate(0.85)',
+            display: 'block',
+          }}
+        />
+        {/* Right-edge fade — fades photo into background on the right side */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to left, #0D0D0D 0%, rgba(13,13,13,0.4) 15%, transparent 40%)',
+            pointerEvents: 'none',
+          }}
+        />
+        {/* Bottom-to-top fade — mobile only, keeps text readable over full-bleed photo */}
+        <div
+          className="hero-photo-fade-bottom"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to top, rgba(13,13,13,0.98) 0%, rgba(13,13,13,0.7) 45%, rgba(13,13,13,0.25) 100%)',
+            pointerEvents: 'none',
+            display: 'none',
+          }}
+        />
+      </div>
+
+      {/* Faint NL watermark — anchored to bottom-left as a background watermark */}
       <div
         aria-hidden="true"
         className="nl-hero-monogram"
         style={{
           position: 'absolute',
-          top: '45%',
-          left: '55%',
-          transform: 'translate(-50%, -50%)',
+          bottom: 'calc(-40px + 20vh)',
+          left: 'calc(-20px + 10vw)',
+          zIndex: 0,
           pointerEvents: 'none',
           userSelect: 'none',
-          width: 'clamp(400px, 60vw, 860px)',
-          height: 'clamp(280px, 42vw, 600px)',
+          width: 'clamp(278px, 41.5vw, 595px)',
+          height: 'clamp(194px, 29.1vw, 415px)',
           mixBlendMode: 'screen',
         }}
       >
@@ -250,7 +304,7 @@ function HeroSection() {
             top: '50%',
             left: '50%',
             fontFamily: '"Luxurious Script", cursive',
-            fontSize: 'clamp(227px, 34vw, 502px)',
+            fontSize: 'clamp(157px, 23.5vw, 346px)',
             color: C.primary,
             lineHeight: 1,
             fontWeight: 400,
@@ -267,7 +321,7 @@ function HeroSection() {
             top: '50%',
             left: '50%',
             fontFamily: '"Luxurious Script", cursive',
-            fontSize: 'clamp(194px, 29.2vw, 421px)',
+            fontSize: 'clamp(134px, 20.3vw, 291px)',
             color: C.primary,
             lineHeight: 1.6,
             fontWeight: 400,
@@ -450,7 +504,8 @@ function AboutSection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 1.1, ease }}
-            style={{ overflow: 'hidden', aspectRatio: '3/4' }}
+            className="about-photo-wrap"
+            style={{ position: 'relative', overflow: 'hidden', aspectRatio: '3/4' }}
           >
             <img
               src={leeyanaPhoto}

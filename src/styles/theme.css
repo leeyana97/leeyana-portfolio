@@ -513,8 +513,37 @@
   }
 }
 
+/* ── About photo — right + bottom edge fades into dark background ───────────
+   ::before  = right-edge gradient (photo blends into the dark column gap)
+   ::after   = bottom-edge gradient (photo dissolves into the dark background)
+   Both sit above the <img> (z-index: 1) so no filter is needed on the img. */
+.about-photo-wrap::before,
+.about-photo-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.about-photo-wrap::before {
+  background: linear-gradient(
+    to right,
+    transparent 60%,
+    #0D0D0D 100%
+  );
+}
+
+.about-photo-wrap::after {
+  background: linear-gradient(
+    to bottom,
+    transparent 70%,
+    #0D0D0D 100%
+  );
+}
+
 /* ── Hero NL monogram — mobile repositioning ───────────────────────────────
-   Desktop: centred via top/left/translate (unchanged).
+   Desktop: anchored bottom-left (z-index: 0) behind text content (z-index: 2).
    Mobile: anchored to the lower-right, scaled to fit, rendered above the
    bottom gradient via z-index so mix-blend-mode: screen composites
    correctly against the dark background.                                    */
@@ -527,6 +556,20 @@
     transform: scale(0.715) !important;
     transform-origin: bottom right;
     z-index: 2 !important;
+  }
+
+  /* Hero photo: full-bleed on mobile, no mask (mask handles desktop only) */
+  .hero-photo-wrap {
+    width: 100% !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+  .hero-photo-fade-bottom {
+    display: block !important;
+  }
+  /* Suppress the general bottom-fade gradient; the photo's own handles it */
+  .nl-hero-gradient {
+    display: none !important;
   }
 }
 
