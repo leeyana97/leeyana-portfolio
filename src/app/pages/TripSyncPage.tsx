@@ -17,8 +17,6 @@ import tripsyncActivityShortlistNewImg from '../../imports/tripsync-activity-sho
 import tripsyncActivityShortlistOldImg from '../../imports/tripsync-activity-shortlist-old.png';
 import tripsyncObjectionOldImg from '../../imports/tripsync-objection-old.png';
 import tripsyncObjectionNewImg from '../../imports/tripsync-objection-new.png';
-import finalItineraryVideo from '../../imports/final-itinerary-final-screen.mp4';
-import objectionFinalVideo from '../../imports/Objection-final-screen.mp4';
 import tripsyncPhone1 from '../../imports/tripsync-phone-1.png';
 import tripsyncPhone2 from '../../imports/tripsync-phone-2.png';
 import tripsyncPhone3 from '../../imports/tripsync-phone-3-v2.png';
@@ -205,9 +203,11 @@ function ScreenMockup({ label, opacity = 1, src = tripsyncImg, videoSrc, maxWidt
               <video
                 ref={videoRef}
                 src={videoSrc}
+                poster={src}
                 loop
                 muted
                 playsInline
+                preload="none"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
               />
             ) : (
@@ -874,7 +874,7 @@ function FinalScreens() {
             {screen.imageFirst ? (
               <>
                 <div className="max-md:!order-2">
-                  <ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={420} />
+                  <ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={294} />
                 </div>
                 <div className="max-md:!order-1">
                   <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
@@ -904,7 +904,7 @@ function FinalScreens() {
                   </ul>
                 </div>
                 <div>
-                  <ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={420} />
+                  <ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={294} />
                 </div>
               </>
             )}

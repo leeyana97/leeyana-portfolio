@@ -1,6 +1,5 @@
 import leeyanaPhoto from '../../imports/Leeyana_profile_photo.jpg';
 import leeyanaHeroPhoto from '../../imports/Leeyana hero photo v2.JPG';
-import nlMonogram from '../../imports/image.png';
 import { useRouteTransition } from '../routeTransition';
 import { Navigation } from '../components/Navigation';
 import { motion } from 'motion/react';
@@ -16,12 +15,8 @@ import {
   overlayCTAVariants,
   ease,
 } from '../components/Animate';
-import tripsyncImg from '../../imports/Tripsync_home_app.png';
 import tripsyncScreenImg from '../../imports/Tripsync_home_app-1.png';
-import tripsyncHandImg from '../../imports/Gemini_Generated_Image_kpqnx2kpqnx2kpqn.png';
-import tripsyncHandImg2 from '../../imports/ChatGPT_Image_Apr_29,_2026,_09_07_27_PM.png';
 import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
-import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
 import lumisPhoneImg from '../../imports/lumis skincare hero phone.png';
 import neighbourlahImg from '../../imports/neighbourlah hero phone.png';
 import axsHeroImg from '../../imports/AXS_hero_image.png';
