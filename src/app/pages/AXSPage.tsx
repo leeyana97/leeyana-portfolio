@@ -86,17 +86,22 @@ function ScreenPlaceholder({ label, opacity = 1, text }: { label?: string; opaci
 // ─── Animated 3-phone carousel hero ─────────────────────────────────────────
 // The source images already include a phone-frame bezel, so we render them
 // directly without wrapping in another mockup.
-// Phase 1: All 3 phones orbit a shared centre point (1.5 rotations, easeInOutQuart).
-// Depth illusion via scale + opacity + dynamic z-index (no 3D transforms).
-// Phase 2: Phones settle into a staggered hero layout with a soft spring.
+//
+// One continuous timeline driven by a single `progress` value (0 → 1):
+//   0.0  – 0.6  Pure carousel orbit (rotation eased over this range)
+//   0.6  – 0.9  Orbital position blends smoothly into the final hero layout
+//   0.9  – 1.0  Layout is locked at its final state
+// Each phone's transform every frame is the linear interpolation of its
+// orbital values and its final values, weighted by a smoothstepped blend
+// factor. There is no discrete phase switch — the orbit just gradually
+// dissolves into the layout, so there is no seam to feel.
 function AXSHeroCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
   const inView = useInView(containerRef, { once: true, amount: 0.25 });
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState<'idle' | 'spinning' | 'settled'>('idle');
   const [dims, setDims] = useState({ phoneWidth: 220, orbitRadius: 220, settleOffset: 210 });
   const [reducedMotion, setReducedMotion] = useState(false);
-  // Guard ensures the spin starts exactly once, even if phase/inView triggers re-runs.
+  // Guard so the timeline starts exactly once.
   const startedRef = useRef(false);
 
   // Track viewport for responsive sizing
@@ -104,13 +109,13 @@ function AXSHeroCarousel() {
     const update = () => {
       const w = window.innerWidth;
       if (w < 480) {
-        setDims({ phoneWidth: 130, orbitRadius: 90, settleOffset: 105 });
+        setDims({ phoneWidth: 204, orbitRadius: 140, settleOffset: 114 });
       } else if (w < 768) {
-        setDims({ phoneWidth: 170, orbitRadius: 140, settleOffset: 150 });
+        setDims({ phoneWidth: 265, orbitRadius: 218, settleOffset: 168 });
       } else if (w < 1100) {
-        setDims({ phoneWidth: 200, orbitRadius: 190, settleOffset: 180 });
+        setDims({ phoneWidth: 312, orbitRadius: 296, settleOffset: 216 });
       } else {
-        setDims({ phoneWidth: 230, orbitRadius: 240, settleOffset: 220 });
+        setDims({ phoneWidth: 360, orbitRadius: 374, settleOffset: 252 });
       }
     };
     update();
@@ -128,45 +133,39 @@ function AXSHeroCarousel() {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  // Kick off the spin once when the hero enters view.
-  // We guard with a ref so the effect doesn't re-run / cancel itself when
-  // `phase` flips to 'spinning' mid-run.
+  // Single RAF timeline 0 → 1 over ~3 seconds.
   useEffect(() => {
     if (!inView || startedRef.current) return;
     startedRef.current = true;
     if (reducedMotion) {
-      // Skip the carousel — just settle in place.
       setProgress(1);
-      setPhase('settled');
       return;
     }
-    setPhase('spinning');
-    const DURATION = 2200; // ms
+    const DURATION = 3000; // ms — full timeline incl. blend + hold
     const startTs = performance.now();
     let rafId = 0;
     const tick = () => {
       const elapsed = performance.now() - startTs;
       const p = Math.min(elapsed / DURATION, 1);
       setProgress(p);
-      if (p < 1) {
-        rafId = requestAnimationFrame(tick);
-      } else {
-        setPhase('settled');
-      }
+      if (p < 1) rafId = requestAnimationFrame(tick);
     };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
   }, [inView, reducedMotion]);
 
-  // easeInOutQuart
-  const eased = progress < 0.5
-    ? 8 * progress * progress * progress * progress
-    : 1 - Math.pow(-2 * progress + 2, 4) / 2;
-
+  // Final layout slots. Center phone is the focal point; sides are tilted.
+  // Index order matches the orbit's natural endpoints under the rotation
+  // math below, so the blend has minimal distance to cover per phone.
+  //   i = 0  starts at orbit angle 240°  →  ends at  -120° + 360° = 240°… see below
+  //   The spin's total rotation is 2 full turns (720°), so each phone ends
+  //   exactly where it started on the orbit. We pre-position the starts so
+  //   that those endpoints are at the LEFT / CENTER / RIGHT of the screen.
+  const screens = [axsHero2, axsHero1, axsHero3]; // left, center, right
   const finalConfigs = [
-    { x: -dims.settleOffset, y: 30, rotate: -7, scale: 1, z: 5 },
-    { x: 0,                  y: -22, rotate: 0, scale: 1.06, z: 20 },
-    { x: dims.settleOffset,  y: 30, rotate: 7, scale: 1, z: 5 },
+    { x: -dims.settleOffset, y: 10,  rotate: -6, scale: 1, z: 5  }, // i=0 LEFT
+    { x:  0,                 y: -10, rotate:  0, scale: 1, z: 20 }, // i=1 CENTER
+    { x:  dims.settleOffset, y: 10,  rotate:  6, scale: 1, z: 5  }, // i=2 RIGHT
   ];
 
   // The source PNGs include the phone-frame bezel. Approximate aspect ratio
@@ -174,7 +173,25 @@ function AXSHeroCarousel() {
   const phoneHeight = Math.round(dims.phoneWidth * 2.05);
   const containerHeight = Math.max(phoneHeight + 80, Math.round(phoneHeight * 1.1));
 
-  const screens = [axsHero2, axsHero1, axsHero3]; // left, center, right (final order)
+  // ─── Timeline-derived values (recomputed each frame from `progress`) ────
+  const SPIN_END = 0.6;
+  const BLEND_END = 0.9;
+  const TOTAL_TURNS = 2; // multiple of full turns → phone i=1 ends back at its start angle (front-centre)
+
+  // Rotation easing: starts slow, accelerates, decelerates into the blend zone.
+  // We map progress 0..SPIN_END to 0..1 and ease that.
+  const rotationT = Math.min(progress / SPIN_END, 1);
+  const rotationEased = rotationT < 0.5
+    ? 8 * rotationT * rotationT * rotationT * rotationT
+    : 1 - Math.pow(-2 * rotationT + 2, 4) / 2;
+
+  // Blend factor: 0 during spin, smoothsteps 0→1 between SPIN_END and BLEND_END.
+  let blendRaw = 0;
+  if (progress >= BLEND_END) blendRaw = 1;
+  else if (progress > SPIN_END) blendRaw = (progress - SPIN_END) / (BLEND_END - SPIN_END);
+  const blend = blendRaw * blendRaw * (3 - 2 * blendRaw); // smoothstep
+
+  const showShadow = progress >= 0.95; // CSS transition handles the fade-in
 
   return (
     <section
@@ -200,46 +217,47 @@ function AXSHeroCarousel() {
         }}
       >
         {screens.map((src, i) => {
-          const isSpinning = phase === 'spinning';
-          const isSettled = phase === 'settled';
+          const final = finalConfigs[i];
 
-          // Spin-phase position
-          const baseAngle = (i / 3) * Math.PI * 2; // 0, 120°, 240°
-          const angle = baseAngle + eased * 1.5 * Math.PI * 2;
-          const shrink = progress > 0.7 ? 1 - ((progress - 0.7) / 0.3) * 0.22 : 1;
-          const r = dims.orbitRadius * shrink;
-          const xSpin = Math.cos(angle) * r;
-          const yDepth = Math.sin(angle) * 28;
-          const yBob = Math.sin(angle * 2) * 10;
-          const depth = (Math.sin(angle) + 1) / 2; // 0 (back) → 1 (front)
-          const scaleSpin = 0.78 + depth * 0.32;
-          const opacitySpin = 0.55 + depth * 0.45;
-          const zSpin = Math.round(depth * 100);
+          // ─── Orbital position (front-centre convention) ─────────────────
+          // baseAngle is pre-shifted so that with TOTAL_TURNS full rotations,
+          // phone i=1 lands at angle 0° (which we map to centre-front),
+          // phone i=0 lands at -120° (left-front-ish), phone i=2 at +120°
+          // (right-front-ish). The 120° offsets keep all three evenly spaced.
+          const baseAngle = (i - 1) * (2 * Math.PI / 3); // -120°, 0°, +120°
+          const angle = baseAngle + rotationEased * TOTAL_TURNS * 2 * Math.PI;
 
-          // Pick target per phase
-          const target = isSettled
-            ? { x: finalConfigs[i].x, y: finalConfigs[i].y, rotate: finalConfigs[i].rotate, scale: finalConfigs[i].scale, opacity: 1 }
-            : isSpinning
-              ? { x: xSpin, y: yDepth + yBob, rotate: 0, scale: scaleSpin, opacity: opacitySpin }
-              : { x: 0, y: 0, rotate: 0, scale: 0.85, opacity: 0 };
+          // Front-centre convention: angle 0° = closest to viewer.
+          //   x_screen = sin(angle) * radius  (sin(0) = 0 → centre on screen)
+          //   depth    = cos(angle) mapped to 0..1 (cos(0) = 1 → max scale)
+          //   y_screen = cos(angle) * ellipseY (front of carousel sits lower)
+          const xOrbit = Math.sin(angle) * dims.orbitRadius;
+          const yOrbit = Math.cos(angle) * 18;
+          const depth = (Math.cos(angle) + 1) / 2; // 0 (back) → 1 (front)
+          const scaleOrbit = 0.78 + depth * 0.32;
+          const opacityOrbit = 0.55 + depth * 0.45;
+          const zOrbit = Math.round(depth * 100);
 
-          const z = isSettled ? finalConfigs[i].z : zSpin;
+          // ─── Blend orbital → final layout ───────────────────────────────
+          const x = xOrbit * (1 - blend) + final.x * blend;
+          const y = yOrbit * (1 - blend) + final.y * blend;
+          const scale = scaleOrbit * (1 - blend) + final.scale * blend;
+          const opacity = opacityOrbit * (1 - blend) + 1 * blend;
+          const rotation = final.rotate * blend; // tilt eases in with the blend
+          // Lock z to final once the blend dominates (per spec, > 0.5).
+          const z = blend > 0.5 ? final.z : zOrbit;
 
           return (
-            <motion.div
+            <div
               key={i}
-              animate={target}
-              transition={
-                isSettled
-                  ? { type: 'spring', stiffness: 80, damping: 12, mass: 0.9, restDelta: 0.001 }
-                  : { duration: 0 }
-              }
               style={{
                 position: 'absolute',
                 left: '50%',
                 top: '50%',
                 marginLeft: -dims.phoneWidth / 2,
                 marginTop: -phoneHeight / 2,
+                transform: `translate3d(${x}px, ${y}px, 0) rotate(${rotation}deg) scale(${scale})`,
+                opacity,
                 zIndex: z,
                 willChange: 'transform, opacity',
               }}
@@ -254,11 +272,14 @@ function AXSHeroCarousel() {
                   width: `${dims.phoneWidth}px`,
                   height: 'auto',
                   display: 'block',
-                  filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6))',
                   userSelect: 'none',
+                  // Drop-shadow only after the layout has fully settled. CSS
+                  // transition handles the fade-in — paint cost is bounded.
+                  filter: showShadow ? 'drop-shadow(0 20px 40px rgba(0,0,0,0.6))' : 'none',
+                  transition: 'filter 0.5s ease-out',
                 }}
               />
-            </motion.div>
+            </div>
           );
         })}
       </div>
