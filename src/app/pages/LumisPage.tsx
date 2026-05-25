@@ -58,8 +58,26 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div style={{ width: '100%', maxWidth: '260px' }}>
         {label && <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>}
-        <div style={{ width: '100%', aspectRatio: '9 / 19.5', overflow: 'hidden', borderRadius: '24px', opacity }}>
-          <img src={lumisImg} alt={label || 'Lumis Skincare screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            padding: '11px',
+            background: 'linear-gradient(135deg, #45464A 0%, #2E2F33 50%, #1E1F22 100%)',
+            borderRadius: '46px',
+            boxShadow:
+              'inset 0 0 0 1.5px rgba(255,255,255,0.08), inset 0 0 0 3.5px #0a0a0a, 0 12px 32px rgba(0,0,0,0.5)',
+            opacity,
+          }}
+        >
+          <div style={{ position: 'absolute', right: '-2px', top: '24%', width: '3px', height: '17%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '1px 2px 2px 1px', zIndex: 0 }} />
+          <div style={{ position: 'absolute', left: '-2px', top: '14%', width: '3px', height: '6%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
+          <div style={{ position: 'absolute', left: '-2px', top: '23%', width: '3px', height: '9%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
+          <div style={{ position: 'absolute', left: '-2px', top: '34%', width: '3px', height: '9%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
+          <div style={{ position: 'relative', width: '100%', aspectRatio: '9 / 19.5', overflow: 'hidden', borderRadius: '36px', backgroundColor: '#000', zIndex: 1 }}>
+            <div style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', width: '32%', height: '20px', backgroundColor: '#000', borderRadius: '14px', zIndex: 3 }} />
+            <img src={lumisImg} alt={label || 'Lumis Skincare screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+          </div>
         </div>
       </div>
     </div>

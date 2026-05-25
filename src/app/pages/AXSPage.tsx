@@ -52,10 +52,28 @@ function ScreenPlaceholder({ label, opacity = 1, text }: { label?: string; opaci
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div style={{ width: '100%', maxWidth: '260px' }}>
         {label && <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>}
-        <div style={{ width: '100%', aspectRatio: '9 / 19.5', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity }}>
-          <p style={{ fontFamily: F.editorial, fontSize: '15px', color: C.secondary, textAlign: 'center', padding: '20px', lineHeight: 1.4, margin: 0 }}>
-            {text || 'AXS · Billing Feature'}
-          </p>
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            padding: '11px',
+            background: 'linear-gradient(135deg, #45464A 0%, #2E2F33 50%, #1E1F22 100%)',
+            borderRadius: '46px',
+            boxShadow:
+              'inset 0 0 0 1.5px rgba(255,255,255,0.08), inset 0 0 0 3.5px #0a0a0a, 0 12px 32px rgba(0,0,0,0.5)',
+            opacity,
+          }}
+        >
+          <div style={{ position: 'absolute', right: '-2px', top: '24%', width: '3px', height: '17%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '1px 2px 2px 1px', zIndex: 0 }} />
+          <div style={{ position: 'absolute', left: '-2px', top: '14%', width: '3px', height: '6%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
+          <div style={{ position: 'absolute', left: '-2px', top: '23%', width: '3px', height: '9%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
+          <div style={{ position: 'absolute', left: '-2px', top: '34%', width: '3px', height: '9%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
+          <div style={{ position: 'relative', width: '100%', aspectRatio: '9 / 19.5', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, borderRadius: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', zIndex: 1 }}>
+            <div style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', width: '32%', height: '20px', backgroundColor: '#000', borderRadius: '14px', zIndex: 3 }} />
+            <p style={{ fontFamily: F.editorial, fontSize: '15px', color: C.secondary, textAlign: 'center', padding: '20px', lineHeight: 1.4, margin: 0 }}>
+              {text || 'AXS · Vault Feature'}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -73,18 +91,18 @@ function CaseStudyHero() {
         style={{ width: '100%', height: 'clamp(300px, 55vw, 640px)', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
         <span style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 3vw, 40px)', color: C.secondary, letterSpacing: '-0.01em', textAlign: 'center', padding: '40px' }}>
-          AXS · Billing Feature
+          AXS · Vault Feature
         </span>
       </motion.div>
       <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '60px' }}>
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
-          AXS · Billing
+          AXS · Vault
         </motion.h1>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: 'clamp(17px, 2vw, 20px)', color: C.secondary, margin: '0 0 24px 0', lineHeight: 1.5 }}>
-          Smart Bill Splitting and Shared Payment Management for Couples and Flatmates
+          Designing a Unified Bill Management Feature for First Jobbers and Young Couples
         </motion.p>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
-          Duration: 2 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: iOS App · Feature Addition
+          Duration: 2 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: iOS App&nbsp;&nbsp;·&nbsp;&nbsp;Feature Addition&nbsp;&nbsp;·&nbsp;&nbsp;Collaboration
         </motion.p>
       </motion.div>
     </section>
@@ -94,9 +112,9 @@ function CaseStudyHero() {
 function StatsStrip() {
   const stats = [
     { number: '2', label: 'Weeks · Duration' },
-    { number: '5', label: 'Users Interviewed' },
-    { number: '6', label: 'Core Flows' },
-    { number: '4', label: 'Billing Categories' },
+    { number: '5', label: 'Users Tested' },
+    { number: '6', label: 'Tasks Tested' },
+    { number: '3', label: 'User Personas' },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, paddingTop: '60px', paddingBottom: '60px', paddingLeft: '80px', paddingRight: '80px' }} className="max-md:!px-6 max-lg:!px-10">
@@ -114,16 +132,16 @@ function StatsStrip() {
 
 function ProblemStatement() {
   const painPoints = [
-    { title: 'Fragmented Bill Tracking', desc: 'Couples and flatmates track shared bills across messages, spreadsheets, and mental notes, with no single source of truth and frequent disputes about who owes what.' },
-    { title: 'Recurring Payment Blindness', desc: 'Subscriptions and recurring utilities often go untracked until someone notices a discrepancy. The administrative burden falls unevenly and creates friction.' },
-    { title: 'Awkward Money Conversations', desc: 'Asking for repayment between people who share a home carries social weight. The design needed to remove the awkwardness, not amplify it.' },
-    { title: 'Lack of Visibility', desc: 'Neither party has a clear picture of shared financial commitments at a glance. This creates anxiety, distrust, and preventable disagreements.' },
+    { title: 'No Structured Bill Handover', desc: 'First jobbers inherit bills from parents through verbal handoffs and password-sharing, with no structured way to take over accounts.' },
+    { title: 'Hidden Visibility Mismatch', desc: "Couples don't want a joint account app, but they need both partners to see what's been paid — leading to double payments and awkward catch-ups." },
+    { title: 'Manual Tracking Across Apps', desc: 'The household bill handler tracks everything across spreadsheets, calendar reminders, and 4–6 separate biller apps every month.' },
+    { title: 'Failures Discovered Too Late', desc: 'Missed payments, GIRO failures, and duplicate payments are only discovered after the fact through SMS alerts or casual conversation.' },
   ];
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <h2 className="cs-section-header">The Problem.</h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        Shared finances are one of the most common sources of household friction, not because of money, but because of ambiguity. AXS already had the infrastructure to handle bill payments; this feature was designed to extend that into the shared and collaborative layer. Making it easy to split, track, and settle without it feeling like a debt collection exercise.
+        First jobbers and young couples in Singapore manage household bills through fragmented, informal systems — verbal handoffs, spreadsheets, scattered biller apps, and memory. AXS already handles bill payments, but offers no way to see what's been paid across a household, inherit bills from parents, or share visibility with a partner without changing who pays what.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {painPoints.map((p) => (
@@ -139,11 +157,11 @@ function ProblemStatement() {
 
 function ResearchFindings() {
   const findings = [
-    { title: 'Financial Transparency as Trust', desc: 'For couples especially, having visibility into shared spending isn\'t about control; it\'s about fairness. The feature needed to feel like a shared dashboard, not a surveillance tool.' },
-    { title: 'Splitting Complexity', desc: 'Simple 50/50 splits cover only a subset of real cases. Participants needed percentage splits, variable recurring amounts, and one-off exceptions, without it feeling like accounting software.' },
-    { title: 'Reminder Anxiety', desc: 'Being reminded that you owe money creates stress. The design needed payment reminders to feel collaborative and neutral, not accusatory.' },
-    { title: 'AXS Brand Trust', desc: 'Participants already trusted AXS for individual bill payment. Adding a shared layer to an existing trusted app was preferable to a new standalone tool.' },
-    { title: 'Mobile-Native Expectation', desc: 'Every participant expected the feature to work entirely on mobile. Desktop was not part of their mental model for day-to-day financial management.' },
+    { title: 'Perception Problem', desc: 'AXS is associated with physical kiosks and an older generation — not with the apps young users pay bills through today.' },
+    { title: 'Notifications as Safety Net', desc: 'Users relied on reminders to know when bills are due. Whichever app reminds them tends to be the app they pay through.' },
+    { title: 'Habit Formation', desc: "First jobbers don't stick around long enough to discover features. The first session has to feel effortless and useful, or they're gone." },
+    { title: 'Hidden Visibility Mismatch', desc: "Couples manage bills informally. They don't want a joint account app — they want both partners to see what's been paid without changing who pays what." },
+    { title: 'Failed Silent Payments', desc: "When one partner can't see what the other has paid, bills get paid twice or missed — creating awkward catch-ups and admin to chase refunds." },
   ];
   // Per-note colour + rotation: five dark tints (brown, teal, purple, red,
   // blue), each with a matching tape colour and a slight rotation.
@@ -184,83 +202,54 @@ function ResearchFindings() {
 }
 
 function DesignDecisions() {
-  const features = [
+  const statements = [
     {
-      number: '01', name: 'Shared Bills Dashboard',
-      bullets: [
-        'A dedicated shared tab within the AXS app surfaces all jointly tracked bills in a single view: utilities, subscriptions, and one-off expenses.',
-        'Each bill shows the split, the next due date, and current settlement status without requiring the user to dig.',
-        'The dashboard is designed for a quick daily glance, not deep financial management. Just 10 seconds to full visibility.',
-      ],
-      imageFirst: false,
+      number: '01',
+      persona: 'For the First Jobber',
+      personaTag: 'The Transitioner',
+      body: 'First jobbers inheriting household bills get every biller set up, tracked, and paid on time by combining snap-and-inherit capture, a unified bill dashboard, and a frictionless first-session onboarding.',
     },
     {
-      number: '02', name: 'Flexible Split Engine',
-      bullets: [
-        'Splits can be 50/50, percentage-based, fixed amount, or custom, set once per bill and remembered for recurring payments.',
-        'One partner can pay the full amount upfront; the app automatically calculates and tracks the reimbursement owed.',
-        'Split configurations can be updated at any time without affecting past settlement records.',
-      ],
-      imageFirst: true,
+      number: '02',
+      persona: 'For the Delegator',
+      personaTag: 'The Delegator',
+      body: 'The delegator of the household can stay informed about household bills without taking over the workload through an opt-in shared visibility layer and pre-payment duplicate checks that show when a bill was paid and by whom.',
     },
     {
-      number: '03', name: 'Settlement Flow',
-      bullets: [
-        'One-tap settlement through the existing AXS payment infrastructure, no need to use a separate app or transfer method.',
-        'Settlement confirmations are visible to both parties simultaneously, removing ambiguity from the reimbursement process.',
-        'A settlement history log provides a neutral record that both parties can reference, removing the need to search through messages.',
-      ],
-      imageFirst: false,
-    },
-    {
-      number: '04', name: 'Collaborative Reminders',
-      bullets: [
-        'Reminders for upcoming bills are sent to both parties, framed as shared events rather than payment demands.',
-        'The reminder tone is neutral and informational: "Your electricity bill is due in 3 days", not "You owe $45.20".',
-        'Both partners can configure their own reminder preferences without affecting the other\'s notification settings.',
-      ],
-      imageFirst: true,
+      number: '03',
+      persona: 'For the Household CFO',
+      personaTag: 'The Household CFO',
+      body: 'The household CFO can stop tracking across spreadsheets and biller apps by setting up each bill once and seeing what’s paid and pending in one dashboard.',
     },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Design Decisions" />
-      <StaggerCards style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
-        {features.map((feat) => (
-          <div key={feat.number} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }} className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10">
-            {feat.imageFirst ? (
-              <>
-                <div className="max-md:!order-2">
-                  <ScreenPlaceholder text="Flexible Split Engine" />
-                </div>
-                <div className="max-md:!order-1">
-                  <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 12px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
-                  <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{feat.name}</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    {feat.bullets.map((b, bi) => (
-                      <li key={bi} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>{b}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 12px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
-                  <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{feat.name}</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    {feat.bullets.map((b, bi) => (
-                      <li key={bi} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>{b}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div><ScreenPlaceholder text={feat.name} /></div>
-              </>
-            )}
+      <SectionLabel text="Solution Statements" />
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 56px 0', maxWidth: '720px' }}>
+        Vault is anchored around three user personas. Each statement names the persona it serves and the specific Vault behaviour that addresses their need.
+      </p>
+      <StaggerCards style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {statements.map((s) => (
+          <div
+            key={s.number}
+            style={{
+              border: `1px solid ${C.cardBorder}`,
+              padding: '40px',
+              display: 'grid',
+              gridTemplateColumns: '120px 1fr',
+              gap: '40px',
+              alignItems: 'start',
+            }}
+            className="max-md:!grid-cols-1 max-md:!gap-6 max-md:!p-7"
+          >
+            <div>
+              <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 12px 0', letterSpacing: '0.08em' }}>{s.number}</p>
+              <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: 0, letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1.4 }}>{s.personaTag}</p>
+            </div>
+            <div>
+              <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 16px 0', lineHeight: 1.25, fontWeight: 400 }}>{s.persona}</h3>
+              <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>{s.body}</p>
+            </div>
           </div>
         ))}
       </StaggerCards>
@@ -269,34 +258,94 @@ function DesignDecisions() {
 }
 
 function UsabilityTesting() {
-  const stats = [
-    { number: '96%', label: 'Task Completion' },
-    { number: '5', label: 'Participants' },
-    { number: '8', label: 'Tasks Tested' },
-    { number: '1.6', label: 'Avg. Difficulty (out of 7)' },
+  const planRows = [
+    { label: 'Participants', value: '5 (2 first jobbers, 3 young couples)' },
+    { label: 'Environment', value: "Online testing on participant's own device" },
+    { label: 'Data Collected', value: 'Success rate, Ease of Use rating (1 = very easy, 5 = very difficult), post-test questions, observation' },
   ];
-  const insights = [
-    'The task completion rate was the highest across all four projects: 96%. The feature\'s logic closely mirrored how users already mentally modelled shared bills, so the flows required minimal explanation.',
-    'The dashboard "10-second glance" concept was validated. Participants could determine the current settlement status of all shared bills within seconds of opening the tab, without needing to tap into any individual bills.',
-    'The neutral reminder framing resonated strongly. Participants explicitly contrasted it with how payment requests on other platforms felt, noting that the AXS approach felt like a shared calendar reminder, not a debt call.',
-    'Two participants wanted a way to add a note or context to a split, particularly for irregular expenses where the reason for the amount mattered. A note field was added to the split configuration screen in the revision.',
+  const workshopRows = [
+    { task: 'Task 1', desc: 'First-time use', rating: '2.8' },
+    { task: 'Task 2', desc: 'Add personal bill', rating: '2.7' },
+    { task: 'Task 3', desc: 'Add household bills', rating: '2.4' },
+    { task: 'Task 4', desc: 'Share with family', rating: '2.1' },
+    { task: 'Task 5', desc: 'Pay via Vault', rating: '1.9' },
+  ];
+  const workshopIssues = [
+    { title: 'Folder-first is unintuitive', desc: 'Users expected to see existing bills first, then file them — not build empty folders.' },
+    { title: 'Mental model: file, don’t create', desc: 'Users expected to have a document or bill first and drag it to a folder. Camera function also felt hidden.' },
+    { title: 'Multi-select is missing', desc: 'Adding bills one-by-one is tedious. Users want checkbox/multi-select and bulk-add from My Favourites.' },
+    { title: 'Sharing needs more channels', desc: 'Email-only feels limiting. Users want shareable links, multiple invitees at once, and at-a-glance view of who a folder is shared with.' },
+    { title: 'Payment doesn’t belong here', desc: 'Vault reads as storage. Existing users default to My Favourites for payment.' },
+  ];
+  const resultStats = [
+    { number: '6', label: 'Tasks Tested' },
+    { number: '5', label: 'Participants' },
+    { number: '3 / 5', label: 'Overall Ease of Use' },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Usability Testing" />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px', marginBottom: '64px' }} className="max-md:!grid-cols-2 max-md:!gap-8 max-lg:!grid-cols-2 max-lg:!gap-8">
-        {stats.map((s) => (
+
+      {/* Test Plan */}
+      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.25, fontWeight: 400 }}>Test Plan</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '64px' }} className="max-md:!grid-cols-1">
+        {planRows.map((r) => (
+          <div key={r.label} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
+            <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 10px 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{r.label}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: 0, lineHeight: 1.6 }}>{r.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Design Feedback Workshop */}
+      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 16px 0', lineHeight: 1.25, fontWeight: 400 }}>Design Feedback Workshop Results</h3>
+      <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 28px 0', maxWidth: '720px' }}>
+        Before the formal usability test, the team ran a design feedback workshop with 5 tasks. Ease of Use ratings used a 1–5 scale (1 = Very Easy, 5 = Very Difficult).
+      </p>
+      <div style={{ border: `1px solid ${C.cardBorder}`, marginBottom: '32px', overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: F.sans, fontSize: '15px', color: C.primary, minWidth: '480px' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#1A1A1A' }}>
+              <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 500, color: C.secondary, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '12px', borderBottom: `1px solid ${C.cardBorder}` }}>Task</th>
+              <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 500, color: C.secondary, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '12px', borderBottom: `1px solid ${C.cardBorder}` }}>Description</th>
+              <th style={{ textAlign: 'right', padding: '16px 20px', fontWeight: 500, color: C.secondary, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '12px', borderBottom: `1px solid ${C.cardBorder}` }}>Rating</th>
+            </tr>
+          </thead>
+          <tbody>
+            {workshopRows.map((r, idx) => (
+              <tr key={r.task} style={{ borderBottom: idx < workshopRows.length - 1 ? `1px solid ${C.cardBorder}` : 'none' }}>
+                <td style={{ padding: '16px 20px', color: C.primary }}>{r.task}</td>
+                <td style={{ padding: '16px 20px', color: C.primary }}>{r.desc}</td>
+                <td style={{ padding: '16px 20px', textAlign: 'right', fontFamily: F.editorial, fontSize: '18px', color: C.primary }}>{r.rating}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: '0 0 20px 0', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Top issue from each task</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '64px' }} className="max-md:!grid-cols-1">
+        {workshopIssues.map((issue, i) => (
+          <div key={issue.title} style={{ border: `1px solid ${C.cardBorder}`, padding: '20px' }}>
+            <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 10px 0', letterSpacing: '0.08em' }}>0{i + 1}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: '0 0 8px 0', fontWeight: 500 }}>{issue.title}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{issue.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Usability Test Results */}
+      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.25, fontWeight: 400 }}>Usability Test Results</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', marginBottom: '40px' }} className="max-md:!grid-cols-1 max-md:!gap-8">
+        {resultStats.map((s) => (
           <div key={s.label}>
             <p style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 5vw, 64px)', color: C.primary, margin: '0 0 8px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>{s.number}</p>
             <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.4 }}>{s.label}</p>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '800px' }}>
-        {insights.map((insight, i) => (
-          <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>{insight}</p>
-        ))}
-      </div>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '800px' }}>
+        Users navigated quickly through Tasks 2 and 3 but penalised the overall rating because Tasks 5 and 6 broke the flow for them. One user brought the rating up to 4/5 because of the steep learning curve on first use and the confusion about navigating to a separate Pay Bills section to actually make payment.
+      </p>
     </section>
   );
 }
@@ -304,19 +353,32 @@ function UsabilityTesting() {
 function Iterations() {
   const issues = [
     {
-      label: 'Split Configuration Clarity',
-      problem: 'The split options screen showed percentage, amount, and custom as equal options with no hierarchy. Participants were confused about what "custom" meant and hesitated before selecting.',
-      solution: 'Restructured split options with 50/50 as the prominent default, and other options revealed progressively. Each option now includes a brief example to clarify how it works in practice.',
+      label: 'Vault Onboarding Discoverability',
+      task: "Task 1 — You've just opened the app. Show me what's new that you'd want to explore.",
+      successRate: '2/5 (40%)',
+      problem: 'Multiple users skipped past the Vault onboarding pop-up because it looked like an advertisement, which meant they didn’t recognise Vault as the new feature.',
+      solution: 'Added a red "New" tag to the Vault tab in the bottom navigation so the feature stands out at first glance, even if users dismiss the introductory pop-up. The tag is dismissed automatically after the user’s first interaction with Vault.',
     },
     {
-      label: 'Settlement Confirmation State',
-      problem: 'After completing a settlement, the confirmation screen disappeared immediately and the bill returned to its normal state. Two participants weren\'t sure if the payment had gone through.',
-      solution: 'Added a persistent "settled" badge to the bill card for 24 hours after settlement, and improved the confirmation animation to feel more definitive. A settlement notification is sent to both parties.',
+      label: 'Due Date Visibility',
+      task: 'Task 4 — Your bills are all in Vault. Show me how you’d find out what’s due.',
+      successRate: '1/5 (20%)',
+      problem: 'The calendar icon’s purpose isn’t clear. Users found due dates via bill-card status indicators but rarely noticed the calendar at the top of Vault.',
+      solution: 'Replaced the plain calendar icon with a calendar-plus-clock to better signal "upcoming due dates." Surfaced the next upcoming due bill on the My Vault home page with a "View all" button. Added a sync icon inside the calendar to connect with Google, iPhone, and other external calendars.',
     },
     {
-      label: 'Expense Note Field',
-      problem: 'For irregular expenses like a shared dinner or a one-off repair, participants wanted to attach context to the amount, but there was no way to add a note.',
-      solution: 'Added an optional note field to all expense entries, visible to both parties on the bill detail screen. Notes are also included in settlement history for reference.',
+      label: 'Single Bill Sharing',
+      task: 'Task 5 — Your son just started his first job and can take over his Singtel bill. Show me how you’d hand it over to him in Vault.',
+      successRate: '2/5 (40%)',
+      problem: 'There is no way to share a single bill directly. Users have to create a new folder, move the bill in, then share the folder. This felt unintuitive and over-engineered for a one-bill share.',
+      solution: 'Allowed users to share individual bills directly rather than requiring them to create a folder first. Folder sharing remains available for grouping multiple bills.',
+    },
+    {
+      label: 'Payment Flow After Handover',
+      task: 'Task 6 — You’re now the son — your parent has just sent you a Singtel bill through Vault. Show me how you’d take it over and pay it.',
+      successRate: '1/5 (20%)',
+      problem: 'The handover experience breaks down at the point of payment. Once a shared bill is accepted, users have no clear in-Vault action to complete it, and must navigate away to Pay Bills and rebuild the transaction manually.',
+      solution: 'Added a grey helper note inside each bill detail page: "To make repayment, refer to the details above and go to Pay Bills or My Favourites." This bridges users to the existing payment flow without reworking the payment architecture.',
     },
   ];
   return (
@@ -325,9 +387,6 @@ function Iterations() {
       <h2 className="cs-section-header">What Changed & Why</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
         {issues.map((issue, i) => {
-          // Alternate sides on desktop: odd issues (1st, 3rd…) keep text left /
-          // mockups right; even issues flip to mockups left / text right via
-          // order. Below lg the grid collapses to one column with text first.
           const mockLeft = i % 2 === 1;
           return (
             <div
@@ -340,6 +399,10 @@ function Iterations() {
               >
                 <div className={mockLeft ? 'lg:order-2' : undefined}>
                   <p className="cs-category-label">{issue.label}</p>
+                  <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: '0 0 8px 0', fontStyle: 'italic' }}>{issue.task}</p>
+                  <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 20px 0', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                    Success rate: <span style={{ color: C.primary }}>{issue.successRate}</span>
+                  </p>
                   <p className="cs-body-text" style={{ margin: '0 0 16px 0' }}>{issue.problem}</p>
                   <p className="cs-body-text" style={{ margin: 0 }}>{issue.solution}</p>
                 </div>
@@ -354,6 +417,12 @@ function Iterations() {
             </div>
           );
         })}
+        <div style={{ borderTop: `1px solid ${C.cardBorder}`, paddingTop: '60px' }}>
+          <p className="cs-category-label">Other Iteration — History Repositioned</p>
+          <p className="cs-body-text" style={{ margin: 0, maxWidth: '780px' }}>
+            Based on the understanding that History is a key, high-usage feature, repositioned it onto the home page alongside My Favourites, Pay Bills, Pay Fines, Top Up, and eServices for seamless transaction verification immediately after payment.
+          </p>
+        </div>
       </div>
     </section>
   );
@@ -361,14 +430,14 @@ function Iterations() {
 
 function Impact() {
   const outcomes = [
-    { title: 'Friction Model Validated', desc: 'The core hypothesis, that shared billing creates friction because of ambiguity, not money, was confirmed by every participant. Clarity, not reminders, was the solution.' },
-    { title: '3 Key Flows Iterated', desc: 'Split configuration, settlement confirmation, and expense context were all meaningfully improved based on observed testing behaviour.' },
-    { title: 'Trust in Existing Infrastructure', desc: 'Building on AXS\'s existing payment trust proved to be a significant design advantage. Participants felt no hesitation about the payment step, only about the split logic, which testing resolved.' },
+    { title: 'Vault Perception Gap Identified', desc: 'Users see Vault as storage, not payment — closing the loop between viewing and paying would unlock AXS’s full value.' },
+    { title: '4 Key Flows Iterated', desc: 'Onboarding, due date visibility, bill sharing, and post-handover payment all received targeted improvements based on test data.' },
+    { title: 'Brand Repositioning Opportunity', desc: 'Many young users don’t realise AXS removes the need to log into each biller’s app — surfacing this through onboarding could reshape how the next generation sees the brand.' },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
       <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
-        "I can already see us using this. It would take all the awkwardness out of the conversation."
+        "I want to share it with him for that particular bill itself, but it doesn’t seem to have any share button just for one single item over here… I wouldn’t know how to do it."
       </AnimatedQuote>
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 64px auto' }}>Usability Test Participant</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
@@ -385,10 +454,8 @@ function Impact() {
 
 function Reflections() {
   const cards = [
-    { number: '01', title: 'Feature vs. Product', body: "Designing a feature within an existing product required a different mindset than a greenfield app. Constraints from the existing AXS design system were both limiting and clarifying, forcing the feature to integrate, not compete." },
-    { number: '02', title: 'Group Beyond Couples', body: "The design focused on two-person households, but the split logic clearly extends to flatmates, families, and larger groups. A subsequent version would need to handle multi-party splits without the interface becoming complex." },
-    { number: '03', title: 'Regulatory Considerations', body: "Any feature handling payment reimbursement within a financial app carries regulatory implications. A production version would require closer collaboration with compliance teams from the earliest design stage." },
-    { number: '04', title: 'Behavioural Stickiness', body: "The feature is most valuable when it becomes a habit, opening the shared tab before paying a bill rather than after. Onboarding design and early-session prompts would be critical to establishing that behaviour." },
+    { number: '01', title: 'Storage vs. Payment', body: "Vault is currently structured as a storage feature, but users perceive AXS as a payment platform. Closing the loop between viewing a bill in Vault and paying it through AXS would align the feature with the user's actual goal — and unlock the full value of what AXS already does well." },
+    { number: '02', title: "Surfacing AXS's Advantage", body: "Many young users don't realise AXS removes the need to log into each biller's app — surfacing this advantage through onboarding or marketing could reshape how the next generation sees the brand." },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -409,9 +476,9 @@ function Reflections() {
 function PrototypeCTA() {
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', textAlign: 'left' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 4.5vw, 52px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 1.1, letterSpacing: '-0.02em', fontWeight: 400 }}>Experience the Billing Feature.</h2>
+      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 4.5vw, 52px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 1.1, letterSpacing: '-0.02em', fontWeight: 400 }}>Experience the Vault Feature.</h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: '0 0 32px 0', lineHeight: 1.7, maxWidth: '580px' }}>
-        Explore the full interactive prototype: shared dashboards, flexible splits, and one-tap settlement in action.
+        Explore the full interactive prototype: snap-and-inherit bill capture, the unified Vault dashboard, opt-in shared visibility, and the handover flow in action.
       </p>
       <a href="#" style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${C.border}`, paddingBottom: '4px' }}
         onMouseEnter={e => (e.currentTarget.style.borderColor = C.primary)}
@@ -444,7 +511,7 @@ const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'problem', label: 'Problem' },
   { id: 'research', label: 'Research' },
-  { id: 'design-decisions', label: 'Design Decisions' },
+  { id: 'design-decisions', label: 'Solution Statements' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
   { id: 'impact', label: 'Impact' },
