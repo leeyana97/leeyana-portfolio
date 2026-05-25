@@ -23,6 +23,8 @@ import tripsyncPhone1 from '../../imports/tripsync-phone-1.png';
 import tripsyncPhone2 from '../../imports/tripsync-phone-2.png';
 import tripsyncPhone3 from '../../imports/tripsync-phone-3-v2.png';
 import tripsyncPhone4 from '../../imports/tripsync-phone-4-v3.png';
+import affinityMapP1 from '../../imports/affinity_map_p1.jpeg';
+import affinityMapP2 from '../../imports/affinity_map_p2.jpeg';
 
 // Hero showcase: 4 phones layered with staggered reveal. Phone 4 (right,
 // held by hand) enters first; phone 1 (left) enters last.
@@ -88,7 +90,7 @@ function TagPill({ label }: { label: string }) {
 }
 
 // ─── Screen Mockup placeholder ──────────────────────────────────────────────
-function ScreenMockup({ label, opacity = 1, src = tripsyncImg, videoSrc }: { label?: string; opacity?: number; src?: string; videoSrc?: string }) {
+function ScreenMockup({ label, opacity = 1, src = tripsyncImg, videoSrc, maxWidth = 260 }: { label?: string; opacity?: number; src?: string; videoSrc?: string; maxWidth?: number }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -106,7 +108,7 @@ function ScreenMockup({ label, opacity = 1, src = tripsyncImg, videoSrc }: { lab
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Label + image share an image-width column so the label sits
           directly on top of the image rather than off at the cell edge. */}
-      <div style={{ width: '100%', maxWidth: '260px' }}>
+      <div style={{ width: '100%', maxWidth: `${maxWidth}px` }}>
         {label && (
           <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>
         )}
@@ -280,34 +282,74 @@ function CaseStudyHero() {
           <span>Duration: 2 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#4ADE80', border: '1px solid #1B7A4E', backgroundColor: 'rgba(74, 222, 128, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
         </motion.p>
+        <motion.div variants={fadeUpItem}>
+          <StatsStrip />
+        </motion.div>
       </motion.div>
     </section>
   );
 }
 
-// ─── 2. Stats Strip ──────────────────────────────────────────────────────────
+// ─── 2. Stats Strip (inline, sits under hero meta) ──────────────────────────
 function StatsStrip() {
   const stats = [
-    { number: '2', label: 'Weeks · Duration' },
+    { number: '2 Weeks', label: 'Duration' },
     { number: '5', label: 'Users Tested' },
-    { number: '100%', label: 'Task Completion' },
-    { number: '4', label: 'Core Features' },
+    { number: '9', label: 'Tasks Tested' },
+    { number: '3 of 4', label: 'Screens Iterated' },
   ];
   return (
-    <section style={{ backgroundColor: C.statsBg, marginTop: '10vh', paddingTop: '60px', paddingBottom: '60px', paddingLeft: '80px', paddingRight: '80px' }} className="max-md:!px-6 max-lg:!px-10">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px' }} className="max-md:!grid-cols-2 max-md:!gap-8 max-lg:!grid-cols-2 max-lg:!gap-8">
-        {stats.map((s) => (
-          <div key={s.label}>
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 5vw, 64px)', color: C.primary, margin: '0 0 8px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>
-              {s.number}
-            </p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.4 }}>
-              {s.label}
-            </p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        flexWrap: 'wrap',
+        rowGap: '20px',
+        marginTop: '40px',
+        paddingTop: '28px',
+        borderTop: `1px solid ${C.cardBorder}`,
+      }}
+    >
+      {stats.map((s, i) => (
+        <div
+          key={s.label}
+          style={{
+            paddingLeft: i > 0 ? '32px' : 0,
+            paddingRight: '32px',
+            borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
+          }}
+          className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
+        >
+          <p
+            style={{
+              fontFamily: F.editorial,
+              fontSize: 'clamp(28px, 3vw, 38px)',
+              color: C.primary,
+              margin: '0 0 6px 0',
+              lineHeight: 1,
+              letterSpacing: '-0.02em',
+              fontWeight: 400,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {s.number}
+          </p>
+          <p
+            style={{
+              fontFamily: F.sans,
+              fontSize: '11px',
+              color: '#8A8A82',
+              margin: 0,
+              lineHeight: 1.4,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {s.label}
+          </p>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -325,7 +367,7 @@ function ProblemStatement() {
         The Problem.
       </h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        Group trip planners managing travel for 3 or more people struggle to accommodate diverse individual preferences without requiring full consensus. Through user interviews with experienced group trip planners, four recurring pain points surfaced: planning scattered across multiple apps with no single source of truth, no structured way to collect individual preferences, slow group decision making that drags on for days, and the social discomfort of opting out of activities once the group has committed. Existing tools like WhatsApp threads, shared Google Docs, and scattered booking apps weren't designed for collective decision making. They were built for individuals.
+        Group trip planners managing travel for 3 or more people struggle to accommodate diverse preferences without requiring full consensus. Planning is scattered across multiple apps, there's no structured way to collect input, decisions drag on for days, and opting out of activities feels socially uncomfortable.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {painPoints.map((p) => (
@@ -339,29 +381,14 @@ function ProblemStatement() {
   );
 }
 
-// ─── 4. Research Findings ────────────────────────────────────────────────────
+// ─── 4. What I Found (research + affinity mapping photos) ───────────────────
 function ResearchFindings() {
   const findings = [
-    {
-      title: 'Chaotic Group Coordination',
-      desc: "Participants managed trips across fragmented channels: WhatsApp, voice calls, and spreadsheets running in parallel. Nobody had a clear picture of where decisions stood or who was responsible for what.",
-    },
-    {
-      title: 'App Fragmentation',
-      desc: 'The average planning process involved switching between 3–5 different tools. Each context switch created friction and risked important information getting lost between platforms.',
-    },
-    {
-      title: 'Flexibility Over Rigidity',
-      desc: 'Users consistently wanted to express soft preferences without feeling locked in. Hard commitments early in planning created anxiety and reluctance to engage fully.',
-    },
-    {
-      title: 'AI & Social Already in the Mix',
-      desc: "TikTok & Instagram drive destination discovery; ChatGPT helps with itinerary generation but users still manually piece everything together across separate tools.",
-    },
-    {
-      title: 'Unified Platform Demand',
-      desc: 'The strongest research signal: users wanted one place that held everything: preferences, itinerary, communication, and bookings, so nothing fell through the cracks.',
-    },
+    { title: 'Chaotic Group Coordination', desc: 'Groups coordinate across WhatsApp, calls, and spreadsheets with no clear picture of where decisions stand.' },
+    { title: 'App Fragmentation', desc: 'The average planning process involved 3–5 different tools, creating friction and lost information.' },
+    { title: 'Flexibility Over Rigidity', desc: 'Users wanted soft preferences without feeling locked into hard commitments early on.' },
+    { title: 'AI & Social Already in the Mix', desc: 'TikTok and Instagram drive discovery; ChatGPT helps with itineraries but everything still gets pieced together manually.' },
+    { title: 'Unified Platform Demand', desc: 'The strongest signal — users wanted one place for preferences, itinerary, communication, and bookings.' },
   ];
   // Per-note colour + rotation. Five dark tints (brown, teal, purple, red,
   // blue), each with a matching tape colour and a slight rotation.
@@ -374,8 +401,35 @@ function ResearchFindings() {
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Research Findings" />
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
+      <SectionLabel text="What I Found" />
+
+      {/* Affinity-map process photos — side by side, smaller */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
+        <div
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', width: '100%', maxWidth: '900px' }}
+          className="max-md:!grid-cols-1 max-md:!gap-4"
+        >
+          <img
+            src={affinityMapP1}
+            alt="Leeyana placing sticky notes on a whiteboard while affinity mapping user interview insights"
+            loading="lazy"
+            decoding="async"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '6px', aspectRatio: '4 / 3' }}
+          />
+          <img
+            src={affinityMapP2}
+            alt="Whiteboard with all sticky notes grouped into research themes after affinity mapping"
+            loading="lazy"
+            decoding="async"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '6px', aspectRatio: '4 / 3' }}
+          />
+        </div>
+        <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#5A5A54', fontStyle: 'italic', margin: '16px 0 0 0', textAlign: 'center', lineHeight: 1.5 }}>
+          Synthesising user interview insights through affinity mapping.
+        </p>
+      </div>
+
+      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginTop: '64px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
         {findings.map((f, i) => {
           const s = noteStyles[i % noteStyles.length];
           return (
@@ -500,7 +554,7 @@ function DesignDecisions() {
       number: '01',
       name: 'Individual Preference Quiz',
       bullets: [
-        'Every member privately inputs preferences before the group sees results. Interviewees consistently described dietary needs and budget constraints getting buried in group chats. Private input eliminates groupthink and ensures critical needs aren\'t overlooked.',
+        'Every member privately inputs preferences before the group sees results. This eliminates groupthink and ensures dietary needs and budget constraints aren’t buried in group chats.',
       ],
       imageFirst: false,
     },
@@ -508,7 +562,7 @@ function DesignDecisions() {
       number: '02',
       name: 'Activity Rating & Shortlist',
       bullets: [
-        'Members privately rate activities. Ratings are aggregated so the planner sees group consensus at a glance, colour coded as High, Mixed, or Low. The planner shortlists based on data, not whoever replies fastest. Override control is retained.',
+        'Members privately rate activities, aggregated so the planner sees colour-coded consensus (High, Mixed, Low) at a glance. The planner shortlists based on data, not whoever replies fastest.',
       ],
       imageFirst: true,
     },
@@ -516,7 +570,7 @@ function DesignDecisions() {
       number: '03',
       name: 'Opt-Out Feature',
       bullets: [
-        'Members flag solo time during planning, not after. Interviewees described this as the most socially uncomfortable part of group travel: declining an activity once plans are set. Building opt out into planning makes preferences visible without confrontation.',
+        'Members flag solo time during planning, not after. This was the most socially uncomfortable part of group travel — building opt-out into planning makes it visible without confrontation.',
       ],
       imageFirst: false,
     },
@@ -524,7 +578,7 @@ function DesignDecisions() {
       number: '04',
       name: 'Objection Handling',
       bullets: [
-        'Members raise objections directly in the app. The planner sees flagged items with suggested alternatives. This came from research where interviewees described not wanting to be the person to derail plans in the group chat.',
+        'Members raise objections in-app with suggested alternatives. This came from research where interviewees didn’t want to be the person to derail plans in the group chat.',
       ],
       imageFirst: true,
     },
@@ -619,30 +673,47 @@ function DesignDecisions() {
 
 // ─── 6. Usability Testing ────────────────────────────────────────────────────
 function UsabilityTesting() {
-  const stats = [
-    { number: '100%', label: 'Completion Rate' },
+  const inlineStats = [
     { number: '5', label: 'Participants' },
-    { number: '9', label: 'Tasks Tested' },
+    { number: '9', label: 'Tasks' },
     { number: '2–4', label: 'Difficulty Rating (out of 7)' },
   ];
   const insights = [
-    'Task completion was unanimous. All 5 participants completed every assigned flow without abandoning the app mid-task. The core journey held together from start to finish.',
-    'The preference quiz was described as "surprisingly fun" by multiple participants. The structured input approach reduced rather than increased friction, turning a potential chore into something closer to a game.',
-    'The overlap dashboard resonated strongly. Seeing shared preferences visualised gave participants an immediate sense of momentum, the feeling that the trip was already coming together.',
-    'The opt-out feature needed clearer labelling. Two participants weren\'t sure whether opting out would remove them from the whole trip or just a single activity, a critical distinction that required a design revision.',
+    'Task completion was unanimous — the core journey held together from start to finish.',
+    'The preference quiz was described as "surprisingly fun," turning a potential chore into something closer to a game.',
+    'The overlap dashboard gave participants an immediate sense of momentum and shared direction.',
+    "The opt-out feature needed clearer labelling — two participants weren't sure if it removed them from the whole trip or just one activity.",
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Usability Testing" />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px', marginBottom: '64px' }} className="max-md:!grid-cols-2 max-md:!gap-8 max-lg:!grid-cols-2 max-lg:!gap-8">
-        {stats.map((s) => (
-          <div key={s.label}>
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 5vw, 64px)', color: C.primary, margin: '0 0 8px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.4 }}>{s.label}</p>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          flexWrap: 'wrap',
+          rowGap: '20px',
+          marginBottom: '48px',
+          paddingBottom: '28px',
+          borderBottom: `1px solid ${C.cardBorder}`,
+        }}
+      >
+        {inlineStats.map((s, i) => (
+          <div
+            key={s.label}
+            style={{
+              paddingLeft: i > 0 ? '32px' : 0,
+              paddingRight: '32px',
+              borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
+            }}
+            className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
+          >
+            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '800px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '820px' }}>
         {insights.map((insight, i) => (
           <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>
             {insight}
@@ -658,40 +729,57 @@ function Iterations() {
   const issues: { label: string; problem: string; solution: string; beforeImg?: string; afterImg?: string }[] = [
     {
       label: 'Group Profile Builder',
-      problem: "Users questioned why planners were filling in details for members who hadn't joined yet.",
-      solution: 'Removed the standalone step so each member now fills in their own profile upon joining.',
+      problem: "Users questioned why planners filled in details for members who hadn't joined.",
+      solution: 'Each member now fills in their own profile upon joining.',
       beforeImg: tripsyncProfileOldImg,
       afterImg: tripsyncProfileQuizImg,
     },
     {
-      label: 'Activity Preferences in Quiz',
+      label: 'Activity Preferences',
       problem: 'Drag handles misled every participant into attempting to drag.',
-      solution: 'Replaced with tap to rank: tap to assign priority, tap again to remove. Understood at a glance without guidance.',
+      solution: 'Replaced with tap-to-rank — tap to assign priority, tap again to remove.',
       beforeImg: tripsyncPrefQuizOldImg,
       afterImg: tripsyncPrefQuizNewImg,
     },
     {
-      label: 'Accommodation Preference in Quiz',
-      problem: 'No visual distinction between single select and multi select caused wrong interaction patterns.',
-      solution: 'Standardised to radio buttons and checkboxes. Familiar conventions, zero ambiguity.',
+      label: 'Accommodation Preference',
+      problem: 'No visual distinction between single-select and multi-select.',
+      solution: 'Standardised to radio buttons and checkboxes.',
       beforeImg: tripsyncPrefAccomOldImg,
       afterImg: tripsyncAccomPrefNewImg,
     },
     {
-      label: 'Planner Activity Shortlisting',
-      problem: 'Users expected tap to include (add to cart model), not tap to exclude.',
-      solution: 'Flipped the model to match their expectation.',
+      label: 'Planner Shortlisting',
+      problem: 'Users expected tap-to-include, not tap-to-exclude.',
+      solution: 'Flipped the model to match their mental model.',
       beforeImg: tripsyncActivityShortlistOldImg,
       afterImg: tripsyncActivityShortlistNewImg,
     },
     {
-      label: 'Planner Objection View',
+      label: 'Objection View',
       problem: 'Two equal buttons caused hesitation.',
-      solution: 'Reduced to one primary action: Return to Review & Edit. Decision paralysis resolved immediately.',
+      solution: 'Reduced to one primary action — decision paralysis resolved.',
       beforeImg: tripsyncObjectionOldImg,
       afterImg: tripsyncObjectionNewImg,
     },
   ];
+  const tagStyle: React.CSSProperties = {
+    fontFamily: F.sans,
+    fontSize: '11px',
+    letterSpacing: '0.16em',
+    textTransform: 'uppercase',
+    color: '#8A8A82',
+    margin: '0 0 16px 0',
+    display: 'block',
+  };
+  const sideText: React.CSSProperties = {
+    fontFamily: F.sans,
+    fontSize: '15px',
+    color: C.primary,
+    lineHeight: 1.6,
+    margin: '20px 0 0 0',
+    maxWidth: '320px',
+  };
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Top Issues & Iterations" />
@@ -699,43 +787,31 @@ function Iterations() {
         What Changed & Why
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
-        {issues.map((issue, i) => {
-          // Alternate sides on desktop: odd issues (1st, 3rd, 5th) keep text
-          // left / mockups right; even issues (2nd, 4th) flip to mockups left /
-          // text right via order. On mobile the grid collapses to one column
-          // and DOM order (text first) always stacks text above the mockups.
-          const mockLeft = i % 2 === 1;
-          return (
+        {issues.map((issue, i) => (
+          <div
+            key={issue.label}
+            style={i > 0 ? { borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' } : undefined}
+          >
+            <p className="cs-category-label" style={{ marginBottom: '32px' }}>{issue.label}</p>
             <div
-              key={issue.label}
-              style={i > 0 ? { borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' } : undefined}
+              style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'start' }}
+              className="max-md:!grid-cols-1 max-md:!gap-10"
             >
-              <div
-                style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}
-                className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10"
-              >
-                {/* Text: title → problem → solution, as one tight narrative */}
-                <div className={mockLeft ? 'lg:order-2' : undefined}>
-                  <p className="cs-category-label">{issue.label}</p>
-                  <p className="cs-body-text" style={{ margin: '0 0 16px 0' }}>
-                    {issue.problem}
-                  </p>
-                  <p className="cs-body-text" style={{ margin: 0 }}>
-                    {issue.solution}
-                  </p>
-                </div>
-                {/* Mockups: Before left, After right — each with its label above */}
-                <div
-                  className={mockLeft ? 'lg:order-1' : undefined}
-                  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}
-                >
-                  <ScreenMockup label="Before" src={issue.beforeImg} />
-                  <ScreenMockup label="After" src={issue.afterImg} />
-                </div>
+              {/* Before */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={tagStyle}>Before</span>
+                <ScreenMockup src={issue.beforeImg} />
+                <p style={sideText}>{issue.problem}</p>
+              </div>
+              {/* After */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={tagStyle}>After</span>
+                <ScreenMockup src={issue.afterImg} />
+                <p style={sideText}>{issue.solution}</p>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -749,10 +825,8 @@ function FinalScreens() {
       image: tripsyncProfileQuizImg,
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/preference-quiz-final-screen_ywzqzz.mp4',
       highlights: [
-        { heading: '3-Section Guided Flow', text: 'Members complete the quiz across 3 sections (Your Profile, Activity Preferences, and Accommodation), each privately capturing a different dimension of personal preference.' },
-        { heading: 'Private Preference Collection', text: 'Collects individual preferences independently, avoiding groupthink or peer pressure.' },
-        { heading: 'Personal Input First', text: 'Enables honest personal input before any group coordination or discussion begins.' },
-        { heading: 'Data-Driven Planning', text: "Quiz results across all 3 sections feed directly into the overlap dashboard to surface group consensus and guide the planner's shortlisting decisions." },
+        { heading: '3-Section Guided Flow', text: 'Collects preferences privately to avoid groupthink.' },
+        { heading: 'Data-Driven Planning', text: 'Results feed directly into the overlap dashboard for data-driven planning.' },
       ],
       imageFirst: false,
     },
@@ -761,10 +835,8 @@ function FinalScreens() {
       image: tripsyncActivityShortlistNewImg,
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/Overlap-dashboard-final-screen_xjsodu.mp4',
       highlights: [
-        { heading: 'Group Interest Ranking', text: 'Activities are ranked by percentage of group interest, with a threshold indicator to guide strong shortlist picks.' },
-        { heading: 'Consensus at a Glance', text: 'Each activity shows the percentage of members who rated it positively, colour-coded as High, Mixed, or Low.' },
-        { heading: 'Data-Driven Shortlisting', text: 'Planner taps to include activities for the itinerary based on group ratings, with the highest-rated items pre-highlighted.' },
-        { heading: 'Planner Override', text: 'Planner can include or exclude any activity regardless of rating before proceeding to confirm the shortlist.' },
+        { heading: 'Group Interest Ranking', text: 'Activities ranked by group interest percentage, colour-coded as High, Mixed, or Low.' },
+        { heading: 'Planner Override', text: 'Planner can override any rating before confirming the shortlist.' },
       ],
       imageFirst: true,
     },
@@ -773,10 +845,8 @@ function FinalScreens() {
       image: tripsyncObjectionNewImg,
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/Objection-final-screen_x8hdta.mp4',
       highlights: [
-        { heading: 'Streamlined Conflict Resolution', text: 'Group members raise objections to planned activities directly in the app without needing a group chat confrontation.' },
-        { heading: 'Two-Way Communication', text: "Objections surface immediately on the planner's view, flagged on the relevant itinerary item in real time." },
-        { heading: 'Smart Alternative Suggestions', text: 'Planner receives app-suggested alternatives based on group preferences, or can input a custom replacement.' },
-        { heading: 'Reduced Group Friction', text: 'Once confirmed, the updated itinerary is instantly visible to the whole group with no manual re-sharing needed.' },
+        { heading: 'In-App Conflict Resolution', text: 'Members raise objections in-app; planner sees flagged items with suggested alternatives.' },
+        { heading: 'Live Group Sync', text: 'Updated itinerary is instantly visible to the whole group — no manual re-sharing.' },
       ],
       imageFirst: false,
     },
@@ -785,10 +855,8 @@ function FinalScreens() {
       image: tripsyncOptOutImg,
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/final-itinerary-final-screen_pzykkv.mp4',
       highlights: [
-        { heading: 'Day-by-Day Itinerary View', text: 'The confirmed itinerary is laid out chronologically by day, with each activity and meal showing the time, location, duration, and attending members at a glance.' },
-        { heading: 'Transparent Opt-Out Indicators', text: 'Each activity card displays who has opted out, visible to the whole group — so attendance is clear and no one is caught off guard on the day.' },
-        { heading: 'Live Edit Mode for Planners', text: 'Planners can enter Edit Mode to swap or remove any activity or meal directly in the itinerary. All changes are broadcast to the group instantly via an in-app notification.' },
-        { heading: 'Smart Import Bookings', text: 'Once the itinerary is finalised, planners can paste a booking link or forward a confirmation email and TripSync auto-fills the details — consolidating flights, accommodation, and activity bookings in one place.' },
+        { heading: 'Day-by-Day View', text: 'Day-by-day view with time, location, duration, and opt-out indicators per activity.' },
+        { heading: 'Smart Import Bookings', text: 'Planners can paste booking links to auto-fill flight and accommodation details.' },
       ],
       imageFirst: true,
     },
@@ -800,13 +868,13 @@ function FinalScreens() {
         {screens.map((screen) => (
           <div
             key={screen.name}
-            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}
+            style={{ display: 'grid', gridTemplateColumns: screen.imageFirst ? '1.85fr 1fr' : '1fr 1.85fr', gap: '64px', alignItems: 'center' }}
             className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10"
           >
             {screen.imageFirst ? (
               <>
                 <div className="max-md:!order-2">
-                  <ScreenMockup src={screen.image} videoSrc={screen.video} />
+                  <ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={420} />
                 </div>
                 <div className="max-md:!order-1">
                   <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
@@ -836,7 +904,7 @@ function FinalScreens() {
                   </ul>
                 </div>
                 <div>
-                  <ScreenMockup src={screen.image} videoSrc={screen.video} />
+                  <ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={420} />
                 </div>
               </>
             )}
@@ -850,32 +918,26 @@ function FinalScreens() {
 // ─── 9. Impact ───────────────────────────────────────────────────────────────
 function Impact() {
   const outcomes = [
-    { title: 'Core Objective Validated', desc: 'All 5 participants confirmed the app successfully surfaces individual preferences without requiring full group consensus, directly addressing the problem statement.' },
-    { title: '3 of 4 Key Screens Iterated', desc: 'Direct feedback from usability testing drove meaningful design changes to the quiz, the shortlist view, and the objection notification, each revision grounded in observed behaviour.' },
-    { title: 'Concept Resonated', desc: 'The opt-out feature was specifically highlighted as valuable for making individual preferences visible to the group without requiring confrontation, addressing a real social dynamic that often creates friction in group travel planning.' },
+    'Core concept validated by all 5 participants.',
+    '3 of 4 key screens iterated based on direct usability feedback.',
+    'Opt-out feature highlighted as the most valuable for reducing social friction.',
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
-      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
+      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 32px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
         "Without this, you would usually be on WhatsApp doing a back and forth... at least now this gives you a very clear overview of what your itinerary can look like."
       </AnimatedQuote>
-      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 64px auto' }}>
+      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 72px auto' }}>
          Usability Test Participant
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
-        {outcomes.map((o) => (
-          <div key={o.title}>
-            <h4 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 12px 0', lineHeight: 1.3, fontWeight: 400 }}>{o.title}</h4>
-            <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: 0, lineHeight: 1.7 }}>{o.desc}</p>
-          </div>
+      <ul style={{ listStyle: 'none', padding: 0, margin: '0 auto', maxWidth: '760px', display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
+        {outcomes.map((o, i) => (
+          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.6 }}>
+            <span style={{ fontFamily: F.editorial, color: '#52B788', minWidth: '28px', fontSize: '18px' }}>{String(i + 1).padStart(2, '0')}</span>
+            <span>{o}</span>
+          </li>
         ))}
-      </div>
-      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(20px, 3vw, 32px)', color: C.primary, margin: '80px auto 32px auto', lineHeight: 1.35, maxWidth: '860px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
-        "The structured preference flow reduces the chaos of simultaneous, unstructured group input."
-      </AnimatedQuote>
-      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: 0 }}>
-        Usability Test Participant
-      </p>
+      </ul>
     </section>
   );
 }
@@ -883,15 +945,14 @@ function Impact() {
 // ─── 10. Reflections ─────────────────────────────────────────────────────────
 function Reflections() {
   const cards = [
-    { number: '01', title: 'Edge Case Complexity', body: "Group travel has enormous variety: trip size, duration, and social dynamic all affect what planning looks like. Designing for edge cases like last-minute additions or partial group attendance would require significant further iteration." },
-    { number: '02', title: 'Multi-Role Design', body: "Syncing two interconnected flows was the core challenge. Future iterations will explore deeper role-specific features for both planner and joiner." },
-    { number: '03', title: 'Iterative Testing', body: "Usability testing validated the core flow while surfacing interaction-level improvements. Continued testing with a larger, more diverse group will uncover more real-world scenarios and edge cases to address in future iterations." },
-    { number: '04', title: 'Preference Structure', body: "Structured preference collection proved to be the most validated feature. Expanding data inputs and personalisation will sharpen recommendation quality in future iterations." },
+    { number: '01', title: 'Edge Cases', body: 'Group travel has enormous variety — trip size, duration, and social dynamics all need further iteration.' },
+    { number: '02', title: 'Multi-Role Design', body: 'Syncing planner and joiner flows was the core challenge; future iterations will explore deeper role-specific features.' },
+    { number: '03', title: 'Iterative Testing', body: 'Continued testing with larger, more diverse groups will surface real-world edge cases for v2.' },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Reflections & Next Steps" />
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
+      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
         {cards.map((card) => (
           <div key={card.number} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
             <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 16px 0', letterSpacing: '0.08em' }}>{card.number}</p>
@@ -955,7 +1016,7 @@ function NextProject() {
 const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'problem', label: 'Problem' },
-  { id: 'research', label: 'Research' },
+  { id: 'research', label: 'What I Found' },
   { id: 'design-decisions', label: 'Design Decisions' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
@@ -973,7 +1034,6 @@ export function TripSyncPage() {
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp><StatsStrip /></FadeUp>
           <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
           {/* Visual Design System hidden */}

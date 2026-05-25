@@ -1,10 +1,13 @@
-import { motion } from 'motion/react';
-import { useEffect } from 'react';
+import { motion, useInView } from 'motion/react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import axsHero1 from '../../imports/AXS_hero_casestudy_1.png';
+import axsHero2 from '../../imports/AXS_hero_casestudy_2.png';
+import axsHero3 from '../../imports/AXS_hero_casestudy_3.png';
 
 const C = {
   bg: '#0D0D0D',
@@ -80,20 +83,193 @@ function ScreenPlaceholder({ label, opacity = 1, text }: { label?: string; opaci
   );
 }
 
+// ─── Animated 3-phone carousel hero ─────────────────────────────────────────
+// The source images already include a phone-frame bezel, so we render them
+// directly without wrapping in another mockup.
+// Phase 1: All 3 phones orbit a shared centre point (1.5 rotations, easeInOutQuart).
+// Depth illusion via scale + opacity + dynamic z-index (no 3D transforms).
+// Phase 2: Phones settle into a staggered hero layout with a soft spring.
+function AXSHeroCarousel() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(containerRef, { once: true, amount: 0.25 });
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<'idle' | 'spinning' | 'settled'>('idle');
+  const [dims, setDims] = useState({ phoneWidth: 220, orbitRadius: 220, settleOffset: 210 });
+  const [reducedMotion, setReducedMotion] = useState(false);
+  // Guard ensures the spin starts exactly once, even if phase/inView triggers re-runs.
+  const startedRef = useRef(false);
+
+  // Track viewport for responsive sizing
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      if (w < 480) {
+        setDims({ phoneWidth: 130, orbitRadius: 90, settleOffset: 105 });
+      } else if (w < 768) {
+        setDims({ phoneWidth: 170, orbitRadius: 140, settleOffset: 150 });
+      } else if (w < 1100) {
+        setDims({ phoneWidth: 200, orbitRadius: 190, settleOffset: 180 });
+      } else {
+        setDims({ phoneWidth: 230, orbitRadius: 240, settleOffset: 220 });
+      }
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  // Respect prefers-reduced-motion
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  // Kick off the spin once when the hero enters view.
+  // We guard with a ref so the effect doesn't re-run / cancel itself when
+  // `phase` flips to 'spinning' mid-run.
+  useEffect(() => {
+    if (!inView || startedRef.current) return;
+    startedRef.current = true;
+    if (reducedMotion) {
+      // Skip the carousel — just settle in place.
+      setProgress(1);
+      setPhase('settled');
+      return;
+    }
+    setPhase('spinning');
+    const DURATION = 2200; // ms
+    const startTs = performance.now();
+    let rafId = 0;
+    const tick = () => {
+      const elapsed = performance.now() - startTs;
+      const p = Math.min(elapsed / DURATION, 1);
+      setProgress(p);
+      if (p < 1) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        setPhase('settled');
+      }
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [inView, reducedMotion]);
+
+  // easeInOutQuart
+  const eased = progress < 0.5
+    ? 8 * progress * progress * progress * progress
+    : 1 - Math.pow(-2 * progress + 2, 4) / 2;
+
+  const finalConfigs = [
+    { x: -dims.settleOffset, y: 30, rotate: -7, scale: 1, z: 5 },
+    { x: 0,                  y: -22, rotate: 0, scale: 1.06, z: 20 },
+    { x: dims.settleOffset,  y: 30, rotate: 7, scale: 1, z: 5 },
+  ];
+
+  // The source PNGs include the phone-frame bezel. Approximate aspect ratio
+  // for that framed image is ~1 : 2 (slightly taller than a bare 9:19.5 screen).
+  const phoneHeight = Math.round(dims.phoneWidth * 2.05);
+  const containerHeight = Math.max(phoneHeight + 80, Math.round(phoneHeight * 1.1));
+
+  const screens = [axsHero2, axsHero1, axsHero3]; // left, center, right (final order)
+
+  return (
+    <section
+      ref={containerRef}
+      style={{
+        position: 'relative',
+        width: '100%',
+        minHeight: 'clamp(440px, 75vh, 720px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        backgroundColor: C.bg,
+      }}
+      aria-label="AXS Vault — three screen mockups previewing the feature"
+    >
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: `${containerHeight}px`,
+          maxWidth: '1100px',
+        }}
+      >
+        {screens.map((src, i) => {
+          const isSpinning = phase === 'spinning';
+          const isSettled = phase === 'settled';
+
+          // Spin-phase position
+          const baseAngle = (i / 3) * Math.PI * 2; // 0, 120°, 240°
+          const angle = baseAngle + eased * 1.5 * Math.PI * 2;
+          const shrink = progress > 0.7 ? 1 - ((progress - 0.7) / 0.3) * 0.22 : 1;
+          const r = dims.orbitRadius * shrink;
+          const xSpin = Math.cos(angle) * r;
+          const yDepth = Math.sin(angle) * 28;
+          const yBob = Math.sin(angle * 2) * 10;
+          const depth = (Math.sin(angle) + 1) / 2; // 0 (back) → 1 (front)
+          const scaleSpin = 0.78 + depth * 0.32;
+          const opacitySpin = 0.55 + depth * 0.45;
+          const zSpin = Math.round(depth * 100);
+
+          // Pick target per phase
+          const target = isSettled
+            ? { x: finalConfigs[i].x, y: finalConfigs[i].y, rotate: finalConfigs[i].rotate, scale: finalConfigs[i].scale, opacity: 1 }
+            : isSpinning
+              ? { x: xSpin, y: yDepth + yBob, rotate: 0, scale: scaleSpin, opacity: opacitySpin }
+              : { x: 0, y: 0, rotate: 0, scale: 0.85, opacity: 0 };
+
+          const z = isSettled ? finalConfigs[i].z : zSpin;
+
+          return (
+            <motion.div
+              key={i}
+              animate={target}
+              transition={
+                isSettled
+                  ? { type: 'spring', stiffness: 80, damping: 12, mass: 0.9, restDelta: 0.001 }
+                  : { duration: 0 }
+              }
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                marginLeft: -dims.phoneWidth / 2,
+                marginTop: -phoneHeight / 2,
+                zIndex: z,
+                willChange: 'transform, opacity',
+              }}
+            >
+              <img
+                src={src}
+                alt=""
+                loading="eager"
+                decoding="async"
+                draggable={false}
+                style={{
+                  width: `${dims.phoneWidth}px`,
+                  height: 'auto',
+                  display: 'block',
+                  filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.6))',
+                  userSelect: 'none',
+                }}
+              />
+            </motion.div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function CaseStudyHero() {
   return (
     <section style={{ paddingTop: '120px', paddingBottom: '80px', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-md:!pb-16 max-lg:!px-10">
-      {/* Intentional placeholder hero — no mockup provided */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease, delay: 0.55 }}
-        style={{ width: '100%', height: 'clamp(300px, 55vw, 640px)', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <span style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 3vw, 40px)', color: C.secondary, letterSpacing: '-0.01em', textAlign: 'center', padding: '40px' }}>
-          AXS · Vault Feature
-        </span>
-      </motion.div>
+      <AXSHeroCarousel />
       <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '60px' }}>
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           AXS · Vault
@@ -300,7 +476,7 @@ function UsabilityTesting() {
       {/* Design Feedback Workshop */}
       <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 16px 0', lineHeight: 1.25, fontWeight: 400 }}>Design Feedback Workshop Results</h3>
       <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 28px 0', maxWidth: '720px' }}>
-        Before the formal usability test, the team ran a design feedback workshop with 5 tasks. Ease of Use ratings used a 1–5 scale (1 = Very Easy, 5 = Very Difficult).
+        Before the formal usability test, the team ran a design feedback workshop with AXS staff with 5 tasks. Ease of Use ratings used a 1–5 scale (1 = Very Easy, 5 = Very Difficult).
       </p>
       <div style={{ border: `1px solid ${C.cardBorder}`, marginBottom: '32px', overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: F.sans, fontSize: '15px', color: C.primary, minWidth: '480px' }}>

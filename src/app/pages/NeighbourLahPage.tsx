@@ -449,7 +449,6 @@ export function NeighbourLahPage() {
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp><StatsStrip /></FadeUp>
           <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
-import { FadeUp, StaggerCards, BeforeAfter, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { FadeUp, StaggerCards, BeforeAfter, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
 import lumisIpadImg from '../../imports/Lumis_ipad.png';
 import lumisLaptopImg from '../../imports/Lumis_laptop_v2.png';
@@ -50,37 +50,6 @@ function SectionLabel({ text }: { text: string }) {
       <span className="cs-section-label">{text}</span>
       <AnimatedLine color="var(--accent-color, #2A2A2A)" />
     </motion.div>
-  );
-}
-
-function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '260px' }}>
-        {label && <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>}
-        <div
-          style={{
-            position: 'relative',
-            width: '100%',
-            padding: '11px',
-            background: 'linear-gradient(135deg, #45464A 0%, #2E2F33 50%, #1E1F22 100%)',
-            borderRadius: '46px',
-            boxShadow:
-              'inset 0 0 0 1.5px rgba(255,255,255,0.08), inset 0 0 0 3.5px #0a0a0a, 0 12px 32px rgba(0,0,0,0.5)',
-            opacity,
-          }}
-        >
-          <div style={{ position: 'absolute', right: '-2px', top: '24%', width: '3px', height: '17%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '1px 2px 2px 1px', zIndex: 0 }} />
-          <div style={{ position: 'absolute', left: '-2px', top: '14%', width: '3px', height: '6%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
-          <div style={{ position: 'absolute', left: '-2px', top: '23%', width: '3px', height: '9%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
-          <div style={{ position: 'absolute', left: '-2px', top: '34%', width: '3px', height: '9%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
-          <div style={{ position: 'relative', width: '100%', aspectRatio: '9 / 19.5', overflow: 'hidden', borderRadius: '36px', backgroundColor: '#000', zIndex: 1 }}>
-            <div style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', width: '32%', height: '20px', backgroundColor: '#000', borderRadius: '14px', zIndex: 3 }} />
-            <img src={lumisImg} alt={label || 'Lumis Skincare screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -185,7 +154,7 @@ function CaseStudyHero() {
           Lumis Skincare
         </motion.h1>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: 'clamp(17px, 2vw, 20px)', color: C.secondary, margin: '0 0 24px 0', lineHeight: 1.5 }}>
-          A Calm, Considered E-Commerce Experience for Skincare Discovery
+          A Personalised Skincare E-Commerce Website for Confident Product Discovery
         </motion.p>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
           Duration: 3 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: Web
@@ -198,9 +167,9 @@ function CaseStudyHero() {
 function StatsStrip() {
   const stats = [
     { number: '3', label: 'Weeks · Duration' },
-    { number: '6', label: 'Users Tested' },
-    { number: '92%', label: 'Purchase Intent' },
-    { number: '5', label: 'Key User Flows' },
+    { number: '5', label: 'Users Tested' },
+    { number: '10', label: 'Tasks Tested' },
+    { number: '100%', label: 'Success Rate (Key Tasks)' },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, paddingTop: '60px', paddingBottom: '60px', paddingLeft: '80px', paddingRight: '80px' }} className="max-md:!px-6 max-lg:!px-10">
@@ -218,10 +187,10 @@ function StatsStrip() {
 
 function ProblemStatement() {
   const painPoints = [
-    { title: 'Overwhelming Product Pages', desc: 'Skincare sites typically present product information in walls of text and ingredient lists that overwhelm rather than guide.' },
-    { title: 'No Personalised Discovery', desc: 'Most e-commerce experiences treat all shoppers identically, ignoring skin type, concerns, and the discovery stage of the customer journey.' },
-    { title: 'Anxiety Around Purchasing', desc: 'Skincare is a considered purchase. Shoppers second-guess decisions without clear guidance, leading to cart abandonment and buyer\'s remorse.' },
-    { title: 'Disconnected Brand Experience', desc: 'Many independent skincare brands lack the visual and editorial cohesion to compete with larger players, despite having superior products.' },
+    { title: 'No reliable skin matching', desc: 'No way to match products to multiple overlapping skin concerns in one place.' },
+    { title: 'No compatibility checking', desc: 'No tools to check whether a new product works with an existing routine.' },
+    { title: 'No low-risk trialling', desc: 'No option to sample or trial before committing to a full purchase.' },
+    { title: 'Reliance on external sources', desc: 'Users depend on friends, social media, and costly trial and error instead of the shopping experience itself.' },
   ];
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -229,7 +198,7 @@ function ProblemStatement() {
         The Problem.
       </h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        Buying skincare online is fraught. Products are expensive, effects are personal, and most e-commerce experiences prioritise conversion over confidence. Lumis Skincare needed a digital presence that felt as considered as its products, guiding people through discovery with editorial calm rather than retail urgency.
+        Users need a way to confidently identify and commit to skincare products suited to their specific skin profile, because the current online shopping experience offers no reliable way to match products to multiple overlapping concerns, check compatibility with their existing routine, or trial before committing — forcing them to rely on friends, social media, and costly trial and error instead.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {painPoints.map((p) => (
@@ -245,11 +214,11 @@ function ProblemStatement() {
 
 function ResearchFindings() {
   const findings = [
-    { title: 'Ritual Over Transaction', desc: 'Skincare buyers think about their routine holistically. They\'re not buying a product; they\'re buying into a practice. The site needed to reflect and support that mindset.' },
-    { title: 'Ingredient Literacy Varies Widely', desc: 'Some shoppers know exactly what they want; others are overwhelmed by niacinamide percentages. The experience needed to serve both without patronising either.' },
-    { title: 'Trust Through Transparency', desc: 'Shoppers repeatedly cited clear ingredient information, honest "this works if" framing, and real before/after results as the key trust signals.' },
-    { title: 'Discovery is Social', desc: 'Most participants found new products through recommendations from friends, content creators, or editorial sources. The site needed to feel like a trusted recommendation, not a shop.' },
-    { title: 'Simplicity Signals Quality', desc: 'Across every participant interview, cleaner interfaces were perceived as higher quality. Visual noise created doubt; editorial calm created confidence.' },
+    { title: 'Trust is people-driven, not platform-driven', desc: "Shoppers trust peer recommendations from platforms like Reddit over brand-owned content because there's no financial incentive for contributors — it's people passionately sharing honest opinions." },
+    { title: 'Suitability comes through costly trial and error', desc: 'Finding the right skincare products involves a lot of trial and error, which translates to wasted money. Users lack reliable ways to assess product suitability before committing.' },
+    { title: 'Online shopping lacks guidance to commit', desc: 'Skincare e-commerce sites are difficult to navigate, with products scattered across overlapping subcategories. Users struggle to figure out where specific products fall, making confident purchasing difficult.' },
+    { title: 'Price filters but doesn’t decide', desc: "Budget matters, but users are willing to splurge when branding and presentation signal quality. Price alone doesn't drive the purchase decision — perception of value does." },
+    { title: 'Skin knowledge is self-taught and uneven', desc: 'Some users understand nuances like the difference between hydration and moisturisation through personal analysis, while others have gaps. Knowledge levels vary widely.' },
   ];
   // Per-note colour + rotation: five dark tints (brown, teal, purple, red,
   // blue), each with a matching tape colour and a slight rotation.
@@ -289,101 +258,144 @@ function ResearchFindings() {
   );
 }
 
-function DesignDecisions() {
-  const features = [
+function SolutionStatement() {
+  return (
+    <section style={{ backgroundColor: C.bg, padding: '120px 80px', paddingTop: '120px', paddingBottom: '120px' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10 max-lg:!py-24">
+      <SectionLabel text="Solution Statement" />
+      <p style={{
+        fontFamily: F.editorial,
+        fontSize: 'clamp(28px, 3.8vw, 48px)',
+        color: C.primary,
+        lineHeight: 1.3,
+        letterSpacing: '-0.01em',
+        fontWeight: 400,
+        margin: 0,
+        maxWidth: '1080px',
+      }}>
+        To design a skincare e-commerce website that provides a personalised skin-matching and product discovery system that surfaces compatible recommendations across multiple skin concerns and enables low-risk trialling before full purchase commitment.
+      </p>
+    </section>
+  );
+}
+
+function InformationArchitecture() {
+  const categories = [
     {
-      number: '01', name: 'Editorial Homepage',
-      bullets: [
-        'Full-bleed hero imagery with minimal typography creates immediate brand atmosphere without competing for attention.',
-        'Product categories are introduced through lifestyle imagery rather than thumbnail grids, setting a discovery mindset from the first scroll.',
-        'The homepage functions as a magazine spread, informing and inspiring before it asks for anything.',
+      name: 'Creams',
+      products: [
+        'Dr.Jart+ Cicapair Tiger Grass Cream',
+        'Laneige Water Bank Blue Hyaluronic Cream',
+        'COSRX Advanced Snail 92 All in One Cream',
+        "Kiehl's Ultra Facial Cream",
+        'Hada Labo Gokujyun Hyaluronic Acid Lotion',
       ],
-      imageFirst: false,
     },
     {
-      number: '02', name: 'Skin Concern Navigation',
-      bullets: [
-        'A secondary navigation layer organised by skin concern (hydration, clarity, texture, sensitivity) sits alongside traditional category browsing.',
-        'Shoppers who know their concern but not the product category can navigate directly to relevance.',
-        'Concern-based pages include editorial context: why this matters, what to look for, before product listings.',
+      name: 'Serums',
+      products: [
+        'Innisfree Retinol Cica Moisture Recovery Serum',
+        'Sulwhasoo Concentrated Ginseng Renewing Serum',
+        'Beauty of Joseon Glow Serum with Propolis',
+        'La Roche-Posay Hyalu B5 Serum',
+        'SKII Facial Treatment Essence',
       ],
-      imageFirst: true,
     },
     {
-      number: '03', name: 'Product Detail Calm',
-      bullets: [
-        'Product pages prioritise breathing room over information density. Key details surface progressively: hero image, then purpose, then ingredients, then reviews.',
-        'A "This works best if..." section honestly articulates who the product is and isn\'t for.',
-        'Related products are surfaced as "What pairs well" rather than "You may also like", reinforcing the ritual framing.',
+      name: 'Toners',
+      products: [
+        'Some By Mi AHA BHA PHA Miracle Toner',
+        "Kiehl's Calendula Herbal Extract Toner",
+        'The Ordinary Glycolic Acid 7% Toning Solution',
       ],
-      imageFirst: false,
     },
     {
-      number: '04', name: 'Routine Builder',
-      bullets: [
-        'A guided tool helps users build a morning and evening routine from the Lumis range.',
-        'Each step in the routine shows which products can fill that role, with simple compatibility notes.',
-        'The completed routine can be saved, shared, and added to cart in a single action.',
+      name: 'Cleansers',
+      products: [
+        'CeraVe Hydrating Facial Cleanser',
+        'COSRX Low pH Good Morning Gel Cleanser',
+        'DHC Deep Cleansing Oil',
       ],
-      imageFirst: true,
+    },
+    {
+      name: 'Masks',
+      products: [
+        'Innisfree Jeju Volcanic Pore Clay Mask',
+        'Laneige Lip Sleeping Mask EX Berry',
+      ],
     },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Design Decisions" />
-      <StaggerCards style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
-        {features.map((feat) => (
-          <div key={feat.number} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }} className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10">
-            {feat.imageFirst ? (
-              <>
-                <div className="max-md:!order-2"><ScreenMockup /></div>
-                <div className="max-md:!order-1">
-                  <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 12px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
-                  <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{feat.name}</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    {feat.bullets.map((b, bi) => (
-                      <li key={bi} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>{b}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 12px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
-                  <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{feat.name}</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    {feat.bullets.map((b, bi) => (
-                      <li key={bi} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>{b}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div><ScreenMockup /></div>
-              </>
-            )}
-          </div>
-        ))}
-      </StaggerCards>
+      <SectionLabel text="Information Architecture" />
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 64px 0', maxWidth: '720px' }}>
+        10 users were asked to sort 20 products into categories, with 1 user failing to name the categories of products they had sorted. Below are the results from 9 users.
+      </p>
+
+      {/* Tree-style layout: parent label connected to 5 category cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}>
+        {/* Parent node */}
+        <div style={{
+          padding: '14px 28px',
+          border: `1px solid ${C.cardBorder}`,
+          backgroundColor: C.statsBg,
+          fontFamily: F.sans,
+          fontSize: '12px',
+          color: C.primary,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          borderRadius: '4px',
+        }}>
+          Product Type
+        </div>
+        {/* Vertical connector down from parent */}
+        <div style={{ width: '1px', height: '32px', backgroundColor: C.cardBorder }} className="max-md:!hidden" />
+        {/* Horizontal spanning line above category cards */}
+        <div style={{ width: '90%', maxWidth: '1200px', height: '1px', backgroundColor: C.cardBorder, marginBottom: '0' }} className="max-md:!hidden" />
+
+        <StaggerCards
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px', width: '100%', marginTop: '0' }}
+          className="max-md:!grid-cols-1 max-md:!gap-4 max-lg:!grid-cols-2 max-lg:!gap-4"
+        >
+          {categories.map((cat) => (
+            <div key={cat.name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {/* Vertical drop from horizontal spanning line */}
+              <div style={{ width: '1px', height: '32px', backgroundColor: C.cardBorder }} className="max-md:!hidden" />
+              <div style={{
+                width: '100%',
+                border: `1px solid ${C.cardBorder}`,
+                backgroundColor: C.statsBg,
+                padding: '24px 20px',
+                borderRadius: '4px',
+              }}>
+                <h3 style={{ fontFamily: F.editorial, fontSize: '22px', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.2, fontWeight: 400 }}>{cat.name}</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {cat.products.map((p) => (
+                    <li key={p} style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, lineHeight: 1.5 }}>
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </StaggerCards>
+      </div>
     </section>
   );
 }
 
 function UsabilityTesting() {
   const stats = [
-    { number: '92%', label: 'Purchase Intent' },
-    { number: '6', label: 'Participants' },
-    { number: '8', label: 'Tasks Tested' },
-    { number: '1.8', label: 'Avg. Difficulty (out of 7)' },
+    { number: '5', label: 'Participants' },
+    { number: '10', label: 'Tasks Tested' },
+    { number: '100%', label: 'Success Rate (Key Tasks)' },
+    { number: '4', label: 'Key Tasks Focused' },
   ];
   const insights = [
-    'Purchase intent was strikingly high: 92% of participants said they\'d buy from Lumis after the testing session, with several noting the site made them feel confident rather than pressured.',
-    'The concern-based navigation was the most appreciated addition. Participants who didn\'t know where to start found it gave them a clear, non-intimidating entry point into the product range.',
-    'The "This works best if..." section on product pages generated consistently positive responses. Honest framing around who a product is for, and isn\'t for, built rather than undermined trust.',
-    'Cart flow needed work. Three participants hesitated at checkout because the shipping cost appeared late in the journey. Surfacing this information earlier was an immediate iteration.',
+    'Testing covered the end-to-end skincare shopping experience — from identifying products tailored to skin type and concerns, to trialling, comparing, and committing to a routine across 10 tasks with 5 participants.',
+    'The four key tasks that directly challenged the problem statement — the Skin Profile Quiz, Trial Sample request, Review Filtering, and Ingredient Compatibility check — each achieved a 100% completion rate.',
+    'Positive sentiment clustered around the aesthetics, ingredient features, and the quiz flow. Participants described the discovery experience as calmer and more guided than typical skincare sites.',
+    'The friction that surfaced was rarely task failure. It was labelling that didn’t match user expectations, feedback signals that felt too subtle to confirm an action, and discoverability gaps for features that existed but weren’t easily found — observations that drove the four targeted iterations in the following section.',
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -408,38 +420,50 @@ function UsabilityTesting() {
 function Iterations() {
   const issues = [
     {
-      label: 'Checkout Transparency',
-      problem: 'Shipping cost appeared only at the final checkout step, causing hesitation and drop-off. Participants felt ambushed by a cost they should have seen earlier.',
-      solution: 'Introduced a persistent "estimated delivery & cost" indicator in the cart sidebar and at the top of the checkout flow, making the total cost visible from the moment items are added.',
+      label: 'Skin Profile Quiz',
+      task: 'Complete the Skin Profile Quiz as a First-Time User',
+      successRate: '100% (5/5)',
+      problem: '2/5 users wanted to select more than one skin type (e.g. combination + sensitive) but the quiz only allowed a single selection. Both proceeded with one selection but the constraint introduced inaccuracy into their recommendations.',
+      solution: 'Remove the "sensitive" button from skin type since sensitivity is already represented under "Redness and sensitivity" in the skin concern section. This means skin type is more about oil production (Dry, Oily, Combination, or Normal).',
     },
     {
-      label: 'Product Image Gallery',
-      problem: 'The product image gallery showed only the product in isolation. Participants wanted to see the texture, the packaging at scale, and ideally the product in use.',
-      solution: 'Expanded the gallery to include close-up texture shots, scale reference images, and at least one in-context lifestyle image per product.',
+      label: 'Trial Sample Feedback',
+      task: 'Request a Trial Sample from Quiz Recommendations',
+      successRate: '100% (5/5)',
+      problem: '3/5 users did not notice that the cart icon counter updates when a sample is added, as there was no visible indication. They expected a motion animation from the product to the cart, as seen on other e-commerce sites.',
+      solution: 'Add a press animation when the button is clicked and transform the button state to "✓ Sample Added!" briefly on click before reverting.',
     },
     {
-      label: 'Ingredient List Readability',
-      problem: 'The full ingredient list was shown in a small-font block with no hierarchy. Shoppers who cared about ingredients found it unusable; those who didn\'t found it intimidating.',
-      solution: 'Restructured ingredient display into three tiers: key actives (highlighted), supporting ingredients, and base. Each tier has a brief explanation of its role.',
+      label: 'Review Filter Discoverability',
+      task: 'Filter Product Reviews by Skin Type',
+      successRate: '100% (5/5)',
+      problem: '2/5 users had difficulty finding their way to the specific product page to access written reviews and the skin type filter. Both expected a review discovery path that didn’t require navigating to an individual product page.',
+      solution: 'Under the "Loved by the Community" UGC section on the homepage, add a "Read reviews →" link, linking directly to the reviews section of that product page.',
     },
     {
-      label: 'Routine Builder Entry Point',
-      problem: 'The Routine Builder was buried two levels deep in the navigation. Most participants didn\'t know it existed until they were told during testing.',
-      solution: 'Surfaced the Routine Builder as a primary homepage section and added a contextual entry point ("Build it into your routine") on every product page.',
+      label: 'Ingredient Compare Input',
+      task: 'Check Ingredient Compatibility with an Existing Product',
+      successRate: '100% (5/5)',
+      problem: '2/5 users typed their external toner’s name into the site’s global search bar first, rather than the dedicated "your own product" input inside the Compare tool. The input exists but is not visually distinct enough to be discovered without prompting.',
+      solution: 'Update the placeholder to "Search for Lumis Skincare product to compare..." making it clear this bar is not for external products. Apply a dashed border and plus (+) icon to the external input, rename the button to "Add your own", add a label "Not sold on Lumis." below it, and show a one-time tooltip on first visit.',
     },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Top Issues & Iterations" />
+      <SectionLabel text="Top Issues Found & Changes Made" />
       <h2 className="cs-section-header">What Changed & Why</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
         {issues.map((issue) => (
           <div key={issue.label}>
             <p className="cs-category-label">{issue.label}</p>
-            {/* Problem + solution sit together at the top… */}
-            <p className="cs-body-text" style={{ margin: '0 0 16px 0', maxWidth: '680px' }}>{issue.problem}</p>
-            <p className="cs-body-text" style={{ margin: '0 0 40px 0', maxWidth: '680px' }}>{issue.solution}</p>
-            {/* …then the before/after website frames below */}
+            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: '0 0 8px 0', fontStyle: 'italic', maxWidth: '760px' }}>
+              Task: {issue.task}
+            </p>
+            <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 20px 0', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              Success Rate: <span style={{ color: C.primary }}>{issue.successRate}</span>
+            </p>
+            <p className="cs-body-text" style={{ margin: '0 0 16px 0', maxWidth: '760px' }}>{issue.problem}</p>
+            <p className="cs-body-text" style={{ margin: '0 0 40px 0', maxWidth: '760px' }}>{issue.solution}</p>
             <BeforeAfter
               style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}
               className="max-md:!grid-cols-1 max-md:!gap-8 max-lg:!grid-cols-1 max-lg:!gap-8"
@@ -455,21 +479,24 @@ function Iterations() {
 
 function Impact() {
   const outcomes = [
-    { title: 'Editorial Trust Established', desc: 'The calm, considered visual approach translated directly into user confidence. Participants described the brand as "premium" and "trustworthy" without prompting.' },
-    { title: '4 of 5 Key Flows Iterated', desc: 'Testing surfaced actionable friction in checkout, product detail, ingredient display, and the Routine Builder entry point. Each was directly addressed in the revised design.' },
-    { title: 'Brand Story Landed', desc: 'All 6 participants could articulate what Lumis stood for after their session, not because it was stated explicitly, but because the design showed it at every touchpoint.' },
+    { title: 'Labelling friction identified', desc: 'Words used in the interface did not always match what users expected, causing momentary confusion.' },
+    { title: 'Insufficient interface feedback', desc: 'Users completed actions but the interface did not respond visibly enough to confirm success.' },
+    { title: 'Discoverability issues surfaced', desc: 'Features existed on the website but users could not find them easily or did not notice them without extra effort.' },
+    { title: '4 of 4 key tasks achieved 100% success', desc: 'All highlighted tasks achieved full completion while still surfacing actionable improvements for iteration.' },
   ];
   return (
-    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
-      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
-        "It feels like someone actually thought about how I shop, not how they wanted me to shop."
-      </AnimatedQuote>
-      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 64px auto' }}>Usability Test Participant</p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
+    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
+      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 4.5vw, 52px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.1, letterSpacing: '-0.02em', fontWeight: 400, textAlign: 'center' }}>
+        User Satisfaction
+      </h2>
+      <p style={{ fontFamily: F.sans, fontSize: 'clamp(17px, 2vw, 20px)', color: C.primary, margin: '0 auto 72px auto', lineHeight: 1.6, maxWidth: '780px', textAlign: 'center' }}>
+        Overall satisfaction was high across all 5 participants. Aesthetic, ingredient features, and the quiz flow received particularly strong positive sentiment.
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', maxWidth: '1080px', margin: '0 auto' }} className="max-md:!grid-cols-1">
         {outcomes.map((o) => (
-          <div key={o.title}>
-            <h4 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 12px 0', lineHeight: 1.3, fontWeight: 400 }}>{o.title}</h4>
-            <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: 0, lineHeight: 1.7 }}>{o.desc}</p>
+          <div key={o.title} style={{ border: `1px solid ${C.cardBorder}`, padding: '28px' }}>
+            <h4 style={{ fontFamily: F.editorial, fontSize: '22px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{o.title}</h4>
+            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{o.desc}</p>
           </div>
         ))}
       </div>
@@ -479,10 +506,10 @@ function Impact() {
 
 function Reflections() {
   const cards = [
-    { number: '01', title: 'Content Strategy Matters', body: 'The editorial framing required actual content decisions, not just layout. A design system without a content strategy for how products are described would have undermined the whole concept.' },
-    { number: '02', title: 'Mobile Commerce First', body: 'Research confirmed that the majority of skincare browsing happens on mobile. The desktop design needed to be built with a genuinely mobile-first mindset, not adapted after the fact.' },
-    { number: '03', title: 'Photography as UX', body: 'The quality and consistency of product photography had as much impact on user confidence as any interface decision. Visual assets are a core part of the UX, not an afterthought.' },
-    { number: '04', title: 'Personalisation Ceiling', body: "The Routine Builder was the most loved feature, but it also exposed the ceiling of a static personalisation approach. A more dynamic recommendation engine would better serve shoppers with evolving routines." },
+    { number: '01', title: 'Quiz Design Requires Careful Constraint Choices', body: 'The skin type quiz exposed how a seemingly simple single-select constraint can introduce inaccuracy. Designing personalisation tools means being especially careful about where to constrain and where to allow flexibility.' },
+    { number: '02', title: 'Feedback Signals Need to Match User Expectations', body: "The trial sample finding showed that e-commerce conventions like cart animations have become user expectations. Subtle updates to counters aren't enough — the interface needs to actively confirm that an action was registered." },
+    { number: '03', title: "Discoverability Can't Be Assumed", body: 'Multiple tasks revealed that features users needed were present but not found. Labels, placement, and visual hierarchy all need to be designed for first-time discovery, not just for repeat use.' },
+    { number: '04', title: 'Input Differentiation is Critical', body: 'The ingredient compatibility tool showed that when multiple input fields serve different purposes, they need strong visual and textual differentiation to avoid users defaulting to the most familiar pattern.' },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -536,9 +563,10 @@ function NextProject() {
 
 const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
-  { id: 'problem', label: 'Problem' },
   { id: 'research', label: 'Research' },
-  { id: 'design-decisions', label: 'Design Decisions' },
+  { id: 'problem', label: 'Problem' },
+  { id: 'solution', label: 'Solution' },
+  { id: 'information-architecture', label: 'Information Architecture' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
   { id: 'impact', label: 'Impact' },
@@ -555,10 +583,10 @@ export function LumisPage() {
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp><StatsStrip /></FadeUp>
-          <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
-          <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
+          <FadeUp id="problem"><ProblemStatement /></FadeUp>
+          <FadeUp id="solution"><SolutionStatement /></FadeUp>
+          <FadeUp id="information-architecture"><InformationArchitecture /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>
           <FadeUp id="impact"><Impact /></FadeUp>
