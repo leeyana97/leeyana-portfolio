@@ -45,6 +45,54 @@ function SplitWords({ text }: { text: string }) {
   );
 }
 
+// ─── Scramble helper (shared by HeroSection + ContactSection) ──────────────
+// Characters cycle through random glyphs and resolve left → right, like a
+// retro decode effect. Caller can pass a startDelay to stagger multiple lines.
+// Sets el.dataset.scrambling = 'true' for the duration so hover handlers can
+// skip a re-trigger while one is already running.
+const SCRAMBLE_GLYPHS = '!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const SCRAMBLE_TICK = 30;
+const SCRAMBLE_DURATION = 1200;
+const scrambleActive = new WeakMap<HTMLElement, number>();
+
+function runScramble(el: HTMLElement, text: string, startDelay = 0): () => void {
+  // Cancel any in-flight run on this element before starting fresh.
+  const prev = scrambleActive.get(el);
+  if (prev !== undefined) window.clearInterval(prev);
+
+  let elapsed = 0;
+  const render = (revealed: number) => {
+    let out = '';
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === ' ') { out += ' '; continue; }
+      out += i < revealed ? ch : SCRAMBLE_GLYPHS[(Math.random() * SCRAMBLE_GLYPHS.length) | 0];
+    }
+    el.textContent = out;
+  };
+  render(0);
+  el.dataset.scrambling = 'true';
+  const id = window.setInterval(() => {
+    elapsed += SCRAMBLE_TICK;
+    if (elapsed >= startDelay + SCRAMBLE_DURATION) {
+      el.textContent = text;
+      el.dataset.scrambling = '';
+      scrambleActive.delete(el);
+      clearInterval(id);
+      return;
+    }
+    const progress = Math.max(0, (elapsed - startDelay) / SCRAMBLE_DURATION);
+    render(Math.floor(progress * text.length));
+  }, SCRAMBLE_TICK);
+  scrambleActive.set(el, id);
+  return () => {
+    clearInterval(id);
+    scrambleActive.delete(el);
+    el.dataset.scrambling = '';
+    el.textContent = text;
+  };
+}
+
 // ─── Shared tokens ──────────────────────────────────────────────────────────
 const C = {
   bg: '#0D0D0D',
@@ -154,54 +202,37 @@ function HeroSection() {
     const meta = metaRef.current;
     if (!headline || !meta) return;
 
-    // Scramble/decode each heading line: characters cycle through random
-    // glyphs and resolve left → right. Line 1 over ~1.2s; line 2 starts
-    // 0.3s later. The meta (subtext/badge) fades up once both finish.
-    const GLYPHS = '!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    const TICK = 30;
-    const DURATION = 1200;
-
-    const scramble = (el: HTMLElement, text: string, startDelay: number) => {
-      let elapsed = 0;
-      const render = (revealed: number) => {
-        let out = '';
-        for (let i = 0; i < text.length; i++) {
-          const ch = text[i];
-          if (ch === ' ') { out += ' '; continue; }
-          out += i < revealed ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
-        }
-        el.textContent = out;
-      };
-      render(0); // jumbled before first paint
-      const id = window.setInterval(() => {
-        elapsed += TICK;
-        if (elapsed >= startDelay + DURATION) {
-          el.textContent = text;
-          clearInterval(id);
-          return;
-        }
-        const progress = Math.max(0, (elapsed - startDelay) / DURATION);
-        render(Math.floor(progress * text.length));
-      }, TICK);
-      return () => clearInterval(id);
-    };
-
+    // Scramble/decode each heading line on mount; Line 1 over ~1.2s; line 2
+    // starts 0.3s later. Each line also re-scrambles on hover (see below).
     const els = Array.from(headline.querySelectorAll<HTMLElement>('.scramble-text'));
     gsap.set(meta, { opacity: 0, y: 20 });
 
     const cleanups = els.map((el, i) =>
-      scramble(el, el.dataset.text ?? el.textContent ?? '', i * 300)
+      runScramble(el, el.dataset.text ?? el.textContent ?? '', i * 300)
     );
 
-    // Last line finishes at (lastDelay + DURATION); fade the meta in after.
+    // Fade the meta in once the last line finishes.
     const lastDelay = (els.length - 1) * 300;
     const metaTimer = window.setTimeout(() => {
       gsap.to(meta, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' });
-    }, lastDelay + DURATION + 80);
+    }, lastDelay + SCRAMBLE_DURATION + 80);
+
+    // Hover re-runs the scramble on whichever line is hovered. Guarded so
+    // wiggling over an already-animating line doesn't restart it.
+    const handleHover = (e: Event) => {
+      const el = e.currentTarget as HTMLElement;
+      if (el.dataset.scrambling === 'true') return;
+      runScramble(el, el.dataset.text ?? el.textContent ?? '', 0);
+    };
+    els.forEach((el) => {
+      el.style.cursor = 'pointer';
+      el.addEventListener('mouseenter', handleHover);
+    });
 
     return () => {
       cleanups.forEach((fn) => fn());
       clearTimeout(metaTimer);
+      els.forEach((el) => el.removeEventListener('mouseenter', handleHover));
     };
   }, []);
 
@@ -858,6 +889,43 @@ function ProjectsSection() {
 
 // ─── Contact Section ─────────────────────────────────────────────────────────
 function ContactSection() {
+  // Scramble the "Let's make / something / good." heading the first time it
+  // scrolls into view, then re-scramble on hover. Triggered by motion.h2's
+  // own onViewportEnter so it stays in lockstep with the fadeUp animation.
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const initialScrambleRan = useRef(false);
+
+  const runInitialScramble = () => {
+    if (initialScrambleRan.current || !headingRef.current) return;
+    initialScrambleRan.current = true;
+    const els = Array.from(
+      headingRef.current.querySelectorAll<HTMLElement>('.scramble-text')
+    );
+    els.forEach((el, i) =>
+      runScramble(el, el.dataset.text ?? el.textContent ?? '', i * 300)
+    );
+  };
+
+  // Hover re-runs the scramble on whichever line is hovered. Guarded so
+  // wiggling over an already-animating line doesn't restart it.
+  useEffect(() => {
+    const heading = headingRef.current;
+    if (!heading) return;
+    const els = Array.from(heading.querySelectorAll<HTMLElement>('.scramble-text'));
+    const handleHover = (e: Event) => {
+      const el = e.currentTarget as HTMLElement;
+      if (el.dataset.scrambling === 'true') return;
+      runScramble(el, el.dataset.text ?? el.textContent ?? '', 0);
+    };
+    els.forEach((el) => {
+      el.style.cursor = 'pointer';
+      el.addEventListener('mouseenter', handleHover);
+    });
+    return () => {
+      els.forEach((el) => el.removeEventListener('mouseenter', handleHover));
+    };
+  }, []);
+
   const btnStyle: React.CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -904,6 +972,7 @@ function ContactSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-60px' }}
+          onViewportEnter={runInitialScramble}
           style={{
             padding: '100px 60px 100px 80px',
             display: 'flex',
@@ -928,6 +997,7 @@ function ContactSection() {
           </motion.p>
 
           <motion.h2
+            ref={headingRef}
             variants={fadeUpItem}
             style={{
               fontFamily: F.editorial,
@@ -939,11 +1009,11 @@ function ContactSection() {
               fontWeight: 400,
             }}
           >
-            Let's make
+            <span className="scramble-text" data-text="Let's make" aria-label="Let's make">Let's make</span>
             <br />
-            <span style={{ fontStyle: 'italic' }}>something</span>
+            <span className="scramble-text" data-text="something" aria-label="something" style={{ fontStyle: 'italic' }}>something</span>
             <br />
-            good.
+            <span className="scramble-text" data-text="good." aria-label="good.">good.</span>
           </motion.h2>
 
           <motion.p
