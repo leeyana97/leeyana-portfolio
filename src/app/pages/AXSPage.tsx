@@ -868,11 +868,22 @@ function Iterations() {
             </div>
           );
         })}
-        <div style={{ borderTop: `1px solid ${C.cardBorder}`, paddingTop: '60px' }}>
-          <p className="cs-category-label">Other Iteration — History Repositioned</p>
-          <p className="cs-body-text" style={{ margin: 0, maxWidth: '780px' }}>
-            Based on the understanding that History is a key, high-usage feature, repositioned it onto the home page alongside My Favourites, Pay Bills, Pay Fines, Top Up, and eServices for seamless transaction verification immediately after payment.
-          </p>
+        {/* Other Iterations — supplementary single-screen block. */}
+        <div style={{ borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' }}>
+          <div
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}
+            className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10"
+          >
+            <div>
+              <p className="cs-category-label">Other Iterations</p>
+              <p className="cs-body-text" style={{ margin: 0 }}>
+                Based on the understanding that History is a key, high-usage feature, repositioned it onto the home page alongside My Favourites, Pay Bills, Pay Fines, Top Up, and eServices. This creates a more seamless experience, allowing users to verify their transactions within the same section immediately after payment.
+              </p>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <ScreenPlaceholder text="History on Home" />
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -929,9 +940,9 @@ function PrototypeCTA() {
     <section style={{ backgroundColor: C.problemBg, padding: '80px', textAlign: 'left' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 4.5vw, 52px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 1.1, letterSpacing: '-0.02em', fontWeight: 400 }}>Experience the Vault Feature.</h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: '0 0 32px 0', lineHeight: 1.7, maxWidth: '580px' }}>
-        Explore the full interactive prototype: snap-and-inherit bill capture, the unified Vault dashboard, opt-in shared visibility, and the handover flow in action.
+        Explore the full interactive prototype: the unified Vault dashboard, calendar reminders that sync to Google or iPhone calendars, opt-in shared visibility, and the handover flow in action.
       </p>
-      <a href="#" style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${C.border}`, paddingBottom: '4px' }}
+      <a href="https://axsapr2026v2.netlify.app/" target="_blank" rel="noopener noreferrer" style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${C.border}`, paddingBottom: '4px' }}
         onMouseEnter={e => (e.currentTarget.style.borderColor = C.primary)}
         onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
         Open Prototype
