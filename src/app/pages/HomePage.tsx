@@ -17,9 +17,12 @@ import {
 } from '../components/Animate';
 import tripsyncScreenImg from '../../imports/Tripsync_home_app-1.png';
 import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
-import lumisPhoneImg from '../../imports/lumis skincare hero phone.png';
-import neighbourlahImg from '../../imports/neighbourlah hero phone.png';
+import lumisPhoneImg from '../../imports/Lumis_portfolio_homepage.png';
+import lumisPhoneMobileImg from '../../imports/lumis skincare hero phone.png';
+import neighbourlahImg from '../../imports/Neighbourlah hero image.png';
+import neighbourlahMobileImg from '../../imports/neighbourlah hero phone.png';
 import axsHeroImg from '../../imports/AXS_hero_image.webp';
+import axsHeroMobileImg from '../../imports/AXS_hero_image_phone.webp';
 
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
@@ -635,8 +638,9 @@ const projects = [
     description: 'A calm, considered shopping experience designed around how people actually discover and buy skincare.',
     tags: [],
     image: lumisPhoneImg,
+    imageMobile: lumisPhoneMobileImg,
     imageHeight: 620,
-    alt: 'Lumis Skincare hero phone mockup',
+    alt: 'Lumis Skincare homepage mockup',
   },
   {
     id: 'PRODUCT DESIGN',
@@ -645,6 +649,7 @@ const projects = [
     description: 'A digital space that helps neighbours connect, share, and look out for each other.',
     tags: [],
     image: neighbourlahImg,
+    imageMobile: neighbourlahMobileImg,
     imageHeight: 520,
     alt: 'NeighbourLah hero photo',
   },
@@ -655,6 +660,7 @@ const projects = [
     description: 'Smart billing: split, track, and manage payments together, designed for individuals and couples.',
     tags: ['iOS App', 'Fintech', 'Feature Design', 'Collaboration'],
     image: axsHeroImg,
+    imageMobile: axsHeroMobileImg,
     imageHeight: 520,
     alt: 'AXS Billing Feature',
   },
@@ -682,19 +688,26 @@ function ProjectCard({ project }: { project: typeof projects[0] }) {
       }}
     >
       {project.image ? (
-        <img
-          src={project.image}
-          alt={project.alt}
-          className="project-card-image"
-          loading="lazy"
-          decoding="async"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block',
-          }}
-        />
+        <picture>
+          {/* Mobile-specific source (currently only used by Lumis — portrait
+              composition reads better in the tall mobile card aspect). */}
+          {'imageMobile' in project && project.imageMobile && (
+            <source media="(max-width: 768px)" srcSet={project.imageMobile} />
+          )}
+          <img
+            src={project.image}
+            alt={project.alt}
+            className="project-card-image"
+            loading="lazy"
+            decoding="async"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block',
+            }}
+          />
+        </picture>
       ) : (
         <div
           className="project-card-image"

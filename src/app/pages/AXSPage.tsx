@@ -8,6 +8,9 @@ import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fa
 import axsHero1 from '../../imports/AXS_hero_casestudy_1.webp';
 import axsHero2 from '../../imports/AXS_hero_casestudy_2.webp';
 import axsHero3 from '../../imports/AXS_hero_casestudy_3.webp';
+import marcusJourneyMap from '../../imports/AXS_marcus_journey_map.png';
+import hanaJourneyMap from '../../imports/AXS_hana_journey_map.png';
+import firdausJourneyMap from '../../imports/AXS_firdaus_journey_map.png';
 
 const C = {
   bg: '#0D0D0D',
@@ -299,8 +302,10 @@ function CaseStudyHero() {
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: 'clamp(17px, 2vw, 20px)', color: C.secondary, margin: '0 0 24px 0', lineHeight: 1.5 }}>
           Designing a Unified Bill Management Feature for First Jobbers and Young Couples
         </motion.p>
-        <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
-          Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: iOS App&nbsp;&nbsp;·&nbsp;&nbsp;Feature Addition&nbsp;&nbsp;·&nbsp;&nbsp;Collaboration
+        <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+          <span>Tools: Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
+          <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#4296CE', border: '1px solid #275A7C', backgroundColor: 'rgba(66, 150, 206, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
+          <span>&nbsp;&nbsp;·&nbsp;&nbsp;Collaboration</span>
         </motion.p>
         <motion.div variants={fadeUpItem}>
           <StatsStrip />
@@ -445,6 +450,60 @@ function ResearchFindings() {
   );
 }
 
+// User Journey Maps — three vertical full-width maps, one per persona.
+// Each image opens in a new tab when clicked so the user can zoom into the
+// fine text on the journey map without needing a custom lightbox.
+function UserJourneyMaps() {
+  const personas = [
+    {
+      label: 'Marcus — The Transitioner',
+      caption: '26 · Investment Analyst — First jobber inheriting household bills from his parents.',
+      image: marcusJourneyMap,
+      alt: "Marcus's journey map — first jobber inheriting household bills",
+    },
+    {
+      label: 'Hana — The Delegator',
+      caption: '28 · Customer Service Executive — Partner who wants to stay informed about household bills without taking over the workload.',
+      image: hanaJourneyMap,
+      alt: "Hana's journey map — partner who wants to stay informed without taking over",
+    },
+    {
+      label: 'Firdaus — The Household CFO',
+      caption: '30 · Engineer — The person who tracks and pays all shared bills across multiple apps and spreadsheets.',
+      image: firdausJourneyMap,
+      alt: "Firdaus's journey map — tracker of all shared bills across apps and spreadsheets",
+    },
+  ];
+  return (
+    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="User Journey Maps" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '72px' }}>
+        {personas.map((p) => (
+          <div key={p.label}>
+            <h3 style={{ fontFamily: F.sans, fontSize: '18px', fontWeight: 600, color: C.primary, margin: '0 0 6px 0', lineHeight: 1.3 }}>{p.label}</h3>
+            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: '0 0 20px 0', lineHeight: 1.5 }}>{p.caption}</p>
+            <a
+              href={p.image}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Open ${p.label}'s journey map in a new tab to view at full size`}
+              style={{ display: 'block', cursor: 'zoom-in', borderRadius: '6px', overflow: 'hidden' }}
+            >
+              <img
+                src={p.image}
+                alt={p.alt}
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+            </a>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function DesignDecisions() {
   const statements = [
     {
@@ -501,6 +560,34 @@ function DesignDecisions() {
   );
 }
 
+// Warm desaturated-gold accent for the Usability Testing visual flourishes.
+// Sits next to AXS's primary blue accent without competing with it.
+const USABILITY_WARM = '#A89476';
+const USABILITY_WARM_TRACK = '#2A2520';
+
+// Animated counter — counts from 0 to `to` when scrolled into view (once).
+function CountUp({ to, durationMs = 1200, formatter }: { to: number; durationMs?: number; formatter: (v: number) => string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    let raf = 0;
+    const tick = () => {
+      const elapsed = performance.now() - start;
+      const t = Math.min(elapsed / durationMs, 1);
+      // easeOutCubic for a slightly springy count-up feel.
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(to * eased);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, to, durationMs]);
+  return <span ref={ref}>{formatter(value)}</span>;
+}
+
 function UsabilityTesting() {
   const planRows = [
     { label: 'Participants', value: '5 (2 first jobbers, 3 young couples)' },
@@ -530,66 +617,186 @@ function UsabilityTesting() {
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Usability Testing" />
 
-      {/* Test Plan */}
-      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.25, fontWeight: 400 }}>Test Plan</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '64px' }} className="max-md:!grid-cols-1">
-        {planRows.map((r) => (
-          <div key={r.label} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
-            <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 10px 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{r.label}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: 0, lineHeight: 1.6 }}>{r.value}</p>
-          </div>
-        ))}
-      </div>
+      {/* ─── Round 1: Design Feedback Workshop ──────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease }}
+        style={{ marginBottom: '96px' }}
+      >
+        <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 14px 0', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Internal Review</p>
+        <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 1 — Design Feedback Workshop</h3>
+        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 36px 0', maxWidth: '720px' }}>
+          Before testing with the public, the team ran a design feedback workshop with AXS staff across 5 tasks. Ease of Use ratings used a 1–5 scale (1 = Very Easy, 5 = Very Difficult).
+        </p>
+        {/* Staggered task cards — each fades up with a 100ms delay between cards.
+            Subtle desaturated-gold left border + horizontal rating bar visualise
+            each score on the 1–5 scale. */}
+        <div
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px' }}
+          className="max-md:!grid-cols-2 max-lg:!grid-cols-3"
+        >
+          {workshopRows.map((r, i) => {
+            const ratingNum = parseFloat(r.rating);
+            const fillPct = Math.min(Math.max((ratingNum / 5) * 100, 0), 100);
+            return (
+              <motion.div
+                key={r.task}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.5, ease, delay: i * 0.1 }}
+                style={{
+                  borderLeft: `2px solid ${USABILITY_WARM}`,
+                  backgroundColor: '#141414',
+                  padding: '22px 22px 24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                }}
+              >
+                <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: 0, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{r.task}</p>
+                <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.primary, margin: 0, lineHeight: 1.4, flex: 1 }}>{r.desc}</p>
+                <p style={{ fontFamily: F.editorial, fontSize: 'clamp(40px, 4vw, 52px)', color: C.primary, margin: '6px 0 0 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>{r.rating}</p>
+                {/* Rating-on-scale indicator: thin filled bar against a dark track. */}
+                <div
+                  style={{ height: '3px', borderRadius: '2px', backgroundColor: USABILITY_WARM_TRACK, overflow: 'hidden', marginTop: '2px' }}
+                  aria-hidden="true"
+                >
+                  <motion.div
+                    initial={{ width: '0%' }}
+                    whileInView={{ width: `${fillPct}%` }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: i * 0.1 + 0.2 }}
+                    style={{ height: '100%', backgroundColor: USABILITY_WARM }}
+                  />
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </motion.div>
 
-      {/* Design Feedback Workshop */}
-      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 16px 0', lineHeight: 1.25, fontWeight: 400 }}>Design Feedback Workshop Results</h3>
-      <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 28px 0', maxWidth: '720px' }}>
-        Before the formal usability test, the team ran a design feedback workshop with AXS staff with 5 tasks. Ease of Use ratings used a 1–5 scale (1 = Very Easy, 5 = Very Difficult).
-      </p>
-      <div style={{ border: `1px solid ${C.cardBorder}`, marginBottom: '32px', overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: F.sans, fontSize: '15px', color: C.primary, minWidth: '480px' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#1A1A1A' }}>
-              <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 500, color: C.secondary, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '12px', borderBottom: `1px solid ${C.cardBorder}` }}>Task</th>
-              <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 500, color: C.secondary, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '12px', borderBottom: `1px solid ${C.cardBorder}` }}>Description</th>
-              <th style={{ textAlign: 'right', padding: '16px 20px', fontWeight: 500, color: C.secondary, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '12px', borderBottom: `1px solid ${C.cardBorder}` }}>Rating</th>
-            </tr>
-          </thead>
-          <tbody>
-            {workshopRows.map((r, idx) => (
-              <tr key={r.task} style={{ borderBottom: idx < workshopRows.length - 1 ? `1px solid ${C.cardBorder}` : 'none' }}>
-                <td style={{ padding: '16px 20px', color: C.primary }}>{r.task}</td>
-                <td style={{ padding: '16px 20px', color: C.primary }}>{r.desc}</td>
-                <td style={{ padding: '16px 20px', textAlign: 'right', fontFamily: F.editorial, fontSize: '18px', color: C.primary }}>{r.rating}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: '0 0 20px 0', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Top issue from each task</p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '64px' }} className="max-md:!grid-cols-1">
-        {workshopIssues.map((issue, i) => (
-          <div key={issue.title} style={{ border: `1px solid ${C.cardBorder}`, padding: '20px' }}>
-            <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 10px 0', letterSpacing: '0.08em' }}>0{i + 1}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: '0 0 8px 0', fontWeight: 500 }}>{issue.title}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{issue.desc}</p>
-          </div>
-        ))}
-      </div>
+      {/* ─── Top Issue From Each Task ────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease }}
+        style={{ marginBottom: '96px' }}
+      >
+        <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 24px 0', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Top issue from each task</p>
+        <div
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}
+          className="max-md:!grid-cols-1"
+        >
+          {workshopIssues.map((issue, i) => (
+            <motion.div
+              key={issue.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.5, ease, delay: i * 0.08 }}
+              whileHover={{ backgroundColor: '#1E1E1E' }}
+              style={{
+                position: 'relative',
+                backgroundColor: '#141414',
+                padding: '32px 32px 28px',
+                overflow: 'hidden',
+                transition: 'background-color 0.3s ease',
+              }}
+            >
+              {/* Large low-opacity numeral sitting behind the content. */}
+              <span
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  top: '12px',
+                  left: '24px',
+                  fontFamily: F.editorial,
+                  fontSize: '40px',
+                  color: C.primary,
+                  opacity: 0.18,
+                  lineHeight: 1,
+                  letterSpacing: '-0.02em',
+                  pointerEvents: 'none',
+                }}
+              >
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <div style={{ position: 'relative', paddingTop: '48px' }}>
+                <h4 style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, margin: '0 0 10px 0', fontWeight: 600, lineHeight: 1.3 }}>{issue.title}</h4>
+                <p style={{ fontFamily: F.sans, fontSize: '14px', color: '#8A8A82', margin: 0, lineHeight: 1.6 }}>{issue.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
 
-      {/* Usability Test Results */}
-      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.25, fontWeight: 400 }}>Usability Test Results</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', marginBottom: '40px' }} className="max-md:!grid-cols-1 max-md:!gap-8">
-        {resultStats.map((s) => (
-          <div key={s.label}>
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 5vw, 64px)', color: C.primary, margin: '0 0 8px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.4 }}>{s.label}</p>
-          </div>
-        ))}
-      </div>
-      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '800px' }}>
-        Users navigated quickly through Tasks 2 and 3 but penalised the overall rating because Tasks 5 and 6 broke the flow for them. One user brought the rating up to 4/5 because of the steep learning curve on first use and the confusion about navigating to a separate Pay Bills section to actually make payment.
-      </p>
+      {/* ─── Divider between Round 1 (internal) and Round 2 (public) ─────── */}
+      <div
+        aria-hidden="true"
+        style={{ height: '1px', backgroundColor: C.cardBorder, margin: '24px 0 96px 0' }}
+      />
+
+      {/* ─── Round 2: Usability Testing (with Public) ────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease }}
+        style={{ marginBottom: '64px' }}
+      >
+        <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 14px 0', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Public Testing</p>
+        <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 2 — Usability Testing</h3>
+        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0', maxWidth: '720px' }}>
+          Following the internal workshop, the team conducted usability testing with 5 members of the public — 2 first jobbers and 3 young couples — using their own devices.
+        </p>
+
+        {/* Test Plan — describes the public usability test setup. */}
+        <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.25, fontWeight: 400 }}>Test Plan</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="max-md:!grid-cols-1">
+          {planRows.map((r) => (
+            <div key={r.label} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
+              <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 10px 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{r.label}</p>
+              <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: 0, lineHeight: 1.6 }}>{r.value}</p>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ─── Usability Test Results — hero moment ─────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease }}
+        style={{ textAlign: 'center', paddingTop: '24px' }}
+      >
+        <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 24px 0', letterSpacing: '0.16em', textTransform: 'uppercase' }}>Overall Ease of Use Rating</p>
+        <div
+          style={{
+            fontFamily: F.editorial,
+            fontSize: 'clamp(64px, 9vw, 96px)',
+            lineHeight: 1,
+            letterSpacing: '-0.03em',
+            fontWeight: 400,
+            margin: '0 0 28px 0',
+            color: '#EBEBE5',
+          }}
+        >
+          <CountUp to={3} formatter={(v) => v.toFixed(1).replace('.0', '')} />
+          <span style={{ color: '#5A5A54' }}>/5</span>
+        </div>
+        {/* Inline supporting stats — small text beneath the hero number. */}
+        <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 36px 0', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+          {resultStats.filter((s) => s.label !== 'Overall Ease of Use').map((s) => `${s.number} ${s.label}`).join('  ·  ')}
+        </p>
+        <p style={{ fontFamily: F.sans, fontSize: '16px', color: C.primary, lineHeight: 1.7, margin: '0 auto', maxWidth: '640px' }}>
+          Users navigated quickly through Tasks 2 and 3 but penalised the overall rating because Tasks 5 and 6 broke the flow for them. One user brought the rating up to 4/5 because of the steep learning curve on first use and the confusion about navigating to a separate Pay Bills section to actually make payment.
+        </p>
+      </motion.div>
     </section>
   );
 }
@@ -755,6 +962,7 @@ const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'problem', label: 'Problem' },
   { id: 'research', label: 'Research' },
+  { id: 'journey-maps', label: 'Journey Maps' },
   { id: 'design-decisions', label: 'Solution Statements' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
@@ -774,6 +982,7 @@ export function AXSPage() {
           <div id="overview"><CaseStudyHero /></div>
           <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
+          <FadeUp id="journey-maps"><UserJourneyMaps /></FadeUp>
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>
