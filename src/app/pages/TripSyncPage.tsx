@@ -279,7 +279,7 @@ function CaseStudyHero() {
           A Travel Companion App for Group Trip Planners
         </motion.p>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
-          <span>Duration: 2 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
+          <span>Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#4ADE80', border: '1px solid #1B7A4E', backgroundColor: 'rgba(74, 222, 128, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
         </motion.p>
         <motion.div variants={fadeUpItem}>
@@ -294,6 +294,7 @@ function CaseStudyHero() {
 function StatsStrip() {
   const stats = [
     { number: '2 Weeks', label: 'Duration' },
+    { number: '10', label: 'Users Interviewed' },
     { number: '5', label: 'Users Tested' },
     { number: '9', label: 'Tasks Tested' },
     { number: '3 of 4', label: 'Screens Iterated' },
@@ -306,6 +307,7 @@ function StatsStrip() {
         flexWrap: 'wrap',
         rowGap: '20px',
         marginTop: '40px',
+        marginBottom: '40px',
         paddingTop: '28px',
         borderTop: `1px solid ${C.cardBorder}`,
       }}

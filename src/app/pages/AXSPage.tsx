@@ -170,8 +170,10 @@ function AXSHeroCarousel() {
 
   // The source PNGs include the phone-frame bezel. Approximate aspect ratio
   // for that framed image is ~1 : 2 (slightly taller than a bare 9:19.5 screen).
+  // containerHeight is tight to the phone so there's no empty space between
+  // the phones and the title below — matches TripSync's hero spacing.
   const phoneHeight = Math.round(dims.phoneWidth * 2.05);
-  const containerHeight = Math.max(phoneHeight + 80, Math.round(phoneHeight * 1.1));
+  const containerHeight = phoneHeight;
 
   // ─── Timeline-derived values (recomputed each frame from `progress`) ────
   const SPIN_END = 0.6;
@@ -199,7 +201,6 @@ function AXSHeroCarousel() {
       style={{
         position: 'relative',
         width: '100%',
-        minHeight: 'clamp(440px, 75vh, 720px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -291,7 +292,7 @@ function CaseStudyHero() {
   return (
     <section style={{ paddingTop: '120px', paddingBottom: '80px', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-md:!pb-16 max-lg:!px-10">
       <AXSHeroCarousel />
-      <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '60px' }}>
+      <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '0' }}>
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           AXS · Vault
         </motion.h1>
@@ -299,31 +300,53 @@ function CaseStudyHero() {
           Designing a Unified Bill Management Feature for First Jobbers and Young Couples
         </motion.p>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
-          Duration: 2 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: iOS App&nbsp;&nbsp;·&nbsp;&nbsp;Feature Addition&nbsp;&nbsp;·&nbsp;&nbsp;Collaboration
+          Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: iOS App&nbsp;&nbsp;·&nbsp;&nbsp;Feature Addition&nbsp;&nbsp;·&nbsp;&nbsp;Collaboration
         </motion.p>
+        <motion.div variants={fadeUpItem}>
+          <StatsStrip />
+        </motion.div>
       </motion.div>
     </section>
   );
 }
 
+// Inline stats strip — sits under the hero meta (matches TripSync structure).
 function StatsStrip() {
   const stats = [
-    { number: '2', label: 'Weeks · Duration' },
+    { number: '3 Weeks', label: 'Duration' },
+    { number: '15', label: 'Users Interviewed' },
     { number: '5', label: 'Users Tested' },
     { number: '6', label: 'Tasks Tested' },
     { number: '3', label: 'User Personas' },
   ];
   return (
-    <section style={{ backgroundColor: C.statsBg, paddingTop: '60px', paddingBottom: '60px', paddingLeft: '80px', paddingRight: '80px' }} className="max-md:!px-6 max-lg:!px-10">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px' }} className="max-md:!grid-cols-2 max-md:!gap-8 max-lg:!grid-cols-2 max-lg:!gap-8">
-        {stats.map((s) => (
-          <div key={s.label}>
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 5vw, 64px)', color: C.primary, margin: '0 0 8px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.4 }}>{s.label}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        flexWrap: 'wrap',
+        rowGap: '20px',
+        marginTop: '40px',
+        marginBottom: '40px',
+        paddingTop: '28px',
+        borderTop: `1px solid ${C.cardBorder}`,
+      }}
+    >
+      {stats.map((s, i) => (
+        <div
+          key={s.label}
+          style={{
+            paddingLeft: i > 0 ? '32px' : 0,
+            paddingRight: '32px',
+            borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
+          }}
+          className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
+        >
+          <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
+          <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -353,15 +376,27 @@ function ProblemStatement() {
 }
 
 function ResearchFindings() {
-  const findings = [
-    { title: 'Perception Problem', desc: 'AXS is associated with physical kiosks and an older generation — not with the apps young users pay bills through today.' },
-    { title: 'Notifications as Safety Net', desc: 'Users relied on reminders to know when bills are due. Whichever app reminds them tends to be the app they pay through.' },
-    { title: 'Habit Formation', desc: "First jobbers don't stick around long enough to discover features. The first session has to feel effortless and useful, or they're gone." },
-    { title: 'Hidden Visibility Mismatch', desc: "Couples manage bills informally. They don't want a joint account app — they want both partners to see what's been paid without changing who pays what." },
-    { title: 'Failed Silent Payments', desc: "When one partner can't see what the other has paid, bills get paid twice or missed — creating awkward catch-ups and admin to chase refunds." },
+  // Findings grouped by persona — labels match the personas used in the
+  // Solution Statements section below.
+  const groups = [
+    {
+      label: 'First Jobber',
+      findings: [
+        { title: 'Perception Problem', desc: 'AXS is associated with physical kiosks and an older generation — not with the apps young users pay bills through today.' },
+        { title: 'Notifications as Safety Net', desc: 'Users relied on reminders to know when bills are due. Whichever app reminds them tends to be the app they pay through.' },
+        { title: 'Habit Formation', desc: "First jobbers don't stick around long enough to discover features. The first session has to feel effortless and useful, or they're gone." },
+      ],
+    },
+    {
+      label: 'Young Couple',
+      findings: [
+        { title: 'Hidden Visibility Mismatch', desc: "Couples manage bills informally. They don't want a joint account app — they want both partners to see what's been paid without changing who pays what." },
+        { title: 'Failed Silent Payments', desc: "When one partner can't see what the other has paid, bills get paid twice or missed — creating awkward catch-ups and admin to chase refunds." },
+      ],
+    },
   ];
-  // Per-note colour + rotation: five dark tints (brown, teal, purple, red,
-  // blue), each with a matching tape colour and a slight rotation.
+  // Per-note colour + rotation: dark tints + matching tape colour and a slight
+  // rotation. Indexed globally so each of the 5 notes keeps a distinct hue.
   const noteStyles = [
     { from: '#2A2520', to: '#1E1B17', tape: 'rgba(190, 150, 100, 0.5)', rot: '-1.5deg' },
     { from: '#1C2A28', to: '#141E1C', tape: 'rgba(90, 185, 170, 0.5)',  rot: '0.8deg'  },
@@ -369,31 +404,43 @@ function ResearchFindings() {
     { from: '#2C1E1E', to: '#1F1515', tape: 'rgba(200, 95, 95, 0.5)',   rot: '1.2deg'  },
     { from: '#1C2230', to: '#141923', tape: 'rgba(95, 135, 205, 0.5)',  rot: '-1.0deg' },
   ];
+  let globalIdx = 0;
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Research Findings" />
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
-        {findings.map((f, i) => {
-          const s = noteStyles[i % noteStyles.length];
-          return (
-            <div key={f.title}>
-              <div
-                className="sticky-note"
-                style={{
-                  '--note-from': s.from,
-                  '--note-to': s.to,
-                  '--note-tape': s.tape,
-                  '--note-rot': s.rot,
-                } as React.CSSProperties}
-              >
-                <p className="sticky-note__num">0{i + 1}</p>
-                <h3 className="sticky-note__title">{f.title}</h3>
-                <p className="sticky-note__body">{f.desc}</p>
-              </div>
-            </div>
-          );
-        })}
-      </StaggerCards>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
+        {groups.map((group) => (
+          <div key={group.label}>
+            <p className="cs-category-label" style={{ marginBottom: '24px' }}>{group.label}</p>
+            <StaggerCards
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}
+              className="max-md:!grid-cols-1 max-lg:!grid-cols-2"
+            >
+              {group.findings.map((f) => {
+                const i = globalIdx++;
+                const s = noteStyles[i % noteStyles.length];
+                return (
+                  <div key={f.title}>
+                    <div
+                      className="sticky-note"
+                      style={{
+                        '--note-from': s.from,
+                        '--note-to': s.to,
+                        '--note-tape': s.tape,
+                        '--note-rot': s.rot,
+                      } as React.CSSProperties}
+                    >
+                      <p className="sticky-note__num">{String(i + 1).padStart(2, '0')}</p>
+                      <h3 className="sticky-note__title">{f.title}</h3>
+                      <p className="sticky-note__body">{f.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </StaggerCards>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
@@ -725,7 +772,6 @@ export function AXSPage() {
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp><StatsStrip /></FadeUp>
           <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>

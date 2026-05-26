@@ -156,32 +156,55 @@ function CaseStudyHero() {
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: 'clamp(17px, 2vw, 20px)', color: C.secondary, margin: '0 0 24px 0', lineHeight: 1.5 }}>
           A Personalised Skincare E-Commerce Website for Confident Product Discovery
         </motion.p>
-        <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
-          Duration: 3 Weeks&nbsp;&nbsp;·&nbsp;&nbsp;Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform: Web
+        <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
+          <span>Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
+          <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#C4A265', border: '1px solid #8A6F40', backgroundColor: 'rgba(196, 162, 101, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>Web</span>
         </motion.p>
+        <motion.div variants={fadeUpItem}>
+          <StatsStrip />
+        </motion.div>
       </motion.div>
     </section>
   );
 }
 
+// Inline stats strip — sits under the hero meta (matches TripSync structure).
 function StatsStrip() {
   const stats = [
-    { number: '3', label: 'Weeks · Duration' },
+    { number: '2 Weeks', label: 'Duration' },
+    { number: '10', label: 'Users Interviewed' },
     { number: '5', label: 'Users Tested' },
     { number: '10', label: 'Tasks Tested' },
     { number: '100%', label: 'Success Rate (Key Tasks)' },
   ];
   return (
-    <section style={{ backgroundColor: C.statsBg, paddingTop: '60px', paddingBottom: '60px', paddingLeft: '80px', paddingRight: '80px' }} className="max-md:!px-6 max-lg:!px-10">
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px' }} className="max-md:!grid-cols-2 max-md:!gap-8 max-lg:!grid-cols-2 max-lg:!gap-8">
-        {stats.map((s) => (
-          <div key={s.label}>
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 5vw, 64px)', color: C.primary, margin: '0 0 8px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.4 }}>{s.label}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'flex-end',
+        flexWrap: 'wrap',
+        rowGap: '20px',
+        marginTop: '40px',
+        marginBottom: '40px',
+        paddingTop: '28px',
+        borderTop: `1px solid ${C.cardBorder}`,
+      }}
+    >
+      {stats.map((s, i) => (
+        <div
+          key={s.label}
+          style={{
+            paddingLeft: i > 0 ? '32px' : 0,
+            paddingRight: '32px',
+            borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
+          }}
+          className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
+        >
+          <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
+          <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
+        </div>
+      ))}
+    </div>
   );
 }
 
