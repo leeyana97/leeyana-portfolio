@@ -6,8 +6,8 @@ import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
-import lumisIpadImg from '../../imports/Lumis_ipad.png';
-import lumisLaptopImg from '../../imports/Lumis_laptop_v2.png';
+import lumisIpadImg from '../../imports/Lumis_ipad.webp';
+import lumisLaptopImg from '../../imports/Lumis_laptop_v2.jpg';
 
 // Hero entrance lives in CSS keyframes (see CaseStudyHero) rather than
 // framer-motion, because the route-level <AnimatePresence> in routes.tsx

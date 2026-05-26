@@ -19,7 +19,7 @@ import tripsyncScreenImg from '../../imports/Tripsync_home_app-1.png';
 import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
 import lumisPhoneImg from '../../imports/lumis skincare hero phone.png';
 import neighbourlahImg from '../../imports/neighbourlah hero phone.png';
-import axsHeroImg from '../../imports/AXS_hero_image.png';
+import axsHeroImg from '../../imports/AXS_hero_image.webp';
 
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';

@@ -5,9 +5,9 @@ import { Navigation } from '../components/Navigation';
 import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
-import axsHero1 from '../../imports/AXS_hero_casestudy_1.png';
-import axsHero2 from '../../imports/AXS_hero_casestudy_2.png';
-import axsHero3 from '../../imports/AXS_hero_casestudy_3.png';
+import axsHero1 from '../../imports/AXS_hero_casestudy_1.webp';
+import axsHero2 from '../../imports/AXS_hero_casestudy_2.webp';
+import axsHero3 from '../../imports/AXS_hero_casestudy_3.webp';
 
 const C = {
   bg: '#0D0D0D',

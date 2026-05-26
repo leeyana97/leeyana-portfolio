@@ -17,12 +17,12 @@ import tripsyncActivityShortlistNewImg from '../../imports/tripsync-activity-sho
 import tripsyncActivityShortlistOldImg from '../../imports/tripsync-activity-shortlist-old.png';
 import tripsyncObjectionOldImg from '../../imports/tripsync-objection-old.png';
 import tripsyncObjectionNewImg from '../../imports/tripsync-objection-new.png';
-import tripsyncPhone1 from '../../imports/tripsync-phone-1.png';
-import tripsyncPhone2 from '../../imports/tripsync-phone-2.png';
-import tripsyncPhone3 from '../../imports/tripsync-phone-3-v2.png';
-import tripsyncPhone4 from '../../imports/tripsync-phone-4-v3.png';
-import affinityMapP1 from '../../imports/affinity_map_p1.jpeg';
-import affinityMapP2 from '../../imports/affinity_map_p2.jpeg';
+import tripsyncPhone1 from '../../imports/tripsync-phone-1.webp';
+import tripsyncPhone2 from '../../imports/tripsync-phone-2.webp';
+import tripsyncPhone3 from '../../imports/tripsync-phone-3-v2.webp';
+import tripsyncPhone4 from '../../imports/tripsync-phone-4-v3.webp';
+import affinityMapP1 from '../../imports/affinity_map_p1.webp';
+import affinityMapP2 from '../../imports/affinity_map_p2.webp';
 
 // Hero showcase: 4 phones layered with staggered reveal. Phone 4 (right,
 // held by hand) enters first; phone 1 (left) enters last.
