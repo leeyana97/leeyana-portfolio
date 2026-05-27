@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { useImagesLoaded } from '../components/useImagesLoaded';
 import tripsyncImg from '../../imports/Tripsync_home_app.png';
 import tripsyncActivityFoodImg from '../../imports/tripsync-Activity-and-Food-Overview-new.png';
 import tripsyncOptOutImg from '../../imports/tripsync-opt-out-new.png';
@@ -231,6 +232,16 @@ function CaseStudyHero() {
   // On mobile we hide the layered 4-phone desktop showcase and render a
   // simpler 2-phone flex layout (splash + Overlap Dashboard) AFTER the
   // text block, so the project name reads first without any scroll.
+  //
+  // Gate the slide-in animation on all 4 phone images being downloaded
+  // AND decoded — without this, the entrance would fire while bitmaps
+  // were still streaming in, producing visible pop-in / jank.
+  const imagesReady = useImagesLoaded([
+    heroPhones[0].src,
+    heroPhones[1].src,
+    heroPhones[2].src,
+    heroPhones[3].src,
+  ]);
   return (
     <section
       style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }}
@@ -253,9 +264,19 @@ function CaseStudyHero() {
             src={p.src}
             alt={p.alt}
             aria-hidden={p.id !== 4}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             initial={{ opacity: p.initialOpacity, x: p.initialX, y: '-50%' }}
-            whileInView={{ opacity: 1, x: 0, y: '-50%' }}
-            viewport={{ once: true, amount: 0.25 }}
+            // Switched from `whileInView` → `animate` so the entrance can be
+            // gated on `imagesReady`. When images are still downloading we
+            // hold each phone at its initial offscreen position; once decoded
+            // the animate target flips and motion drives the slide-in.
+            animate={
+              imagesReady
+                ? { opacity: 1, x: 0, y: '-50%' }
+                : { opacity: p.initialOpacity, x: p.initialX, y: '-50%' }
+            }
             transition={{ duration: p.duration, ease: PHONE_EASE, delay: p.delay }}
             style={{
               position: 'absolute',
@@ -346,8 +367,18 @@ function CaseStudyHero() {
             <motion.img
               src={phone.src}
               alt={phone.alt}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               initial={{ opacity: phone.initialOpacity, x: phone.initialX }}
-              animate={{ opacity: 1, x: 0 }}
+              // Hold each phone at its initial offscreen position until the
+              // images are fully decoded, then flip the animate target so
+              // the slide-in runs against bitmaps that are already in memory.
+              animate={
+                imagesReady
+                  ? { opacity: 1, x: 0 }
+                  : { opacity: phone.initialOpacity, x: phone.initialX }
+              }
               transition={{
                 duration: phone.duration,
                 ease: PHONE_EASE,

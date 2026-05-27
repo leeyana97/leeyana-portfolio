@@ -5,6 +5,7 @@ import { Navigation } from '../components/Navigation';
 import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { useImagesLoaded } from '../components/useImagesLoaded';
 import axsHero1 from '../../imports/AXS_hero_casestudy_1.webp';
 import axsHero2 from '../../imports/AXS_hero_casestudy_2.webp';
 import axsHero3 from '../../imports/AXS_hero_casestudy_3.webp';
@@ -106,6 +107,11 @@ function AXSHeroCarousel() {
   const [reducedMotion, setReducedMotion] = useState(false);
   // Guard so the timeline starts exactly once.
   const startedRef = useRef(false);
+  // Block the orbital RAF timeline until all 3 phone images are fully
+  // downloaded AND decoded — without this guard the carousel would start
+  // spinning while the browser was still painting in the bitmaps, which
+  // caused visible pop-in / jank during the entrance.
+  const imagesReady = useImagesLoaded([axsHero1, axsHero2, axsHero3]);
 
   // Track viewport for responsive sizing.
   //
@@ -150,8 +156,11 @@ function AXSHeroCarousel() {
   }, []);
 
   // Single RAF timeline 0 → 1 over ~3 seconds.
+  // Gated on `imagesReady` so the spin doesn't start until every phone
+  // image is fully decoded — otherwise the first half of the animation
+  // would run with pop-in artefacts as bitmaps arrive on screen.
   useEffect(() => {
-    if (!inView || startedRef.current) return;
+    if (!inView || !imagesReady || startedRef.current) return;
     startedRef.current = true;
     if (reducedMotion) {
       setProgress(1);
@@ -168,7 +177,7 @@ function AXSHeroCarousel() {
     };
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, [inView, reducedMotion]);
+  }, [inView, imagesReady, reducedMotion]);
 
   // Final layout slots. Center phone is the focal point; sides are tilted.
   // Index order matches the orbit's natural endpoints under the rotation
@@ -292,6 +301,7 @@ function AXSHeroCarousel() {
                 alt=""
                 loading="eager"
                 decoding="async"
+                fetchPriority="high"
                 draggable={false}
                 style={{
                   width: `${dims.phoneWidth}px`,

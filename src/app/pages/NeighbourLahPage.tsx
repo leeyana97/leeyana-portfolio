@@ -75,6 +75,9 @@ function CaseStudyHero() {
         <img
           src={neighbourlahImg}
           alt="NeighbourLah app overview"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
           // Mobile uses `object-contain` so the tall portrait image scales
           // down to fit the clamped 281px container without cropping.

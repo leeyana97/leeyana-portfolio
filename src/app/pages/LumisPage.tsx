@@ -5,6 +5,7 @@ import { Navigation } from '../components/Navigation';
 import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { useImagesLoaded } from '../components/useImagesLoaded';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
 import lumisIpadImg from '../../imports/Lumis_ipad.webp';
 import lumisLaptopImg from '../../imports/Lumis_laptop.webp';
@@ -84,6 +85,13 @@ function CaseStudyHero() {
   // On mobile we keep the same iPad + MacBook layered showcase, just
   // reordered to appear AFTER the text block so the project name reads
   // first without any scroll. The clamp() heights already scale.
+  //
+  // The slide-in CSS keyframes are gated on `imagesReady` — we only
+  // attach the `--ipad` / `--laptop` modifier classes (which set the
+  // `animation-name`) after both images are downloaded AND decoded.
+  // Until then the base `.lumis-device` class keeps them at opacity 0,
+  // so the entrance plays smoothly against in-memory bitmaps.
+  const imagesReady = useImagesLoaded([lumisIpadImg, lumisLaptopImg]);
   return (
     <section
       style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }}
@@ -137,7 +145,10 @@ function CaseStudyHero() {
           src={lumisLaptopImg}
           alt="Lumis Skin Match page on a MacBook"
           aria-hidden="true"
-          className="lumis-device lumis-device--laptop"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className={`lumis-device ${imagesReady ? 'lumis-device--laptop' : ''}`}
           style={{
             position: 'absolute',
             top: '40%',
@@ -153,7 +164,10 @@ function CaseStudyHero() {
         <img
           src={lumisIpadImg}
           alt="Lumis Skincare website on an iPad"
-          className="lumis-device lumis-device--ipad"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className={`lumis-device ${imagesReady ? 'lumis-device--ipad' : ''}`}
           style={{
             position: 'absolute',
             top: '45%',
