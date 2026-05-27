@@ -551,9 +551,11 @@
   .nl-hero-monogram {
     top: auto !important;
     left: auto !important;
-    bottom: calc(280px - 10vh) !important;
-    right: calc(20px + 10vw) !important;
-    transform: scale(0.715) !important;
+    bottom: calc(260px - 8vh) !important;
+    /* Push the wrapper further inward so the L's lower-right script swash
+       isn't clipped by the hero's overflow: hidden on narrow viewports. */
+    right: clamp(56px, 22vw, 110px) !important;
+    transform: scale(0.55) !important;
     transform-origin: bottom right;
     z-index: 2 !important;
   }

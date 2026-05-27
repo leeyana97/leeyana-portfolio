@@ -102,23 +102,36 @@ function AXSHeroCarousel() {
   const containerRef = useRef<HTMLDivElement>(null);
   const inView = useInView(containerRef, { once: true, amount: 0.25 });
   const [progress, setProgress] = useState(0);
-  const [dims, setDims] = useState({ phoneWidth: 220, orbitRadius: 220, settleOffset: 210 });
+  const [dims, setDims] = useState({ phoneWidth: 220, orbitRadius: 220, settleOffset: 210, yShift: 0 });
   const [reducedMotion, setReducedMotion] = useState(false);
   // Guard so the timeline starts exactly once.
   const startedRef = useRef(false);
 
-  // Track viewport for responsive sizing
+  // Track viewport for responsive sizing.
+  //
+  // Mobile breakpoints (< 768px) are tuned so the resulting carousel height
+  // (= phoneWidth × 2.05) matches TripSync's mobile mockup container of
+  // clamp(280px, 78vw, 460px). This keeps the gap between mockup and stats
+  // strip consistent across all 4 case-study heroes on mobile.
+  //   phoneWidth 137 → containerHeight 281 (matches 280px min)
+  //   phoneWidth 224 → containerHeight 459 (matches 460px max)
+  // orbitRadius/settleOffset scaled proportionally from the originals so
+  // the orbital animation feel is preserved at the smaller phone size.
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
       if (w < 480) {
-        setDims({ phoneWidth: 204, orbitRadius: 140, settleOffset: 114 });
+        // Mobile: phones 10% smaller than the prior 137 → 123 (containerHeight 252).
+        // yShift 50 = ~20% of containerHeight (5% less down than before).
+        setDims({ phoneWidth: 123, orbitRadius: 85, settleOffset: 69, yShift: 50 });
       } else if (w < 768) {
-        setDims({ phoneWidth: 265, orbitRadius: 218, settleOffset: 168 });
+        // Same 10% reduction at this breakpoint: 224 → 202 (containerHeight 414).
+        // yShift 82 = ~20% of containerHeight.
+        setDims({ phoneWidth: 202, orbitRadius: 166, settleOffset: 128, yShift: 82 });
       } else if (w < 1100) {
-        setDims({ phoneWidth: 312, orbitRadius: 296, settleOffset: 216 });
+        setDims({ phoneWidth: 312, orbitRadius: 296, settleOffset: 216, yShift: 0 });
       } else {
-        setDims({ phoneWidth: 360, orbitRadius: 374, settleOffset: 252 });
+        setDims({ phoneWidth: 360, orbitRadius: 374, settleOffset: 252, yShift: 0 });
       }
     };
     update();
@@ -165,10 +178,13 @@ function AXSHeroCarousel() {
   //   exactly where it started on the orbit. We pre-position the starts so
   //   that those endpoints are at the LEFT / CENTER / RIGHT of the screen.
   const screens = [axsHero2, axsHero1, axsHero3]; // left, center, right
+  // yShift is a vertical offset added uniformly to all phones — used on
+  // mobile to push the whole carousel ~10% lower within its section.
+  // Desktop yShift is 0 so the original layout is preserved.
   const finalConfigs = [
-    { x: -dims.settleOffset, y: 10,  rotate: -6, scale: 1, z: 5  }, // i=0 LEFT
-    { x:  0,                 y: -10, rotate:  0, scale: 1, z: 20 }, // i=1 CENTER
-    { x:  dims.settleOffset, y: 10,  rotate:  6, scale: 1, z: 5  }, // i=2 RIGHT
+    { x: -dims.settleOffset, y: 10  + dims.yShift, rotate: -6, scale: 1, z: 5  }, // i=0 LEFT
+    { x:  0,                 y: -10 + dims.yShift, rotate:  0, scale: 1, z: 20 }, // i=1 CENTER
+    { x:  dims.settleOffset, y: 10  + dims.yShift, rotate:  6, scale: 1, z: 5  }, // i=2 RIGHT
   ];
 
   // The source PNGs include the phone-frame bezel. Approximate aspect ratio
@@ -236,7 +252,12 @@ function AXSHeroCarousel() {
           //   depth    = cos(angle) mapped to 0..1 (cos(0) = 1 → max scale)
           //   y_screen = cos(angle) * ellipseY (front of carousel sits lower)
           const xOrbit = Math.sin(angle) * dims.orbitRadius;
-          const yOrbit = Math.cos(angle) * 18;
+          // Add yShift to the orbital y too (not just the final position),
+          // so the entire animation — spin + settle — happens at the same
+          // vertical offset. Without this, the phones spin around the
+          // centre then drop downward as they settle, which doesn't match
+          // the desktop animation (yShift = 0 on desktop).
+          const yOrbit = Math.cos(angle) * 18 + dims.yShift;
           const depth = (Math.cos(angle) + 1) / 2; // 0 (back) → 1 (front)
           const scaleOrbit = 0.78 + depth * 0.32;
           const opacityOrbit = 0.55 + depth * 0.45;
@@ -292,10 +313,25 @@ function AXSHeroCarousel() {
 }
 
 function CaseStudyHero() {
+  // On mobile we keep the same animated 3-phone carousel (the orbital
+  // math is already responsive via the dims useEffect) — just reorder
+  // it to appear AFTER the text block so the project name reads first.
   return (
-    <section style={{ paddingTop: '120px', paddingBottom: '80px', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-md:!pb-16 max-lg:!px-10">
-      <AXSHeroCarousel />
-      <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '0' }}>
+    <section
+      style={{ paddingTop: '120px', paddingBottom: '80px', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }}
+      className="max-md:!px-6 max-md:!pt-24 max-md:!pb-16 max-lg:!px-10 max-md:!flex max-md:!flex-col"
+    >
+      {/* ─── Carousel — same on desktop and mobile, ordered after the text on mobile. ─── */}
+      <div className="max-md:!order-2">
+        <AXSHeroCarousel />
+      </div>
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+        style={{ marginTop: '0' }}
+        className="max-md:!order-1"
+      >
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           AXS · Vault
         </motion.h1>
@@ -307,9 +343,16 @@ function CaseStudyHero() {
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#4296CE', border: '1px solid #275A7C', backgroundColor: 'rgba(66, 150, 206, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
           <span>&nbsp;&nbsp;·&nbsp;&nbsp;Collaboration</span>
         </motion.p>
-        <motion.div variants={fadeUpItem}>
-          <StatsStrip />
-        </motion.div>
+      </motion.div>
+
+      {/* ─── Stats strip — sibling of text/mockup so it can be ordered last on mobile. */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="max-md:!order-3"
+      >
+        <StatsStrip />
       </motion.div>
     </section>
   );

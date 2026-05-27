@@ -7,7 +7,7 @@ import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySideb
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
 import lumisIpadImg from '../../imports/Lumis_ipad.webp';
-import lumisLaptopImg from '../../imports/Lumis_laptop_v2.jpg';
+import lumisLaptopImg from '../../imports/Lumis_laptop.webp';
 
 // Hero entrance lives in CSS keyframes (see CaseStudyHero) rather than
 // framer-motion, because the route-level <AnimatePresence> in routes.tsx
@@ -80,8 +80,15 @@ function CaseStudyHero() {
   // The site's <AnimatePresence> in PageTransitionLayout suppresses inner
   // framer-motion mount animations. Use plain CSS keyframes for the hero
   // slide-in — those fire on mount unconditionally.
+  //
+  // On mobile we keep the same iPad + MacBook layered showcase, just
+  // reordered to appear AFTER the text block so the project name reads
+  // first without any scroll. The clamp() heights already scale.
   return (
-    <section style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10">
+    <section
+      style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }}
+      className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10 max-md:!flex max-md:!flex-col"
+    >
       <style>{`
         @keyframes lumisSlideInLeft {
           from { opacity: 0; transform: translate(-100vw, calc(-50% + 20px)); }
@@ -104,15 +111,25 @@ function CaseStudyHero() {
         @media (prefers-reduced-motion: reduce) {
           .lumis-device { animation: none; opacity: 1; transform: translateY(-50%); }
         }
+        /* Mobile-only: nudge both devices 5% leftward (desktop unchanged).
+           Inline styles set the desktop lefts (laptop 38%, iPad 0%); these
+           media-query rules use !important to override on viewports < 768px. */
+        @media (max-width: 767.98px) {
+          .lumis-device--laptop { left: 33% !important; }
+          .lumis-device--ipad   { left: -5% !important; }
+        }
       `}</style>
-      {/* iPad + MacBook showcase. */}
+      {/* ─── Layered iPad + MacBook showcase — same on desktop and mobile,
+          ordered after the text block on mobile. ─── */}
       <div
+        className="max-md:!order-2 max-md:!h-[clamp(280px,78vw,460px)]"
         style={{
           position: 'relative',
           width: '100%',
           maxWidth: '1280px',
           margin: '0 auto',
           height: 'clamp(440px, 58vw, 660px)',
+          overflow: 'hidden',
         }}
       >
         {/* MacBook — behind, right side, slides in from the right edge. */}
@@ -149,7 +166,13 @@ function CaseStudyHero() {
           }}
         />
       </div>
-      <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '60px' }}>
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+        style={{ marginTop: '60px' }}
+        className="max-md:!order-1 max-md:!mt-0"
+      >
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           Lumis Skincare
         </motion.h1>
@@ -160,9 +183,16 @@ function CaseStudyHero() {
           <span>Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#C4A265', border: '1px solid #8A6F40', backgroundColor: 'rgba(196, 162, 101, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>Web</span>
         </motion.p>
-        <motion.div variants={fadeUpItem}>
-          <StatsStrip />
-        </motion.div>
+      </motion.div>
+
+      {/* ─── Stats strip — sibling of text/mockup so it can be ordered last on mobile. */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="max-md:!order-3"
+      >
+        <StatsStrip />
       </motion.div>
     </section>
   );
@@ -170,12 +200,15 @@ function CaseStudyHero() {
 
 // Inline stats strip — sits under the hero meta (matches TripSync structure).
 function StatsStrip() {
-  const stats = [
+  // `desktopSuffix` is hidden on mobile to keep the last stat's label on a
+  // single line, matching TripSync's strip height. "Success Rate (Key Tasks)"
+  // wraps to 2 lines below 768px; "Success Rate" alone fits one line.
+  const stats: Array<{ number: string; label: string; desktopSuffix?: string }> = [
     { number: '2 Weeks', label: 'Duration' },
     { number: '10', label: 'Users Interviewed' },
     { number: '5', label: 'Users Tested' },
     { number: '10', label: 'Tasks Tested' },
-    { number: '100%', label: 'Success Rate (Key Tasks)' },
+    { number: '100%', label: 'Success Rate', desktopSuffix: '(Key Tasks)' },
   ];
   return (
     <div
@@ -201,7 +234,10 @@ function StatsStrip() {
           className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
         >
           <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
-          <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
+          <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            {s.label}
+            {s.desktopSuffix && <span className="max-md:!hidden"> {s.desktopSuffix}</span>}
+          </p>
         </div>
       ))}
     </div>

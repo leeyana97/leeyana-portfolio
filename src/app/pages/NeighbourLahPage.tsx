@@ -61,12 +61,34 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
 }
 
 function CaseStudyHero() {
+  // On mobile we keep the single overview image but reorder it AFTER the
+  // text block so the project name reads first without any scroll.
   return (
-    <section style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10">
-      <div style={{ width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', overflow: 'hidden', margin: '0 auto' }}>
-        <img src={neighbourlahImg} alt="NeighbourLah app overview" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+    <section
+      style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }}
+      className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10 max-md:!flex max-md:!flex-col"
+    >
+      <div
+        style={{ width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', overflow: 'hidden', margin: '0 auto' }}
+        className="max-md:!order-2 max-md:!mt-6 max-md:!h-[clamp(280px,78vw,460px)]"
+      >
+        <img
+          src={neighbourlahImg}
+          alt="NeighbourLah app overview"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+          // Mobile uses `object-contain` so the tall portrait image scales
+          // down to fit the clamped 281px container without cropping.
+          // Desktop keeps `object-cover` for the original full-bleed crop.
+          className="max-md:!object-contain"
+        />
       </div>
-      <motion.div variants={staggerContainer} initial="hidden" animate="show" style={{ marginTop: '60px' }}>
+      <motion.div
+        variants={staggerContainer}
+        initial="hidden"
+        animate="show"
+        style={{ marginTop: '60px' }}
+        className="max-md:!order-1 max-md:!mt-0"
+      >
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           NeighbourLah
         </motion.h1>
@@ -77,9 +99,16 @@ function CaseStudyHero() {
           <span>Tools: Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#E8632B', border: '1px solid #A03F12', backgroundColor: 'rgba(232, 99, 43, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
         </motion.p>
-        <motion.div variants={fadeUpItem}>
-          <StatsStrip />
-        </motion.div>
+      </motion.div>
+
+      {/* ─── Stats strip — sibling of text/mockup so it can be ordered last on mobile. */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="max-md:!order-3"
+      >
+        <StatsStrip />
       </motion.div>
     </section>
   );

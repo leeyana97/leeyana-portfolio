@@ -228,12 +228,17 @@ function ScreenMockup({ label, opacity = 1, src = tripsyncImg, videoSrc, maxWidt
 
 // ─── 1. Case Study Hero ─────────────────────────────────────────────────────
 function CaseStudyHero() {
+  // On mobile we hide the layered 4-phone desktop showcase and render a
+  // simpler 2-phone flex layout (splash + Overlap Dashboard) AFTER the
+  // text block, so the project name reads first without any scroll.
   return (
-    <section style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }} className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10">
-      {/* Layered 4-phone showcase. Each phone slides in from the right and
-          fades up, staggered right → left, triggered when the showcase
-          enters the viewport. */}
+    <section
+      style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }}
+      className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10 max-md:!flex max-md:!flex-col"
+    >
+      {/* ─── Desktop showcase (4 phones, absolute) — hidden on mobile ─── */}
       <div
+        className="max-md:!hidden"
         style={{
           width: '100%',
           maxWidth: '1280px',
@@ -271,6 +276,7 @@ function CaseStudyHero() {
         initial="hidden"
         animate="show"
         style={{ marginTop: '60px' }}
+        className="max-md:!order-1 max-md:!mt-0"
       >
         <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
           TripSync
@@ -282,9 +288,92 @@ function CaseStudyHero() {
           <span>Tools: Figma, Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#4ADE80', border: '1px solid #1B7A4E', backgroundColor: 'rgba(74, 222, 128, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
         </motion.p>
-        <motion.div variants={fadeUpItem}>
-          <StatsStrip />
-        </motion.div>
+      </motion.div>
+
+      {/* ─── Mobile showcase (3-phone layered overlap) ─────────────────────
+          Uses absolute positioning to mirror the desktop showcase
+          structure. Flex can't hold "big phones + clear overlap + nothing
+          clipped" all at once because each phone's flex layout box has to
+          consume its declared width, forcing the row to overflow when the
+          phones are large. With absolute positioning each phone gets an
+          explicit `left` / `top` / `width`, so the overlap geometry is
+          independent of layout flow.
+
+          Z-stack (matches desktop): Phone 2 z=2, Phone 3 z=3, Phone 4 z=4.
+          Sizing (Phone 4 dominant): 32 / 28 / 55 — proportional to the
+          desktop height ratios 78 / 86 / 168 normalised so Phone 4
+          extends only ~5% past the right edge (clipped by overflow-x: clip).
+
+          Animation: identical contract to desktop (initial opacity + x slide
+          from heroPhones, fires on mount via `animate` so the cascade plays
+          regardless of where the showcase sits in the viewport). */}
+      <div
+        className="hidden max-md:!block max-md:!order-2"
+        style={{
+          position: 'relative',
+          width: '100%',
+          // Tall enough to fit Phone 4 at its natural 1:2 aspect when its
+          // width is 55% of viewport. clamp keeps it responsive.
+          height: 'clamp(280px, 78vw, 460px)',
+          marginTop: '32px',
+          marginBottom: '8px',
+        }}
+        aria-hidden="true"
+      >
+        {[
+          // Each entry pairs a heroPhones source with explicit positioning.
+          // Overlap ratios chosen to mirror the desktop layout:
+          //   Desktop Phone 2 ends up ~50% covered by Phone 3
+          //   (height-driven widths + the 6%/32% lefts create deep overlap).
+          //   Desktop Phone 3 is only ~8% covered by Phone 4.
+          // We replicate that on mobile so the peek effect matches.
+          //   Phone 2 width 32% → Phone 3 starts 16% earlier (50% of 32%).
+          //   Phone 3 right ends at 44% → Phone 4 starts at 42% (~7% of 28%).
+          { phone: heroPhones[1], left: '-8%', top: '12%',  width: '67%' }, // Phone 2 — moved 10% up (22→12%)
+          { phone: heroPhones[2], left: '18%', top: '22%',  width: '48%' }, // Phone 3 — moved 10% up (32→22%)
+          { phone: heroPhones[3], left: '52%', top: '-10%', width: '74%' }, // Phone 4 — moved 10% up (0→-10%); extends slightly above container top
+        ].map(({ phone, left, top, width }) => (
+          <div
+            key={phone.id}
+            style={{
+              position: 'absolute',
+              left,
+              top,
+              width,
+              zIndex: phone.z,
+            }}
+          >
+            <motion.img
+              src={phone.src}
+              alt={phone.alt}
+              initial={{ opacity: phone.initialOpacity, x: phone.initialX }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                duration: phone.duration,
+                ease: PHONE_EASE,
+                // Phone 3 enters slightly later on mobile (0.8s vs desktop's
+                // 0.5s) so it feels like a deliberate follow-up to Phone 4.
+                delay: phone.id === 3 ? 0.8 : phone.delay,
+              }}
+              style={{
+                width: '100%',
+                height: 'auto',
+                display: 'block',
+                pointerEvents: 'none',
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* ─── Stats strip — sibling of text/mockup so it can be ordered last on mobile. */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.55, ease: PHONE_EASE }}
+        className="max-md:!order-3"
+      >
+        <StatsStrip />
       </motion.div>
     </section>
   );
