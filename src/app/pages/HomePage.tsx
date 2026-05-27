@@ -656,20 +656,20 @@ const projects = [
   {
     id: 'PRODUCT DESIGN',
     slug: '/axs',
-    name: 'AXS · Billing Feature',
+    name: 'AXS · Vault',
     description: 'Smart billing: split, track, and manage payments together, designed for individuals and couples.',
     tags: ['iOS App', 'Fintech', 'Feature Design', 'Collaboration'],
     image: axsHeroImg,
     imageMobile: axsHeroMobileImg,
     imageHeight: 520,
-    alt: 'AXS Billing Feature',
+    alt: 'AXS Vault',
     // When a project has a brand logo, the ProjectCard h3 renders the
     // logo image in place of the brand-name prefix, with `nameSuffix`
     // taking over the rest of the title. `name` is still used as the
     // fallback / accessible name.
     nameLogoSrc: 'https://res.cloudinary.com/dvunn40le/image/upload/q_auto,f_auto/AXS_logo_jrvfwm.jpg',
     nameLogoAlt: 'AXS',
-    nameSuffix: '· Billing Feature',
+    nameSuffix: '· Vault',
   },
 ];
 
