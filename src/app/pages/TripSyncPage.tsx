@@ -507,10 +507,10 @@ function ProblemStatement() {
 function ResearchFindings() {
   const findings = [
     { title: 'Chaotic Group Coordination', desc: 'Groups coordinate across WhatsApp, calls, and spreadsheets with no clear picture of where decisions stand.' },
-    { title: 'App Fragmentation', desc: 'The average planning process involved 3–5 different tools, creating friction and lost information.' },
+    { title: 'App Fragmentation', desc: 'The average planning process involved 3 to 5 different tools, creating friction and lost information.' },
     { title: 'Flexibility Over Rigidity', desc: 'Users wanted soft preferences without feeling locked into hard commitments early on.' },
     { title: 'AI & Social Already in the Mix', desc: 'TikTok and Instagram drive discovery; ChatGPT helps with itineraries but everything still gets pieced together manually.' },
-    { title: 'Unified Platform Demand', desc: 'The strongest signal — users wanted one place for preferences, itinerary, communication, and bookings.' },
+    { title: 'Unified Platform Demand', desc: 'The strongest signal: users wanted one place for preferences, itinerary, communication, and bookings.' },
   ];
   // Per-note colour + rotation. Five dark tints (brown, teal, purple, red,
   // blue), each with a matching tape colour and a slight rotation.
@@ -692,7 +692,7 @@ function DesignDecisions() {
       number: '03',
       name: 'Opt-Out Feature',
       bullets: [
-        'Members flag solo time during planning, not after. This was the most socially uncomfortable part of group travel — building opt-out into planning makes it visible without confrontation.',
+        'Members flag solo time during planning, not after. This was the most socially uncomfortable part of group travel. Building opt-out into planning makes it visible without confrontation.',
       ],
       imageFirst: false,
     },
@@ -798,13 +798,13 @@ function UsabilityTesting() {
   const inlineStats = [
     { number: '5', label: 'Participants' },
     { number: '9', label: 'Tasks' },
-    { number: '2–4', label: 'Difficulty Rating (out of 7)' },
+    { number: '2 to 4', label: 'Difficulty Rating (out of 7)' },
   ];
   const insights = [
-    'Task completion was unanimous — the core journey held together from start to finish.',
+    'Task completion was unanimous. The core journey held together from start to finish.',
     'The preference quiz was described as "surprisingly fun," turning a potential chore into something closer to a game.',
     'The overlap dashboard gave participants an immediate sense of momentum and shared direction.',
-    "The opt-out feature needed clearer labelling — two participants weren't sure if it removed them from the whole trip or just one activity.",
+    "The opt-out feature needed clearer labelling. Two participants weren't sure if it removed them from the whole trip or just one activity.",
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -859,7 +859,7 @@ function Iterations() {
     {
       label: 'Activity Preferences',
       problem: 'Drag handles misled every participant into attempting to drag.',
-      solution: 'Replaced with tap-to-rank — tap to assign priority, tap again to remove.',
+      solution: 'Replaced with tap-to-rank. Tap to assign priority, tap again to remove.',
       beforeImg: tripsyncPrefQuizOldImg,
       afterImg: tripsyncPrefQuizNewImg,
     },
@@ -880,7 +880,7 @@ function Iterations() {
     {
       label: 'Objection View',
       problem: 'Two equal buttons caused hesitation.',
-      solution: 'Reduced to one primary action — decision paralysis resolved.',
+      solution: 'Reduced to one primary action. Decision paralysis resolved.',
       beforeImg: tripsyncObjectionOldImg,
       afterImg: tripsyncObjectionNewImg,
     },
@@ -970,7 +970,7 @@ function FinalScreens() {
       highlights: [
         { heading: 'In-App Conflict Resolution', text: 'Members raise objections in-app; planner sees flagged items with suggested alternatives.' },
         { heading: 'Smart Alternative Suggestions', text: 'Planner receives app-suggested alternatives based on group preferences, or can input a custom replacement.' },
-        { heading: 'Live Group Sync', text: 'Updated itinerary is instantly visible to the whole group — no manual re-sharing.' },
+        { heading: 'Live Group Sync', text: 'Updated itinerary is instantly visible to the whole group, with no manual re-sharing.' },
       ],
       imageFirst: false,
     },
@@ -1070,7 +1070,7 @@ function Impact() {
 // ─── 10. Reflections ─────────────────────────────────────────────────────────
 function Reflections() {
   const cards = [
-    { number: '01', title: 'Edge Cases', body: 'Group travel has enormous variety — trip size, duration, and social dynamics all need further iteration.' },
+    { number: '01', title: 'Edge Cases', body: 'Group travel has enormous variety. Trip size, duration, and social dynamics all need further iteration.' },
     { number: '02', title: 'Multi-Role Design', body: 'Syncing planner and joiner flows was the core challenge; future iterations will explore deeper role-specific features.' },
     { number: '03', title: 'Iterative Testing', body: 'Continued testing with larger, more diverse groups will surface real-world edge cases for v2.' },
   ];

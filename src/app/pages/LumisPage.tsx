@@ -271,7 +271,7 @@ function ProblemStatement() {
         The Problem.
       </h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        Users need a way to confidently identify and commit to skincare products suited to their specific skin profile, because the current online shopping experience offers no reliable way to match products to multiple overlapping concerns, check compatibility with their existing routine, or trial before committing — forcing them to rely on friends, social media, and costly trial and error instead.
+        Users need a way to confidently identify and commit to skincare products suited to their specific skin profile, because the current online shopping experience offers no reliable way to match products to multiple overlapping concerns, check compatibility with their existing routine, or trial before committing. This forces them to rely on friends, social media, and costly trial and error instead.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {painPoints.map((p) => (
@@ -287,10 +287,10 @@ function ProblemStatement() {
 
 function ResearchFindings() {
   const findings = [
-    { title: 'Trust is people-driven, not platform-driven', desc: "Shoppers trust peer recommendations from platforms like Reddit over brand-owned content because there's no financial incentive for contributors — it's people passionately sharing honest opinions." },
+    { title: 'Trust is people-driven, not platform-driven', desc: "Shoppers trust peer recommendations from platforms like Reddit over brand-owned content because there's no financial incentive for contributors. It's people passionately sharing honest opinions." },
     { title: 'Suitability comes through costly trial and error', desc: 'Finding the right skincare products involves a lot of trial and error, which translates to wasted money. Users lack reliable ways to assess product suitability before committing.' },
     { title: 'Online shopping lacks guidance to commit', desc: 'Skincare e-commerce sites are difficult to navigate, with products scattered across overlapping subcategories. Users struggle to figure out where specific products fall, making confident purchasing difficult.' },
-    { title: 'Price filters but doesn’t decide', desc: "Budget matters, but users are willing to splurge when branding and presentation signal quality. Price alone doesn't drive the purchase decision — perception of value does." },
+    { title: 'Price filters but doesn’t decide', desc: "Budget matters, but users are willing to splurge when branding and presentation signal quality. Price alone doesn't drive the purchase decision. Perception of value does." },
     { title: 'Skin knowledge is self-taught and uneven', desc: 'Some users understand nuances like the difference between hydration and moisturisation through personal analysis, while others have gaps. Knowledge levels vary widely.' },
   ];
   // Per-note colour + rotation: five dark tints (brown, teal, purple, red,
@@ -465,10 +465,10 @@ function UsabilityTesting() {
     { number: '4', label: 'Key Tasks Focused' },
   ];
   const insights = [
-    'Testing covered the end-to-end skincare shopping experience — from identifying products tailored to skin type and concerns, to trialling, comparing, and committing to a routine across 10 tasks with 5 participants.',
-    'The four key tasks that directly challenged the problem statement — the Skin Profile Quiz, Trial Sample request, Review Filtering, and Ingredient Compatibility check — each achieved a 100% completion rate.',
+    'Testing covered the end-to-end skincare shopping experience: from identifying products tailored to skin type and concerns, to trialling, comparing, and committing to a routine across 10 tasks with 5 participants.',
+    'The four key tasks that directly challenged the problem statement (the Skin Profile Quiz, Trial Sample request, Review Filtering, and Ingredient Compatibility check) each achieved a 100% completion rate.',
     'Positive sentiment clustered around the aesthetics, ingredient features, and the quiz flow. Participants described the discovery experience as calmer and more guided than typical skincare sites.',
-    'The friction that surfaced was rarely task failure. It was labelling that didn’t match user expectations, feedback signals that felt too subtle to confirm an action, and discoverability gaps for features that existed but weren’t easily found — observations that drove the four targeted iterations in the following section.',
+    'The friction that surfaced was rarely task failure. It was labelling that didn’t match user expectations, feedback signals that felt too subtle to confirm an action, and discoverability gaps for features that existed but weren’t easily found. These observations drove the four targeted iterations in the following section.',
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -580,7 +580,7 @@ function Impact() {
 function Reflections() {
   const cards = [
     { number: '01', title: 'Quiz Design Requires Careful Constraint Choices', body: 'The skin type quiz exposed how a seemingly simple single-select constraint can introduce inaccuracy. Designing personalisation tools means being especially careful about where to constrain and where to allow flexibility.' },
-    { number: '02', title: 'Feedback Signals Need to Match User Expectations', body: "The trial sample finding showed that e-commerce conventions like cart animations have become user expectations. Subtle updates to counters aren't enough — the interface needs to actively confirm that an action was registered." },
+    { number: '02', title: 'Feedback Signals Need to Match User Expectations', body: "The trial sample finding showed that e-commerce conventions like cart animations have become user expectations. Subtle updates to counters aren't enough. The interface needs to actively confirm that an action was registered." },
     { number: '03', title: "Discoverability Can't Be Assumed", body: 'Multiple tasks revealed that features users needed were present but not found. Labels, placement, and visual hierarchy all need to be designed for first-time discovery, not just for repeat use.' },
     { number: '04', title: 'Input Differentiation is Critical', body: 'The ingredient compatibility tool showed that when multiple input fields serve different purposes, they need strong visual and textual differentiation to avoid users defaulting to the most familiar pattern.' },
   ];

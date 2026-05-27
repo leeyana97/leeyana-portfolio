@@ -2,13 +2,15 @@ import { motion, useInView } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
-import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
-import axsHero1 from '../../imports/AXS_hero_casestudy_1.webp';
-import axsHero2 from '../../imports/AXS_hero_casestudy_2.webp';
-import axsHero3 from '../../imports/AXS_hero_casestudy_3.webp';
+// All three carousel phones loaded from Cloudinary so the images can be
+// updated without redeploying. (Previously they were bundled by Vite
+// from src/imports/.)
+const axsHero1 = 'https://res.cloudinary.com/dvunn40le/image/upload/AXS_hero_image_1_1_rhxmqb.png';
+const axsHero2 = 'https://res.cloudinary.com/dvunn40le/image/upload/AXS_hero_casestudy_2_1_n0mulz.png';
+const axsHero3 = 'https://res.cloudinary.com/dvunn40le/image/upload/AXS_hero_casestudy_3_rcc9kp.png';
 import marcusJourneyMap from '../../imports/AXS_marcus_journey_map.png';
 import hanaJourneyMap from '../../imports/AXS_hana_journey_map.png';
 import firdausJourneyMap from '../../imports/AXS_firdaus_journey_map.png';
@@ -38,7 +40,14 @@ function SectionLabel({ text }: { text: string }) {
         position: 'sticky',
         top: '72px',
         zIndex: 5,
-        backgroundColor: 'inherit',
+        // Explicit opaque bg via a CSS variable. `backgroundColor: 'inherit'`
+        // was leaking content from behind the sticky bar (the big editorial
+        // text inside the journey-map images was bleeding through above
+        // the persona names). The leak happened because the parent FadeUp
+        // wrapper creates a stacking context via its GSAP `opacity` animation,
+        // which broke the `inherit` chain. Using a CSS var lets each section
+        // override the colour if its bg differs from the page default.
+        backgroundColor: 'var(--cs-section-bg, #0D0D0D)',
         paddingTop: '12px',
         paddingBottom: '12px',
       }}
@@ -53,8 +62,149 @@ function SectionLabel({ text }: { text: string }) {
   );
 }
 
-// AXS uses placeholder screens since no mockup image was provided
-function ScreenPlaceholder({ label, opacity = 1, text }: { label?: string; opacity?: number; text?: string }) {
+// Annotation rectangle that draws itself around a region of the screen
+// when the parent scrolls into view, then breathes with a soft glow.
+//
+// Implementation:
+//   - dasharray/dashoffset are set via React's inline `style` (which
+//     beats any class-level rule on specificity and is guaranteed to
+//     reach the DOM). Previous attempts using a <style> block within
+//     the component weren't taking effect on the SVG <path>.
+//   - The draw-on is a CSS `transition` on stroke-dashoffset — toggling
+//     `active` from false → true triggers it. No @keyframes required.
+//   - The pulse glow uses a single named @keyframes (defined in
+//     theme.css) attached as a CSS animation once the draw starts.
+function AnimatedHighlight({
+  left,
+  top,
+  width,
+  height,
+}: {
+  left: string;
+  top: string;
+  width: string;
+  height: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // 400ms hold so the user registers the image first.
+          window.setTimeout(() => setActive(true), 400);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Rounded rectangle path drawn as a single closed path.
+  // M 8 2 L 192 2 A 6 6 0 0 1 198 8 L 198 92 A 6 6 0 0 1 192 98
+  // L 8 98 A 6 6 0 0 1 2 92 L 2 8 A 6 6 0 0 1 8 2 Z
+  const rectPath =
+    'M 8 2 L 192 2 A 6 6 0 0 1 198 8 L 198 92 A 6 6 0 0 1 192 98 ' +
+    'L 8 98 A 6 6 0 0 1 2 92 L 2 8 A 6 6 0 0 1 8 2 Z';
+
+  // Perimeter (viewBox units): 4 sides + 4 quarter-circle corners.
+  //   4 × (line segment) = (184 + 84) × 2 = 536
+  //   4 × (πr/2) with r=6 = 4 × ~9.42 = ~37.7
+  //   total ≈ 573.7 → rounded to 574 for the dasharray
+  const PERIMETER = 574;
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden="true"
+      style={{
+        position: 'absolute',
+        left,
+        top,
+        width,
+        height,
+        pointerEvents: 'none',
+        zIndex: 5,
+      }}
+    >
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 0 200 100"
+        preserveAspectRatio="none"
+        style={{ position: 'absolute', inset: 0, overflow: 'visible' }}
+      >
+        <path
+          d={rectPath}
+          fill="none"
+          stroke="rgba(220, 38, 38, 0.9)"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+          // Inline styles win over presentation attributes / sheet rules.
+          // active=false → full dashoffset hides the stroke entirely.
+          // active=true  → dashoffset 0 with transition reveals it.
+          style={{
+            strokeDasharray: PERIMETER,
+            strokeDashoffset: active ? 0 : PERIMETER,
+            transition: 'stroke-dashoffset 1400ms cubic-bezier(0.4, 0, 0.2, 1)',
+            // Pulse glow starts 1400 ms after the draw begins (right as
+            // it completes). Defined in src/styles/theme.css.
+            animation: active ? 'axsHighlightPulse 2s ease-in-out 1400ms infinite' : 'none',
+          }}
+        />
+      </svg>
+    </div>
+  );
+}
+
+// AXS uses placeholder screens since no mockup image was provided.
+// Reused across the iteration blocks for three rendering modes:
+//   - `videoSrc` → lazy-loaded muted demo video
+//   - `imgSrc`   → static screenshot, optionally with an animated
+//                  highlight overlay (and a label below the frame)
+//   - default    → placeholder text inside the iPhone bezel
+function ScreenPlaceholder({
+  label,
+  opacity = 1,
+  text,
+  videoSrc,
+  imgSrc,
+  imgAlt,
+  highlight,
+  captionBelow,
+}: {
+  label?: string;
+  opacity?: number;
+  text?: string;
+  videoSrc?: string;
+  imgSrc?: string;
+  imgAlt?: string;
+  highlight?: { left: string; top: string; width: string; height: string };
+  captionBelow?: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Lazy-load: only start playing when the video is ~30% visible, pause
+  // when it scrolls out. preload="none" means we don't even hit the
+  // network until the first play() call, which keeps the page light.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !videoSrc) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { entry.isIntersecting ? v.play().catch(() => undefined) : v.pause(); },
+      { threshold: 0.3 },
+    );
+    observer.observe(v);
+    return () => observer.disconnect();
+  }, [videoSrc]);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div style={{ width: '100%', maxWidth: '260px' }}>
@@ -77,11 +227,47 @@ function ScreenPlaceholder({ label, opacity = 1, text }: { label?: string; opaci
           <div style={{ position: 'absolute', left: '-2px', top: '34%', width: '3px', height: '9%', background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)', borderRadius: '2px 1px 1px 2px', zIndex: 0 }} />
           <div style={{ position: 'relative', width: '100%', aspectRatio: '9 / 19.5', backgroundColor: '#161616', border: `1px solid ${C.cardBorder}`, borderRadius: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', zIndex: 1 }}>
             <div style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', width: '32%', height: '20px', backgroundColor: '#000', borderRadius: '14px', zIndex: 3 }} />
-            <p style={{ fontFamily: F.editorial, fontSize: '15px', color: C.secondary, textAlign: 'center', padding: '20px', lineHeight: 1.4, margin: 0 }}>
-              {text || 'AXS · Vault Feature'}
-            </p>
+            {videoSrc ? (
+              <video
+                ref={videoRef}
+                src={videoSrc}
+                loop
+                muted
+                playsInline
+                preload="none"
+                aria-label={label ? `${label} demo` : 'AXS Vault feature demo'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+              />
+            ) : imgSrc ? (
+              <>
+                <img
+                  src={imgSrc}
+                  alt={imgAlt || ''}
+                  loading="lazy"
+                  decoding="async"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+                />
+                {highlight && <AnimatedHighlight {...highlight} />}
+              </>
+            ) : (
+              <p style={{ fontFamily: F.editorial, fontSize: '15px', color: C.secondary, textAlign: 'center', padding: '20px', lineHeight: 1.4, margin: 0 }}>
+                {text || 'AXS · Vault Feature'}
+              </p>
+            )}
           </div>
         </div>
+        {captionBelow && (
+          <p style={{
+            fontFamily: F.sans,
+            fontSize: '12px',
+            color: '#8A8A82',
+            margin: '14px 0 0 0',
+            textAlign: 'center',
+            lineHeight: 1.4,
+          }}>
+            {captionBelow}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -235,7 +421,7 @@ function AXSHeroCarousel() {
         overflow: 'hidden',
         backgroundColor: C.bg,
       }}
-      aria-label="AXS Vault — three screen mockups previewing the feature"
+      aria-label="AXS Vault: three screen mockups previewing the feature"
     >
       <div
         style={{
@@ -342,8 +528,34 @@ function CaseStudyHero() {
         style={{ marginTop: '0' }}
         className="max-md:!order-1"
       >
-        <motion.h1 variants={fadeUpItem} style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 7vw, 96px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 0.95, letterSpacing: '-0.02em', fontWeight: 400 }}>
-          AXS · Vault
+        <motion.h1
+          variants={fadeUpItem}
+          style={{
+            fontFamily: F.editorial,
+            fontSize: 'clamp(42px, 7vw, 96px)',
+            color: C.primary,
+            margin: '0 0 20px 0',
+            lineHeight: 0.95,
+            letterSpacing: '-0.02em',
+            fontWeight: 400,
+            // inline-flex puts the logo and "· Vault" on the same row;
+            // align-items: center keeps the logo's vertical midline on
+            // the same axis as the text x-height for a balanced read.
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.15em',
+          }}
+        >
+          <img
+            src="https://res.cloudinary.com/dvunn40le/image/upload/q_auto,f_auto/AXS_logo_jrvfwm.jpg"
+            alt="AXS"
+            // height: 0.85em matches the cap-height of the Playfair
+            // Display "Vault" word so the logo reads visually balanced
+            // beside it (not too dominant or too small). Scales with
+            // the h1's clamp() font-size automatically.
+            style={{ height: '0.85em', width: 'auto', display: 'block' }}
+          />
+          <span>· Vault</span>
         </motion.h1>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: 'clamp(17px, 2vw, 20px)', color: C.secondary, margin: '0 0 24px 0', lineHeight: 1.5 }}>
           Designing a Unified Bill Management Feature for First Jobbers and Young Couples
@@ -411,15 +623,15 @@ function StatsStrip() {
 function ProblemStatement() {
   const painPoints = [
     { title: 'No Structured Bill Handover', desc: 'First jobbers inherit bills from parents through verbal handoffs and password-sharing, with no structured way to take over accounts.' },
-    { title: 'Hidden Visibility Mismatch', desc: "Couples don't want a joint account app, but they need both partners to see what's been paid — leading to double payments and awkward catch-ups." },
-    { title: 'Manual Tracking Across Apps', desc: 'The household bill handler tracks everything across spreadsheets, calendar reminders, and 4–6 separate biller apps every month.' },
+    { title: 'Hidden Visibility Mismatch', desc: "Couples don't want a joint account app, but they need both partners to see what's been paid. This leads to double payments and awkward catch-ups." },
+    { title: 'Manual Tracking Across Apps', desc: 'The household bill handler tracks everything across spreadsheets, calendar reminders, and 4 to 6 separate biller apps every month.' },
     { title: 'Failures Discovered Too Late', desc: 'Missed payments, GIRO failures, and duplicate payments are only discovered after the fact through SMS alerts or casual conversation.' },
   ];
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <h2 className="cs-section-header">The Problem.</h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        First jobbers and young couples in Singapore manage household bills through fragmented, informal systems — verbal handoffs, spreadsheets, scattered biller apps, and memory. AXS already handles bill payments, but offers no way to see what's been paid across a household, inherit bills from parents, or share visibility with a partner without changing who pays what.
+        First jobbers and young couples in Singapore manage household bills through fragmented, informal systems: verbal handoffs, spreadsheets, scattered biller apps, and memory. AXS already handles bill payments, but offers no way to see what's been paid across a household, inherit bills from parents, or share visibility with a partner without changing who pays what.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {painPoints.map((p) => (
@@ -440,7 +652,7 @@ function ResearchFindings() {
     {
       label: 'First Jobber',
       findings: [
-        { title: 'Perception Problem', desc: 'AXS is associated with physical kiosks and an older generation — not with the apps young users pay bills through today.' },
+        { title: 'Perception Problem', desc: 'AXS is associated with physical kiosks and an older generation, not with the apps young users pay bills through today.' },
         { title: 'Notifications as Safety Net', desc: 'Users relied on reminders to know when bills are due. Whichever app reminds them tends to be the app they pay through.' },
         { title: 'Habit Formation', desc: "First jobbers don't stick around long enough to discover features. The first session has to feel effortless and useful, or they're gone." },
       ],
@@ -448,8 +660,8 @@ function ResearchFindings() {
     {
       label: 'Young Couple',
       findings: [
-        { title: 'Hidden Visibility Mismatch', desc: "Couples manage bills informally. They don't want a joint account app — they want both partners to see what's been paid without changing who pays what." },
-        { title: 'Failed Silent Payments', desc: "When one partner can't see what the other has paid, bills get paid twice or missed — creating awkward catch-ups and admin to chase refunds." },
+        { title: 'Hidden Visibility Mismatch', desc: "Couples manage bills informally. They don't want a joint account app. They want both partners to see what's been paid without changing who pays what." },
+        { title: 'Failed Silent Payments', desc: "When one partner can't see what the other has paid, bills get paid twice or missed, creating awkward catch-ups and admin to chase refunds." },
       ],
     },
   ];
@@ -509,22 +721,22 @@ function ResearchFindings() {
 function UserJourneyMaps() {
   const personas = [
     {
-      label: 'Marcus — The Transitioner',
+      label: 'Marcus, The Transitioner',
       caption: 'First jobber inheriting household bills from his parents.',
       image: marcusJourneyMap,
-      alt: "Marcus's journey map — first jobber inheriting household bills",
+      alt: "Marcus's journey map showing a first jobber inheriting household bills",
     },
     {
-      label: 'Hana — The Delegator',
+      label: 'Hana, The Delegator',
       caption: 'Partner who wants to stay informed about household bills without taking over the workload.',
       image: hanaJourneyMap,
-      alt: "Hana's journey map — partner who wants to stay informed without taking over",
+      alt: "Hana's journey map showing a partner who wants to stay informed without taking over",
     },
     {
-      label: 'Firdaus — The Household CFO',
+      label: 'Firdaus, The Household CFO',
       caption: 'The person who tracks and pays all shared bills across multiple apps and spreadsheets.',
       image: firdausJourneyMap,
-      alt: "Firdaus's journey map — tracker of all shared bills across apps and spreadsheets",
+      alt: "Firdaus's journey map showing a tracker of all shared bills across apps and spreadsheets",
     },
   ];
   return (
@@ -655,7 +867,7 @@ function UsabilityTesting() {
     { task: 'Task 5', desc: 'Pay via Vault', rating: '1.9' },
   ];
   const workshopIssues = [
-    { title: 'Folder-first is unintuitive', desc: 'Users expected to see existing bills first, then file them — not build empty folders.' },
+    { title: 'Folder-first is unintuitive', desc: 'Users expected to see existing bills first, then file them, not build empty folders.' },
     { title: 'Mental model: file, don’t create', desc: 'Users expected to have a document or bill first and drag it to a folder. Camera function also felt hidden.' },
     { title: 'Multi-select is missing', desc: 'Adding bills one-by-one is tedious. Users want checkbox/multi-select and bulk-add from My Favourites.' },
     { title: 'Sharing needs more channels', desc: 'Email-only feels limiting. Users want shareable links, multiple invitees at once, and at-a-glance view of who a folder is shared with.' },
@@ -667,7 +879,7 @@ function UsabilityTesting() {
     { number: '3 / 5', label: 'Overall Ease of Use' },
   ];
   return (
-    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.statsBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Usability Testing" />
 
       {/* ─── Round 1: Design Feedback Workshop ──────────────────────────── */}
@@ -679,9 +891,9 @@ function UsabilityTesting() {
         style={{ marginBottom: '96px' }}
       >
         <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 14px 0', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Internal Review</p>
-        <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 1 — Design Feedback Workshop</h3>
+        <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 1: Design Feedback Workshop</h3>
         <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 36px 0', maxWidth: '720px' }}>
-          Before testing with the public, the team ran a design feedback workshop with AXS staff across 5 tasks. Ease of Use ratings used a 1–5 scale (1 = Very Easy, 5 = Very Difficult).
+          Before testing with the public, the team ran a design feedback workshop with AXS staff across 5 tasks. Ease of Use ratings used a 1 to 5 scale (1 = Very Easy, 5 = Very Difficult).
         </p>
         {/* Staggered task cards — each fades up with a 100ms delay between cards.
             Subtle desaturated-gold left border + horizontal rating bar visualise
@@ -802,9 +1014,12 @@ function UsabilityTesting() {
         style={{ marginBottom: '64px' }}
       >
         <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 14px 0', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Public Testing</p>
-        <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 2 — Usability Testing</h3>
+        <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 2: Usability Testing</h3>
+        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 12px 0', maxWidth: '720px' }}>
+          Following the internal workshop, the team iterated on the 5 issues surfaced by AXS staff.
+        </p>
         <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0', maxWidth: '720px' }}>
-          Following the internal workshop, the team conducted usability testing with 5 members of the public — 2 first jobbers and 3 young couples — using their own devices.
+          Usability testing was then conducted with 5 members of the public, including 2 first jobbers and 3 young couples, on their own devices.
         </p>
 
         {/* Test Plan — describes the public usability test setup. */}
@@ -855,34 +1070,54 @@ function UsabilityTesting() {
 }
 
 function Iterations() {
-  const issues = [
+  // `videoBefore` / `videoAfter` are optional. When present, the
+  // ScreenPlaceholder swaps its placeholder text for a lazy-loaded video
+  // that plays only while ~30% visible (auto-pauses when scrolled away).
+  type Issue = {
+    label: string;
+    task: string;
+    successRate: string;
+    problem: string;
+    solution: string;
+    videoBefore?: string;
+    videoAfter?: string;
+  };
+  const issues: Issue[] = [
     {
       label: 'Vault Onboarding Discoverability',
-      task: "Task 1 — You've just opened the app. Show me what's new that you'd want to explore.",
+      task: "Task 1: You've just opened the app. Show me what's new that you'd want to explore.",
       successRate: '2/5 (40%)',
       problem: 'Multiple users skipped past the Vault onboarding pop-up because it looked like an advertisement, which meant they didn’t recognise Vault as the new feature.',
       solution: 'Added a red "New" tag to the Vault tab in the bottom navigation so the feature stands out at first glance, even if users dismiss the introductory pop-up. The tag is dismissed automatically after the user’s first interaction with Vault.',
+      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_1_old_v3_qqijmh.mp4',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_1_new_gevqwr.mp4',
     },
     {
       label: 'Due Date Visibility',
-      task: 'Task 4 — Your bills are all in Vault. Show me how you’d find out what’s due.',
+      task: 'Task 4: Your bills are all in Vault. Show me how you’d find out what’s due.',
       successRate: '1/5 (20%)',
       problem: 'The calendar icon’s purpose isn’t clear. Users found due dates via bill-card status indicators but rarely noticed the calendar at the top of Vault.',
       solution: 'Replaced the plain calendar icon with a calendar-plus-clock to better signal "upcoming due dates." Surfaced the next upcoming due bill on the My Vault home page with a "View all" button. Added a sync icon inside the calendar to connect with Google, iPhone, and other external calendars.',
+      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_4_Calendar_old_apchnv.mp4',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_4_new_jvgg5c.mp4',
     },
     {
       label: 'Single Bill Sharing',
-      task: 'Task 5 — Your son just started his first job and can take over his Singtel bill. Show me how you’d hand it over to him in Vault.',
+      task: 'Task 5: Your son just started his first job and can take over his Singtel bill. Show me how you’d hand it over to him in Vault.',
       successRate: '2/5 (40%)',
       problem: 'There is no way to share a single bill directly. Users have to create a new folder, move the bill in, then share the folder. This felt unintuitive and over-engineered for a one-bill share.',
       solution: 'Allowed users to share individual bills directly rather than requiring them to create a folder first. Folder sharing remains available for grouping multiple bills.',
+      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_5_old_ajua1b.mp4',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_5_new_uhn7dk.mp4',
     },
     {
       label: 'Payment Flow After Handover',
-      task: 'Task 6 — You’re now the son — your parent has just sent you a Singtel bill through Vault. Show me how you’d take it over and pay it.',
+      task: 'Task 6: You’re now the son. Your parent has just sent you a Singtel bill through Vault. Show me how you’d take it over and pay it.',
       successRate: '1/5 (20%)',
       problem: 'The handover experience breaks down at the point of payment. Once a shared bill is accepted, users have no clear in-Vault action to complete it, and must navigate away to Pay Bills and rebuild the transaction manually.',
       solution: 'Added a grey helper note inside each bill detail page: "To make repayment, refer to the details above and go to Pay Bills or My Favourites." This bridges users to the existing payment flow without reworking the payment architecture.',
+      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_6_old_wyudvr.mp4',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_6_new_kbfewj.mp4',
     },
   ];
   return (
@@ -911,11 +1146,19 @@ function Iterations() {
                   <p className="cs-body-text" style={{ margin: 0 }}>{issue.solution}</p>
                 </div>
                 <div
-                  className={mockLeft ? 'lg:order-1' : undefined}
+                  className={`max-md:!grid-cols-1 max-md:!gap-10 ${mockLeft ? 'lg:order-1' : ''}`.trim()}
                   style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}
                 >
-                  <ScreenPlaceholder label="Before" text="Before" />
-                  <ScreenPlaceholder label="After" text="After" />
+                  <ScreenPlaceholder
+                    label="Before"
+                    text="Before"
+                    videoSrc={issue.videoBefore}
+                  />
+                  <ScreenPlaceholder
+                    label="After"
+                    text="After"
+                    videoSrc={issue.videoAfter}
+                  />
                 </div>
               </div>
             </div>
@@ -934,7 +1177,14 @@ function Iterations() {
               </p>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <ScreenPlaceholder text="History on Home" />
+              <ScreenPlaceholder
+                imgSrc="https://res.cloudinary.com/dvunn40le/image/upload/Screenshot_2026-05-19_at_4.44.56_PM_kme8ug.png"
+                imgAlt="AXS app home screen with History tile in the bottom-left of the action grid"
+                captionBelow="History moved to home screen"
+                // History tile is in the second row, first column of the
+                // action grid (below "My Favourites", left of "Top Up").
+                highlight={{ left: '6%', top: '48%', width: '30.6%', height: '12.2%' }}
+              />
             </div>
           </div>
         </div>
@@ -945,14 +1195,14 @@ function Iterations() {
 
 function Impact() {
   const outcomes = [
-    { title: 'Vault Perception Gap Identified', desc: 'Users see Vault as storage, not payment — closing the loop between viewing and paying would unlock AXS’s full value.' },
+    { title: 'Vault Perception Gap Identified', desc: 'Users see Vault as storage, not payment. Closing the loop between viewing and paying would unlock AXS’s full value.' },
     { title: '4 Key Flows Iterated', desc: 'Onboarding, due date visibility, bill sharing, and post-handover payment all received targeted improvements based on test data.' },
-    { title: 'Brand Repositioning Opportunity', desc: 'Many young users don’t realise AXS removes the need to log into each biller’s app — surfacing this through onboarding could reshape how the next generation sees the brand.' },
+    { title: 'Brand Repositioning Opportunity', desc: 'Many young users don’t realise AXS removes the need to log into each biller’s app. Surfacing this through onboarding could reshape how the next generation sees the brand.' },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
-      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
-        "I want to share it with him for that particular bill itself, but it doesn’t seem to have any share button just for one single item over here… I wouldn’t know how to do it."
+      <AnimatedQuote scramble style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
+        "There isn't even a next action for me to make payment over here. I would give up and pay at Singtel separately."
       </AnimatedQuote>
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 64px auto' }}>Usability Test Participant</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
@@ -963,17 +1213,79 @@ function Impact() {
           </div>
         ))}
       </div>
+
+      {/* ─── Process moments — two photos showing the human side of the work.
+          Photos are constrained at ~45% width each so the source resolution
+          doesn't need to stretch. Cloudinary's URL transforms (w_900, q_auto,
+          f_auto) ask the CDN to serve a resized + auto-formatted version,
+          keeping bytes low without us doing any local processing. */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '32px',
+          textAlign: 'left',
+          maxWidth: '960px',
+          margin: '96px auto 0 auto',
+        }}
+        className="max-md:!grid-cols-1 max-md:!gap-8 max-md:!mt-16"
+      >
+        <figure style={{ margin: 0 }}>
+          <img
+            src="https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/Design_feedback_workshop_photo_jjv6he.jpg"
+            alt="The design team walking AXS staff through the Vault feature during a design feedback workshop"
+            loading="lazy"
+            decoding="async"
+            style={{
+              width: '100%',
+              // Both photos share a 4:3 frame so they sit at identical
+              // dimensions in the grid. objectFit:cover crops to fit
+              // without distortion (centred crop by default — most group
+              // photos have the subject in the centre, so this is safe).
+              aspectRatio: '4 / 3',
+              height: 'auto',
+              objectFit: 'cover',
+              display: 'block',
+              borderRadius: '6px',
+              border: `1px solid ${C.cardBorder}`,
+            }}
+          />
+          <figcaption style={{ fontFamily: F.sans, fontSize: '12px', color: '#8A8A82', margin: '14px 0 0 0', lineHeight: 1.5 }}>
+            Walking AXS staff through the Vault feature flows during the design feedback workshop.
+          </figcaption>
+        </figure>
+        <figure style={{ margin: 0 }}>
+          <img
+            src="https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/Final_presentation_photo_ysku1v.jpg"
+            alt="The design team presenting the end-to-end process and final findings to AXS staff"
+            loading="lazy"
+            decoding="async"
+            style={{
+              width: '100%',
+              aspectRatio: '4 / 3',
+              height: 'auto',
+              objectFit: 'cover',
+              display: 'block',
+              borderRadius: '6px',
+              border: `1px solid ${C.cardBorder}`,
+            }}
+          />
+          <figcaption style={{ fontFamily: F.sans, fontSize: '12px', color: '#8A8A82', margin: '14px 0 0 0', lineHeight: 1.5 }}>
+            Sharing the end-to-end process and final findings with the AXS team.
+          </figcaption>
+        </figure>
+      </div>
     </section>
   );
 }
 
 function Reflections() {
   const cards = [
-    { number: '01', title: 'Storage vs. Payment', body: "Vault is currently structured as a storage feature, but users perceive AXS as a payment platform. Closing the loop between viewing a bill in Vault and paying it through AXS would align the feature with the user's actual goal — and unlock the full value of what AXS already does well." },
-    { number: '02', title: "Surfacing AXS's Advantage", body: "Many young users don't realise AXS removes the need to log into each biller's app — surfacing this advantage through onboarding or marketing could reshape how the next generation sees the brand." },
+    { number: '01', title: 'Storage vs. Payment', body: "Vault is currently structured as a storage feature, but users perceive AXS as a payment platform. Closing the loop between viewing a bill in Vault and paying it through AXS would align the feature with the user's actual goal, and unlock the full value of what AXS already does well." },
+    { number: '02', title: "Surfacing AXS's Advantage", body: "Many young users don't realise AXS removes the need to log into each biller's app. Surfacing this advantage through onboarding or marketing could reshape how the next generation sees the brand." },
   ];
   return (
-    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.statsBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Reflections & Next Steps" />
       <StaggerCards style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {cards.map((card) => (
@@ -1037,7 +1349,6 @@ const sidebarItems: SidebarItem[] = [
 export function AXSPage() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
-    <PasswordGate storageKey="axs-unlocked">
     <div style={{ backgroundColor: C.bg, minHeight: '100vh', '--accent-color': '#4296CE' } as React.CSSProperties}>
       <Navigation showBack />
       <div className="cs-layout">
@@ -1057,6 +1368,5 @@ export function AXSPage() {
         </div>
       </div>
     </div>
-    </PasswordGate>
   );
 }

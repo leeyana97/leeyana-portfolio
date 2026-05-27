@@ -114,14 +114,61 @@ export function StaggerCards({
 // Participant quote block with a green accent left border that draws from
 // height 0 → full (0.4s), then the quote text fades in (0.3s). Trigger fires
 // when the block is 20% visible. Plays once.
+//
+// Optional `scramble` prop: when set, the text reveal is replaced with a
+// glyph-scramble effect (same pattern used in the HomePage hero). The
+// component still keeps the border slide-in as a leading beat — the
+// scramble starts right after. Requires `children` to be a plain string
+// when scramble is enabled.
+
+// Scramble support — local mirror of the HomePage helper so AnimatedQuote
+// is self-contained. setInterval ticks at SCRAMBLE_TICK ms; on each tick
+// a growing prefix of the final text is "revealed" and everything past
+// that point renders as a random SCRAMBLE_GLYPHS character. Spaces are
+// preserved so word shape doesn't get destroyed mid-animation.
+const SCRAMBLE_GLYPHS =
+  '!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const SCRAMBLE_TICK = 30;
+const SCRAMBLE_DURATION = 1200;
+
+function scrambleInto(el: HTMLElement, text: string): () => void {
+  const render = (revealed: number) => {
+    let out = '';
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === ' ') { out += ' '; continue; }
+      out += i < revealed ? ch : SCRAMBLE_GLYPHS[(Math.random() * SCRAMBLE_GLYPHS.length) | 0];
+    }
+    el.textContent = out;
+  };
+  let elapsed = 0;
+  render(0);
+  const id = window.setInterval(() => {
+    elapsed += SCRAMBLE_TICK;
+    if (elapsed >= SCRAMBLE_DURATION) {
+      el.textContent = text;
+      window.clearInterval(id);
+      return;
+    }
+    const progress = elapsed / SCRAMBLE_DURATION;
+    render(Math.floor(progress * text.length));
+  }, SCRAMBLE_TICK);
+  return () => {
+    window.clearInterval(id);
+    el.textContent = text;
+  };
+}
+
 export function AnimatedQuote({
   children,
   className,
   style,
+  scramble = false,
 }: {
   children: ReactNode;
   className?: string;
   style?: CSSProperties;
+  scramble?: boolean;
 }) {
   const ref = useRef<HTMLQuoteElement>(null);
   const borderRef = useRef<HTMLDivElement>(null);
@@ -133,9 +180,24 @@ export function AnimatedQuote({
     const textEl = textRef.current;
     if (!el || !borderEl || !textEl) return;
 
+    // Capture the final text once at mount so the scramble has a target
+    // to settle on. `textContent` is used instead of grabbing `children`
+    // directly because children can be a string node — same effect, but
+    // works whether the caller passes a plain string or a ReactNode.
+    const finalText = scramble ? (textEl.textContent ?? '') : '';
+    let cancelScramble: (() => void) | undefined;
+
     const ctx = gsap.context(() => {
       gsap.set(borderEl, { scaleY: 0, transformOrigin: 'top center' });
-      gsap.set(textEl, { opacity: 0 });
+      if (scramble) {
+        // Hide the text completely until the scramble kicks in — gives
+        // the border slide-in a clean entrance with no pre-flash of
+        // the final quote.
+        gsap.set(textEl, { autoAlpha: 0 });
+      } else {
+        gsap.set(textEl, { opacity: 0 });
+      }
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: el,
@@ -144,11 +206,24 @@ export function AnimatedQuote({
         },
       });
       tl.to(borderEl, { scaleY: 1, duration: 0.4, ease: 'power2.out' });
-      tl.to(textEl, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+      if (scramble) {
+        // Reveal the (still-invisible) text container instantly, then
+        // start the glyph scramble so the user sees random characters
+        // rapidly settling into the real quote.
+        tl.set(textEl, { autoAlpha: 1 });
+        tl.call(() => {
+          cancelScramble = scrambleInto(textEl, finalText);
+        });
+      } else {
+        tl.to(textEl, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+      }
     });
 
-    return () => ctx.revert();
-  }, []);
+    return () => {
+      cancelScramble?.();
+      ctx.revert();
+    };
+  }, [scramble]);
 
   return (
     <blockquote

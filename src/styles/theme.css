@@ -630,3 +630,13 @@
 
 }
 
+/* ── AXS "Other Iterations" annotation rectangle ───────────────────────────
+   Soft red drop-shadow halo that breathes around the History tile
+   highlight after the draw-on completes. The draw-on itself is handled
+   inline (CSS transition on stroke-dashoffset) — only the looping pulse
+   needs a named keyframe. */
+@keyframes axsHighlightPulse {
+  0%, 100% { filter: drop-shadow(0 0 3px rgba(220, 38, 38, 0.35)); }
+  50%      { filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.7)); }
+}
+

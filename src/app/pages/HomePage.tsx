@@ -538,7 +538,7 @@ function AboutSection() {
           >
             <img
               src={leeyanaPhoto}
-              alt="Leeyana — UI/UX Designer"
+              alt="Leeyana, UI/UX Designer"
               loading="lazy"
               decoding="async"
               style={{
@@ -626,7 +626,7 @@ const projects = [
     tags: [],
     image: tripsyncHeroImg,
     imageHeight: 620,
-    alt: 'TripSync hero photo — phones on a desk with travel objects',
+    alt: 'TripSync hero photo showing phones on a desk with travel objects',
     phoneFrame: false,
     handMockupImg: tripsyncHeroImg,
     screenImg: tripsyncScreenImg,
@@ -663,6 +663,13 @@ const projects = [
     imageMobile: axsHeroMobileImg,
     imageHeight: 520,
     alt: 'AXS Billing Feature',
+    // When a project has a brand logo, the ProjectCard h3 renders the
+    // logo image in place of the brand-name prefix, with `nameSuffix`
+    // taking over the rest of the title. `name` is still used as the
+    // fallback / accessible name.
+    nameLogoSrc: 'https://res.cloudinary.com/dvunn40le/image/upload/q_auto,f_auto/AXS_logo_jrvfwm.jpg',
+    nameLogoAlt: 'AXS',
+    nameSuffix: '· Billing Feature',
   },
 ];
 
@@ -770,10 +777,30 @@ function ProjectCard({ project }: { project: typeof projects[0] }) {
               letterSpacing: '-0.01em',
               lineHeight: 1.15,
               fontWeight: 400,
+              // inline-flex puts an optional brand logo inline with the
+              // rest of the title; align-items: center keeps the logo's
+              // vertical midline on the same axis as the text x-height.
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.15em',
+              flexWrap: 'wrap',
             }}
             className="max-md:!text-[24px]"
           >
-            {project.name}
+            {('nameLogoSrc' in project && project.nameLogoSrc) ? (
+              <>
+                <img
+                  src={project.nameLogoSrc}
+                  alt={('nameLogoAlt' in project && project.nameLogoAlt) || ''}
+                  // height: 0.85em ties the logo size to the h3's
+                  // clamp() font-size — scales naturally on mobile/desktop.
+                  style={{ height: '0.85em', width: 'auto', display: 'block' }}
+                />
+                <span>{('nameSuffix' in project && project.nameSuffix) || ''}</span>
+              </>
+            ) : (
+              project.name
+            )}
           </h3>
         </div>
         <p
