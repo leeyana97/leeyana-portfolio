@@ -510,19 +510,19 @@ function UserJourneyMaps() {
   const personas = [
     {
       label: 'Marcus — The Transitioner',
-      caption: '26 · Investment Analyst — First jobber inheriting household bills from his parents.',
+      caption: 'First jobber inheriting household bills from his parents.',
       image: marcusJourneyMap,
       alt: "Marcus's journey map — first jobber inheriting household bills",
     },
     {
       label: 'Hana — The Delegator',
-      caption: '28 · Customer Service Executive — Partner who wants to stay informed about household bills without taking over the workload.',
+      caption: 'Partner who wants to stay informed about household bills without taking over the workload.',
       image: hanaJourneyMap,
       alt: "Hana's journey map — partner who wants to stay informed without taking over",
     },
     {
       label: 'Firdaus — The Household CFO',
-      caption: '30 · Engineer — The person who tracks and pays all shared bills across multiple apps and spreadsheets.',
+      caption: 'The person who tracks and pays all shared bills across multiple apps and spreadsheets.',
       image: firdausJourneyMap,
       alt: "Firdaus's journey map — tracker of all shared bills across apps and spreadsheets",
     },
