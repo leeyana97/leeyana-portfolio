@@ -8,12 +8,28 @@ import { useImagesLoaded } from '../components/useImagesLoaded';
 // All three carousel phones loaded from Cloudinary so the images can be
 // updated without redeploying. (Previously they were bundled by Vite
 // from src/imports/.)
-const axsHero1 = 'https://res.cloudinary.com/dvunn40le/image/upload/AXS_hero_image_1_1_rhxmqb.png';
-const axsHero2 = 'https://res.cloudinary.com/dvunn40le/image/upload/AXS_hero_casestudy_2_1_n0mulz.png';
-const axsHero3 = 'https://res.cloudinary.com/dvunn40le/image/upload/AXS_hero_casestudy_3_rcc9kp.png';
-import marcusJourneyMap from '../../imports/AXS_marcus_journey_map.png';
-import hanaJourneyMap from '../../imports/AXS_hana_journey_map.png';
-import firdausJourneyMap from '../../imports/AXS_firdaus_journey_map.png';
+//
+// Cloudinary transforms (w_900,q_auto,f_auto):
+//   - w_900 caps the served width at 900px. Phones render at most
+//     ~360px (desktop, ≥1100px viewport) — at 2× retina that's 720px,
+//     so 900px is the safe target with no upscaling.
+//   - q_auto picks the optimal quality/size tradeoff per image.
+//   - f_auto serves WebP/AVIF to supporting browsers (5–10× smaller
+//     than the raw PNG); falls back to PNG otherwise.
+// Without these the carousel was waiting on multi-MB raw PNG downloads
+// before the orbital animation could start — on first load the hero
+// looked frozen until the network caught up.
+const axsHero1 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_image_1_1_rhxmqb.png';
+const axsHero2 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_casestudy_2_1_n0mulz.png';
+const axsHero3 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_casestudy_3_rcc9kp.png';
+// Journey maps served from Cloudinary at 3200px wide. These are
+// text-heavy infographics that users click to open at full size and
+// zoom in to read fine touchpoint/quote text — 3200px keeps that text
+// legible even under zoom. q_auto preserves text edges; f_auto serves
+// WebP/AVIF where supported, falling back to PNG.
+const marcusJourneyMap = 'https://res.cloudinary.com/dvunn40le/image/upload/w_3200,q_auto,f_auto/AXS_marcus_journey_map_q785vx.png';
+const hanaJourneyMap = 'https://res.cloudinary.com/dvunn40le/image/upload/w_3200,q_auto,f_auto/AXS_hana_journey_map_cw95jo.png';
+const firdausJourneyMap = 'https://res.cloudinary.com/dvunn40le/image/upload/w_3200,q_auto,f_auto/AXS_firdaus_journey_map_wvncnk.png';
 
 const C = {
   bg: '#0D0D0D',
@@ -752,7 +768,16 @@ function UserJourneyMaps() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Open ${p.label}'s journey map in a new tab to view at full size`}
-              style={{ display: 'block', cursor: 'zoom-in', borderRadius: '6px', overflow: 'hidden' }}
+              style={{
+                display: 'block',
+                cursor: 'zoom-in',
+                borderRadius: '6px',
+                overflow: 'hidden',
+                // 10% smaller than the section width, centred so the
+                // breathing space sits evenly on either side.
+                width: '90%',
+                margin: '0 auto',
+              }}
             >
               <img
                 src={p.image}

@@ -6,7 +6,10 @@ import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, BeforeAfter, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
-import lumisImg from '../../imports/Lumis_portfolio_homepage.png';
+// Lumis homepage screenshot served from Cloudinary (shared with the
+// homepage project card). w_2400 keeps it crisp on retina; q_auto and
+// f_auto compress + format-negotiate per browser.
+const lumisImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_2400,q_auto,f_auto/Lumis_portfolio_homepage_cfmpbm.png';
 import lumisIpadImg from '../../imports/Lumis_ipad.webp';
 import lumisLaptopImg from '../../imports/Lumis_laptop.webp';
 

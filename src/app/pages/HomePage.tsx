@@ -1,5 +1,9 @@
 import leeyanaPhoto from '../../imports/Leeyana_profile_photo.jpg';
-import leeyanaHeroPhoto from '../../imports/Leeyana hero photo v2.JPG';
+// Hero portrait served from Cloudinary at 1200px wide (the photo
+// renders at most ~700px wide on a large desktop hero; at 2× retina
+// that's 1400px, so 1200px is the right ceiling). f_auto serves
+// WebP/AVIF to modern browsers — much smaller than the source JPG.
+const leeyanaHeroPhoto = 'https://res.cloudinary.com/dvunn40le/image/upload/w_1200,q_auto,f_auto/Leeyana_hero_photo_v2_tcrmyh.jpg';
 import { useRouteTransition } from '../routeTransition';
 import { Navigation } from '../components/Navigation';
 import { motion } from 'motion/react';
@@ -16,12 +20,21 @@ import {
   ease,
 } from '../components/Animate';
 import tripsyncScreenImg from '../../imports/Tripsync_home_app-1.png';
-import tripsyncHeroImg from '../../imports/Tripsync_hero_image.png';
-import lumisPhoneImg from '../../imports/Lumis_portfolio_homepage.png';
-import lumisPhoneMobileImg from '../../imports/lumis skincare hero phone.png';
-import neighbourlahImg from '../../imports/Neighbourlah hero image.png';
-import neighbourlahMobileImg from '../../imports/neighbourlah hero phone.png';
-import axsHeroImg from '../../imports/AXS_hero_image.webp';
+// Homepage card hero images served from Cloudinary.
+//   - DESKTOP variants use w_2400 — cards render up to ~1200px wide on
+//     wide desktops, so at 2× retina that's 2400px. 2400 keeps the
+//     thumbnails crisp on high-DPI displays.
+//   - MOBILE variants use w_1600 — viewport is <768px, so even at 3× DPR
+//     (the highest realistic mobile DPR) max display width is ~1440px.
+//     1600 is plenty there and keeps mobile data plans happy.
+//   - q_auto picks optimal quality/size per file.
+//   - f_auto serves WebP/AVIF (5–10× smaller than raw PNG) where supported.
+const tripsyncHeroImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_2400,q_auto,f_auto/Tripsync_hero_image_bdn64x.png';
+const lumisPhoneImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_2400,q_auto,f_auto/Lumis_portfolio_homepage_cfmpbm.png';
+const lumisPhoneMobileImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_1600,q_auto,f_auto/lumis_skincare_hero_phone_zcs0ud.png';
+const neighbourlahImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_2400,q_auto,f_auto/Neighbourlah_hero_image_mgoujg.png';
+const neighbourlahMobileImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_1600,q_auto,f_auto/neighbourlah_hero_phone_rbgfib.png';
+const axsHeroImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_2400,q_auto,f_auto/AXS_hero_image_sxdxgw.png';
 import axsHeroMobileImg from '../../imports/AXS_hero_image_phone.webp';
 
 import { useEffect, useLayoutEffect, useRef } from 'react';
