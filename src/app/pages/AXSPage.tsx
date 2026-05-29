@@ -579,7 +579,6 @@ function CaseStudyHero() {
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
           <span>Tools: Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
           <span style={{ fontFamily: F.sans, fontSize: '13px', color: '#4296CE', border: '1px solid #275A7C', backgroundColor: 'rgba(66, 150, 206, 0.06)', borderRadius: '20px', padding: '4px 12px', whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>iOS App</span>
-          <span>&nbsp;&nbsp;·&nbsp;&nbsp;Collaboration</span>
         </motion.p>
       </motion.div>
 
@@ -591,6 +590,12 @@ function CaseStudyHero() {
         className="max-md:!order-3"
       >
         <StatsStrip />
+        {/* Quiet collaborators credit — sits directly under the stats
+            strip in the same muted register so it reads as a footnote,
+            not a featured element. */}
+        <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#8A8A82', margin: '4px 0 0 0', lineHeight: 1.5 }}>
+          In collaboration with Kathlyn Teh and Sim Mirin.
+        </p>
       </motion.div>
     </section>
   );
@@ -604,6 +609,7 @@ function StatsStrip() {
     { number: '5', label: 'Users Tested' },
     { number: '6', label: 'Tasks Tested' },
     { number: '3', label: 'User Personas' },
+    { number: '3', label: 'Team Members' },
   ];
   return (
     <div
@@ -1167,7 +1173,13 @@ function Iterations() {
                   <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 20px 0', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                     Success rate: <span style={{ color: C.primary }}>{issue.successRate}</span>
                   </p>
-                  <p className="cs-body-text" style={{ margin: '0 0 16px 0' }}>{issue.problem}</p>
+                  {/* ISSUE / SOLUTION eyebrows. Off-white at full opacity
+                      so they read confidently next to the body text;
+                      uppercase + tracked letter-spacing keeps them clearly
+                      label-shaped rather than mistaken for a heading. */}
+                  <p style={{ fontFamily: F.sans, fontSize: '13px', fontWeight: 700, color: '#EBEBE5', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 8px 0' }}>Issue</p>
+                  <p className="cs-body-text" style={{ margin: '0 0 24px 0' }}>{issue.problem}</p>
+                  <p style={{ fontFamily: F.sans, fontSize: '13px', fontWeight: 700, color: '#EBEBE5', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 8px 0' }}>Solution</p>
                   <p className="cs-body-text" style={{ margin: 0 }}>{issue.solution}</p>
                 </div>
                 <div
@@ -1321,6 +1333,12 @@ function Reflections() {
           </div>
         ))}
       </StaggerCards>
+      {/* Closing collaboration note — quiet italic footnote sitting
+          below the reflection cards. No card treatment, just a plain
+          paragraph in the same muted register as other secondary copy. */}
+      <p style={{ fontFamily: F.sans, fontSize: '15px', color: '#8A8A82', fontStyle: 'italic', margin: '32px 0 0 0', lineHeight: 1.7 }}>
+        This was a collaborative project completed with Kathlyn Teh and Sim Mirin. All research, design decisions, and testing were conducted jointly as a team.
+      </p>
     </section>
   );
 }

@@ -173,34 +173,16 @@ function TagPill({ label }: { label: string }) {
 function HeroSection() {
   const headlineRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
-  const nRef = useRef<HTMLSpanElement>(null);
-  const lRef = useRef<HTMLSpanElement>(null);
   const bottomRowRef = useRef<HTMLDivElement>(null);
 
-  // Mount-time animations (was framer-motion before — moved to GSAP so they
-  // play correctly when AnimatePresence wraps the route. AnimatePresence
+  // Mount-time animation for the bottom meta row. Uses GSAP (not
+  // framer-motion) so it plays correctly under AnimatePresence — AP
   // suppresses initial animations on descendant motion components via
-  // PresenceContext, but plain DOM + GSAP is unaffected.)
+  // PresenceContext, but plain DOM + GSAP is unaffected.
   useLayoutEffect(() => {
-    const n = nRef.current;
-    const l = lRef.current;
     const bottom = bottomRowRef.current;
 
     const ctx = gsap.context(() => {
-      if (n) {
-        gsap.fromTo(
-          n,
-          { opacity: 0, x: '-60vw', y: '-50vh' },
-          { opacity: 0.18, x: '-5%', y: '-48%', duration: 1.6, delay: 0.4, ease: 'power2.out' }
-        );
-      }
-      if (l) {
-        gsap.fromTo(
-          l,
-          { opacity: 0, x: '50vw', y: '100vh' },
-          { opacity: 0.18, x: '13%', y: '-30%', duration: 1.6, delay: 0.4, ease: 'power2.out' }
-        );
-      }
       if (bottom) {
         gsap.fromTo(
           bottom,
@@ -321,58 +303,6 @@ function HeroSection() {
             display: 'none',
           }}
         />
-      </div>
-
-      {/* Faint NL watermark — anchored to bottom-left as a background watermark */}
-      <div
-        aria-hidden="true"
-        className="nl-hero-monogram"
-        style={{
-          position: 'absolute',
-          bottom: 'calc(-40px + 20vh)',
-          left: 'calc(-20px + 10vw)',
-          zIndex: 0,
-          pointerEvents: 'none',
-          userSelect: 'none',
-          width: 'clamp(278px, 41.5vw, 595px)',
-          height: 'clamp(194px, 29.1vw, 415px)',
-          mixBlendMode: 'screen',
-        }}
-      >
-        <span
-          ref={nRef}
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            fontFamily: '"Luxurious Script", cursive',
-            fontSize: 'clamp(157px, 23.5vw, 346px)',
-            color: C.primary,
-            lineHeight: 1,
-            fontWeight: 400,
-            letterSpacing: '-0.04em',
-            willChange: 'transform, opacity',
-          }}
-        >
-          N
-        </span>
-        <span
-          ref={lRef}
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            fontFamily: '"Luxurious Script", cursive',
-            fontSize: 'clamp(134px, 20.3vw, 291px)',
-            color: C.primary,
-            lineHeight: 1.6,
-            fontWeight: 400,
-            letterSpacing: '-0.04em',
-            willChange: 'transform, opacity',
-          }}
-        >
-          L
-        </span>
       </div>
 
       {/* Main content */}
@@ -633,41 +563,6 @@ function AboutSection() {
 const projects = [
   {
     id: 'PRODUCT DESIGN',
-    slug: '/tripsync',
-    name: 'TripSync',
-    description: 'A group travel companion app that makes planning together feel effortless.',
-    tags: [],
-    image: tripsyncHeroImg,
-    imageHeight: 620,
-    alt: 'TripSync hero photo showing phones on a desk with travel objects',
-    phoneFrame: false,
-    handMockupImg: tripsyncHeroImg,
-    screenImg: tripsyncScreenImg,
-  },
-  {
-    id: 'PRODUCT DESIGN',
-    slug: '/lumis',
-    name: 'Lumis Skincare',
-    description: 'A calm, considered shopping experience designed around how people actually discover and buy skincare.',
-    tags: [],
-    image: lumisPhoneImg,
-    imageMobile: lumisPhoneMobileImg,
-    imageHeight: 620,
-    alt: 'Lumis Skincare homepage mockup',
-  },
-  {
-    id: 'PRODUCT DESIGN',
-    slug: '/neighbourlah',
-    name: 'NeighbourLah',
-    description: 'A digital space that helps neighbours connect, share, and look out for each other.',
-    tags: [],
-    image: neighbourlahImg,
-    imageMobile: neighbourlahMobileImg,
-    imageHeight: 520,
-    alt: 'NeighbourLah hero photo',
-  },
-  {
-    id: 'PRODUCT DESIGN',
     slug: '/axs',
     name: 'AXS · Vault',
     description: 'Smart billing: split, track, and manage payments together, designed for individuals and couples.',
@@ -683,6 +578,41 @@ const projects = [
     nameLogoSrc: 'https://res.cloudinary.com/dvunn40le/image/upload/q_auto,f_auto/AXS_logo_jrvfwm.jpg',
     nameLogoAlt: 'AXS',
     nameSuffix: '· Vault',
+  },
+  {
+    id: 'PRODUCT DESIGN',
+    slug: '/tripsync',
+    name: 'TripSync',
+    description: 'A group travel companion app that makes planning together feel effortless.',
+    tags: [],
+    image: tripsyncHeroImg,
+    imageHeight: 620,
+    alt: 'TripSync hero photo showing phones on a desk with travel objects',
+    phoneFrame: false,
+    handMockupImg: tripsyncHeroImg,
+    screenImg: tripsyncScreenImg,
+  },
+  {
+    id: 'PRODUCT DESIGN',
+    slug: '/neighbourlah',
+    name: 'NeighbourLah',
+    description: 'A digital space that helps neighbours connect, share, and look out for each other.',
+    tags: [],
+    image: neighbourlahImg,
+    imageMobile: neighbourlahMobileImg,
+    imageHeight: 520,
+    alt: 'NeighbourLah hero photo',
+  },
+  {
+    id: 'PRODUCT DESIGN',
+    slug: '/lumis',
+    name: 'Lumis Skincare',
+    description: 'A calm, considered shopping experience designed around how people actually discover and buy skincare.',
+    tags: [],
+    image: lumisPhoneImg,
+    imageMobile: lumisPhoneMobileImg,
+    imageHeight: 620,
+    alt: 'Lumis Skincare homepage mockup',
   },
 ];
 

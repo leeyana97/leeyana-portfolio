@@ -542,24 +542,7 @@
   );
 }
 
-/* ── Hero NL monogram — mobile repositioning ───────────────────────────────
-   Desktop: anchored bottom-left (z-index: 0) behind text content (z-index: 2).
-   Mobile: anchored to the lower-right, scaled to fit, rendered above the
-   bottom gradient via z-index so mix-blend-mode: screen composites
-   correctly against the dark background.                                    */
 @media (max-width: 768px) {
-  .nl-hero-monogram {
-    top: auto !important;
-    left: auto !important;
-    bottom: calc(260px - 8vh) !important;
-    /* Push the wrapper further inward so the L's lower-right script swash
-       isn't clipped by the hero's overflow: hidden on narrow viewports. */
-    right: clamp(56px, 22vw, 110px) !important;
-    transform: scale(0.55) !important;
-    transform-origin: bottom right;
-    z-index: 2 !important;
-  }
-
   /* Hero photo: full-bleed on mobile, no mask (mask handles desktop only) */
   .hero-photo-wrap {
     width: 100% !important;
