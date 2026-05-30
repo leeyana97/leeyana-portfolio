@@ -1,10 +1,9 @@
-import { motion } from 'motion/react';
-import { useEffect } from 'react';
+import { motion, useInView } from 'motion/react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
-import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
-import { FadeUp, StaggerCards, BeforeAfter, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { FadeUp, StaggerCards, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
 // Lumis homepage screenshot served from Cloudinary (shared with the
 // homepage project card). w_2400 keeps it crisp on retina; q_auto and
@@ -12,10 +11,6 @@ import { useImagesLoaded } from '../components/useImagesLoaded';
 const lumisImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_2400,q_auto,f_auto/Lumis_portfolio_homepage_cfmpbm.png';
 import lumisIpadImg from '../../imports/Lumis_ipad.webp';
 import lumisLaptopImg from '../../imports/Lumis_laptop.webp';
-
-// Hero entrance lives in CSS keyframes (see CaseStudyHero) rather than
-// framer-motion, because the route-level <AnimatePresence> in routes.tsx
-// suppresses inner motion mount animations.
 
 const C = {
   bg: '#0D0D0D',
@@ -57,11 +52,29 @@ function SectionLabel({ text }: { text: string }) {
   );
 }
 
-// Lumis is a website project, so its before/after comparisons render inside a
-// browser-window frame (chrome bar + address pill) rather than a phone shell.
-function WebsiteMockup({ label, opacity = 1 }: { label?: string; opacity?: number }) {
+// Lumis is a website project, so mockups render inside a browser-window
+// frame (chrome bar + address pill) rather than a phone shell. The content
+// area is a fixed 16:10 box so all mockups — image or video — share the
+// same laptop-screen dimensions. `videoSrc` opt-in plays a muted, looping
+// MP4/WebM in-place; we gate play/pause on viewport visibility so off-screen
+// videos don't burn CPU. `src` is still used as the poster frame so the
+// frame size is fixed before the first video frame decodes.
+function WebsiteMockup({ label, opacity = 1, src = lumisImg, videoSrc, videoBottomTrim = 0, imageBottomTrim = 0 }: { label?: string; opacity?: number; src?: string; videoSrc?: string; videoBottomTrim?: number; imageBottomTrim?: number }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { entry.isIntersecting ? video.play().catch(() => {}) : video.pause(); },
+      { threshold: 0.3 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [videoSrc]);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
       <div style={{ width: '100%' }}>
         {label && <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>}
         <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', border: `1px solid ${C.cardBorder}`, backgroundColor: '#161616', opacity }}>
@@ -72,7 +85,29 @@ function WebsiteMockup({ label, opacity = 1 }: { label?: string; opacity?: numbe
             <div style={{ flex: 1, marginLeft: '8px', height: '18px', borderRadius: '6px', backgroundColor: '#2A2A2A' }} />
           </div>
           <div style={{ width: '100%', aspectRatio: '16 / 10', overflow: 'hidden' }}>
-            <img src={lumisImg} alt={label || 'Lumis Skincare website'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+            {videoSrc ? (
+              <video
+                ref={videoRef}
+                src={videoSrc}
+                poster={src}
+                loop
+                muted
+                playsInline
+                preload="none"
+                // `videoBottomTrim` overscales the video vertically; the
+                // parent's overflow:hidden then clips that overshoot off
+                // the bottom (object-position keeps the top of the video
+                // anchored). The 16:10 laptop frame around it is unchanged.
+                style={{ width: '100%', height: `${100 + videoBottomTrim * 100}%`, objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+              />
+            ) : (
+              // `imageBottomTrim` overscales the image vertically; the
+              // parent's overflow:hidden then clips that overshoot off the
+              // bottom (object-position keeps the top anchored). Same
+              // technique used for videos so the laptop frame stays the
+              // same dimensions either way.
+              <img src={src} alt={label || 'Lumis Skincare website'} loading="lazy" decoding="async" style={{ width: '100%', height: `${100 + imageBottomTrim * 100}%`, objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+            )}
           </div>
         </div>
       </div>
@@ -80,6 +115,7 @@ function WebsiteMockup({ label, opacity = 1 }: { label?: string; opacity?: numbe
   );
 }
 
+// ─── 1. Case Study Hero ─────────────────────────────────────────────────────
 function CaseStudyHero() {
   // The site's <AnimatePresence> in PageTransitionLayout suppresses inner
   // framer-motion mount animations. Use plain CSS keyframes for the hero
@@ -87,13 +123,9 @@ function CaseStudyHero() {
   //
   // On mobile we keep the same iPad + MacBook layered showcase, just
   // reordered to appear AFTER the text block so the project name reads
-  // first without any scroll. The clamp() heights already scale.
+  // first without any scroll.
   //
-  // The slide-in CSS keyframes are gated on `imagesReady` — we only
-  // attach the `--ipad` / `--laptop` modifier classes (which set the
-  // `animation-name`) after both images are downloaded AND decoded.
-  // Until then the base `.lumis-device` class keeps them at opacity 0,
-  // so the entrance plays smoothly against in-memory bitmaps.
+  // The slide-in CSS keyframes are gated on `imagesReady`.
   const imagesReady = useImagesLoaded([lumisIpadImg, lumisLaptopImg]);
   return (
     <section
@@ -122,16 +154,12 @@ function CaseStudyHero() {
         @media (prefers-reduced-motion: reduce) {
           .lumis-device { animation: none; opacity: 1; transform: translateY(-50%); }
         }
-        /* Mobile-only: nudge both devices 5% leftward (desktop unchanged).
-           Inline styles set the desktop lefts (laptop 38%, iPad 0%); these
-           media-query rules use !important to override on viewports < 768px. */
         @media (max-width: 767.98px) {
           .lumis-device--laptop { left: 33% !important; }
           .lumis-device--ipad   { left: -5% !important; }
         }
       `}</style>
-      {/* ─── Layered iPad + MacBook showcase — same on desktop and mobile,
-          ordered after the text block on mobile. ─── */}
+      {/* ─── Layered iPad + MacBook showcase ─── */}
       <div
         className="max-md:!order-2 max-md:!h-[clamp(280px,78vw,460px)]"
         style={{
@@ -143,7 +171,6 @@ function CaseStudyHero() {
           overflow: 'hidden',
         }}
       >
-        {/* MacBook — behind, right side, slides in from the right edge. */}
         <img
           src={lumisLaptopImg}
           alt="Lumis Skin Match page on a MacBook"
@@ -155,7 +182,7 @@ function CaseStudyHero() {
           style={{
             position: 'absolute',
             top: '40%',
-            left: '38%',
+            left: '27%',
             width: '72.6%',
             zIndex: 1,
             height: 'auto',
@@ -163,7 +190,6 @@ function CaseStudyHero() {
             pointerEvents: 'none',
           }}
         />
-        {/* iPad — front, left side, slides in from the left edge. */}
         <img
           src={lumisIpadImg}
           alt="Lumis Skincare website on an iPad"
@@ -215,17 +241,13 @@ function CaseStudyHero() {
   );
 }
 
-// Inline stats strip — sits under the hero meta (matches TripSync structure).
+// ─── 2. Stats Strip (inline, sits under hero meta) ──────────────────────────
 function StatsStrip() {
-  // `desktopSuffix` is hidden on mobile to keep the last stat's label on a
-  // single line, matching TripSync's strip height. "Success Rate (Key Tasks)"
-  // wraps to 2 lines below 768px; "Success Rate" alone fits one line.
-  const stats: Array<{ number: string; label: string; desktopSuffix?: string }> = [
+  const stats = [
     { number: '2 Weeks', label: 'Duration' },
     { number: '10', label: 'Users Interviewed' },
     { number: '5', label: 'Users Tested' },
     { number: '10', label: 'Tasks Tested' },
-    { number: '100%', label: 'Success Rate', desktopSuffix: '(Key Tasks)' },
   ];
   return (
     <div
@@ -250,10 +272,32 @@ function StatsStrip() {
           }}
           className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
         >
-          <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
-          <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+          <p
+            style={{
+              fontFamily: F.editorial,
+              fontSize: 'clamp(28px, 3vw, 38px)',
+              color: C.primary,
+              margin: '0 0 6px 0',
+              lineHeight: 1,
+              letterSpacing: '-0.02em',
+              fontWeight: 400,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {s.number}
+          </p>
+          <p
+            style={{
+              fontFamily: F.sans,
+              fontSize: '11px',
+              color: '#8A8A82',
+              margin: 0,
+              lineHeight: 1.4,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+            }}
+          >
             {s.label}
-            {s.desktopSuffix && <span className="max-md:!hidden"> {s.desktopSuffix}</span>}
           </p>
         </div>
       ))}
@@ -261,6 +305,7 @@ function StatsStrip() {
   );
 }
 
+// ─── 3. Problem Statement ───────────────────────────────────────────────────
 function ProblemStatement() {
   const painPoints = [
     { title: 'No reliable skin matching', desc: 'No way to match products to multiple overlapping skin concerns in one place.' },
@@ -288,13 +333,14 @@ function ProblemStatement() {
   );
 }
 
+// ─── 4. What I Found (Research findings — sticky notes) ─────────────────────
 function ResearchFindings() {
   const findings = [
-    { title: 'Trust is people-driven, not platform-driven', desc: "Shoppers trust peer recommendations from platforms like Reddit over brand-owned content because there's no financial incentive for contributors. It's people passionately sharing honest opinions." },
-    { title: 'Suitability comes through costly trial and error', desc: 'Finding the right skincare products involves a lot of trial and error, which translates to wasted money. Users lack reliable ways to assess product suitability before committing.' },
-    { title: 'Online shopping lacks guidance to commit', desc: 'Skincare e-commerce sites are difficult to navigate, with products scattered across overlapping subcategories. Users struggle to figure out where specific products fall, making confident purchasing difficult.' },
-    { title: 'Price filters but doesn’t decide', desc: "Budget matters, but users are willing to splurge when branding and presentation signal quality. Price alone doesn't drive the purchase decision. Perception of value does." },
-    { title: 'Skin knowledge is self-taught and uneven', desc: 'Some users understand nuances like the difference between hydration and moisturisation through personal analysis, while others have gaps. Knowledge levels vary widely.' },
+    { title: 'Trust and discovery are people-driven, not platform-driven', desc: 'Users trust friends and organic social content over brand claims. Reviews feel untrustworthy when they appear incentivised or disconnected from real skin experience.' },
+    { title: 'Suitability is determined by trial and error at personal cost', desc: "There's no reliable way to predict whether a product will work before buying. Compatibility is figured out on skin, often at the cost of wasted money and reactions." },
+    { title: 'Online shopping lacks the guidance needed to commit confidently', desc: 'Users are overwhelmed by options, confused by pricing inconsistencies, and let down by incomplete product pages. Without meaningful platform guidance, they default to friends and social media to decide.' },
+    { title: "Price filters, but doesn't decide", desc: "Budget shapes every purchase but doesn't drive decisions alone. Users spend more on validated products; a lower price lowers the risk, a higher price raises the stakes." },
+    { title: 'Skin knowledge is self-taught and uneven', desc: 'Users vary widely in how well they understand their own skin. This gap directly affects how confidently they shop and how exposed they are to bad purchases.' },
   ];
   // Per-note colour + rotation: five dark tints (brown, teal, purple, red,
   // blue), each with a matching tape colour and a slight rotation.
@@ -307,7 +353,7 @@ function ResearchFindings() {
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Research Findings" />
+      <SectionLabel text="What I Found" />
       <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
         {findings.map((f, i) => {
           const s = noteStyles[i % noteStyles.length];
@@ -334,124 +380,108 @@ function ResearchFindings() {
   );
 }
 
-function SolutionStatement() {
-  return (
-    <section style={{ backgroundColor: C.bg, padding: '120px 80px', paddingTop: '120px', paddingBottom: '120px' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10 max-lg:!py-24">
-      <SectionLabel text="Solution Statement" />
-      <p style={{
-        fontFamily: F.editorial,
-        fontSize: 'clamp(28px, 3.8vw, 48px)',
-        color: C.primary,
-        lineHeight: 1.3,
-        letterSpacing: '-0.01em',
-        fontWeight: 400,
-        margin: 0,
-        maxWidth: '1080px',
-      }}>
-        To design a skincare e-commerce website that provides a personalised skin-matching and product discovery system that surfaces compatible recommendations across multiple skin concerns and enables low-risk trialling before full purchase commitment.
-      </p>
-    </section>
-  );
-}
-
-function InformationArchitecture() {
-  const categories = [
+// ─── 5. Design Decisions ────────────────────────────────────────────────────
+function DesignDecisions() {
+  const features = [
     {
-      name: 'Creams',
-      products: [
-        'Dr.Jart+ Cicapair Tiger Grass Cream',
-        'Laneige Water Bank Blue Hyaluronic Cream',
-        'COSRX Advanced Snail 92 All in One Cream',
-        "Kiehl's Ultra Facial Cream",
-        'Hada Labo Gokujyun Hyaluronic Acid Lotion',
-      ],
+      number: '01',
+      name: 'Skin Profile Quiz',
+      body: 'Every user privately completes a skin profile quiz before seeing recommendations. Collecting skin type, concerns, and a bare-skin photo eliminates guesswork and ensures the site matches products to the individual, not a generic profile.',
     },
     {
-      name: 'Serums',
-      products: [
-        'Innisfree Retinol Cica Moisture Recovery Serum',
-        'Sulwhasoo Concentrated Ginseng Renewing Serum',
-        'Beauty of Joseon Glow Serum with Propolis',
-        'La Roche-Posay Hyalu B5 Serum',
-        'SKII Facial Treatment Essence',
-      ],
+      number: '02',
+      name: 'Personalised Recommendations',
+      body: "Quiz results surface a ranked, match-percentage product list tailored to the user's specific skin type and concerns. Users can retake the quiz or refine results at any time.",
     },
     {
-      name: 'Toners',
-      products: [
-        'Some By Mi AHA BHA PHA Miracle Toner',
-        "Kiehl's Calendula Herbal Extract Toner",
-        'The Ordinary Glycolic Acid 7% Toning Solution',
-      ],
+      number: '03',
+      name: 'Trial Before Commitment',
+      body: 'Every recommended product can be sampled at a fraction of the full price before committing to a full purchase. This directly addresses the core barrier: the financial and skin risk of buying blind.',
     },
     {
-      name: 'Cleansers',
-      products: [
-        'CeraVe Hydrating Facial Cleanser',
-        'COSRX Low pH Good Morning Gel Cleanser',
-        'DHC Deep Cleansing Oil',
-      ],
+      number: '04',
+      name: 'Ingredient Comparison Tool',
+      body: 'Users can compare any two products side by side, including products they already own from outside the Lumis catalogue. Ingredient compatibility is surfaced clearly, removing the need to research externally.',
     },
     {
-      name: 'Masks',
-      products: [
-        'Innisfree Jeju Volcanic Pore Clay Mask',
-        'Laneige Lip Sleeping Mask EX Berry',
-      ],
+      number: '05',
+      name: 'Rewards Programme',
+      body: 'Beyond the core purchase flow, the design includes a loyalty system built to reinforce the ritual mindset and encourage long-term retention. Members progress through four tiers: Seed, Bloom, Glow, and Radiance, earning points on every purchase and unlocking exclusive rewards as they go.',
     },
   ];
   return (
-    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Information Architecture" />
-      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 64px 0', maxWidth: '720px' }}>
-        10 users were asked to sort 20 products into categories, with 1 user failing to name the categories of products they had sorted. Below are the results from 9 users.
-      </p>
-
-      {/* Tree-style layout: parent label connected to 5 category cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}>
-        {/* Parent node */}
-        <div style={{
-          padding: '14px 28px',
-          border: `1px solid ${C.cardBorder}`,
-          backgroundColor: C.statsBg,
-          fontFamily: F.sans,
-          fontSize: '12px',
-          color: C.primary,
-          letterSpacing: '0.14em',
-          textTransform: 'uppercase',
-          borderRadius: '4px',
-        }}>
-          Product Type
-        </div>
-        {/* Vertical connector down from parent */}
-        <div style={{ width: '1px', height: '32px', backgroundColor: C.cardBorder }} className="max-md:!hidden" />
-        {/* Horizontal spanning line above category cards */}
-        <div style={{ width: '90%', maxWidth: '1200px', height: '1px', backgroundColor: C.cardBorder, marginBottom: '0' }} className="max-md:!hidden" />
-
-        <StaggerCards
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '16px', width: '100%', marginTop: '0' }}
-          className="max-md:!grid-cols-1 max-md:!gap-4 max-lg:!grid-cols-2 max-lg:!gap-4"
+    <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Design Decisions" />
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1.2fr',
+          gap: '80px',
+          alignItems: 'center',
+        }}
+        className="max-md:!grid-cols-1 max-md:!gap-12 max-lg:!grid-cols-1 max-lg:!gap-12"
+      >
+        {/* Overlapping browser-frame mockups (Lumis is a web product) */}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            minHeight: '460px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          className="max-md:!min-h-[340px]"
         >
-          {categories.map((cat) => (
-            <div key={cat.name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              {/* Vertical drop from horizontal spanning line */}
-              <div style={{ width: '1px', height: '32px', backgroundColor: C.cardBorder }} className="max-md:!hidden" />
-              <div style={{
-                width: '100%',
+          <div
+            style={{
+              position: 'absolute',
+              left: '0%',
+              top: '4%',
+              width: '78%',
+              transform: 'rotate(-3deg)',
+              zIndex: 1,
+              opacity: 0.85,
+            }}
+          >
+            <WebsiteMockup src="https://res.cloudinary.com/dvunn40le/image/upload/w_1600,q_auto,f_auto/lumis_final_rewards_nedo9x.png" imageBottomTrim={0.15} />
+          </div>
+          <div
+            style={{
+              position: 'absolute',
+              right: '0%',
+              bottom: '4%',
+              width: '78%',
+              transform: 'rotate(2.5deg)',
+              zIndex: 2,
+            }}
+          >
+            <WebsiteMockup src="https://res.cloudinary.com/dvunn40le/image/upload/w_1600,q_auto,f_auto/lumis_final_compare_uahxhl.png" />
+          </div>
+        </div>
+
+        {/* 2x2 grid of decision cards */}
+        <StaggerCards
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '16px',
+          }}
+          className="max-md:!grid-cols-1"
+        >
+          {features.map((feat) => (
+            <div
+              key={feat.number}
+              style={{
                 border: `1px solid ${C.cardBorder}`,
-                backgroundColor: C.statsBg,
-                padding: '24px 20px',
-                borderRadius: '4px',
-              }}>
-                <h3 style={{ fontFamily: F.editorial, fontSize: '22px', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.2, fontWeight: 400 }}>{cat.name}</h3>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {cat.products.map((p) => (
-                    <li key={p} style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, lineHeight: 1.5 }}>
-                      {p}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                padding: '24px',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#C4A265', margin: '0 0 14px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
+              <h3 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{feat.name}</h3>
+              <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: 0 }}>{feat.body}</p>
             </div>
           ))}
         </StaggerCards>
@@ -460,165 +490,241 @@ function InformationArchitecture() {
   );
 }
 
+// ─── 6. Usability Testing (TripSync prose style) ────────────────────────────
 function UsabilityTesting() {
-  const stats = [
+  const inlineStats = [
     { number: '5', label: 'Participants' },
-    { number: '10', label: 'Tasks Tested' },
+    { number: '10', label: 'Tasks' },
     { number: '100%', label: 'Success Rate (Key Tasks)' },
-    { number: '4', label: 'Key Tasks Focused' },
   ];
   const insights = [
-    'Testing covered the end-to-end skincare shopping experience: from identifying products tailored to skin type and concerns, to trialling, comparing, and committing to a routine across 10 tasks with 5 participants.',
-    'The four key tasks that directly challenged the problem statement (the Skin Profile Quiz, Trial Sample request, Review Filtering, and Ingredient Compatibility check) each achieved a 100% completion rate.',
-    'Positive sentiment clustered around the aesthetics, ingredient features, and the quiz flow. Participants described the discovery experience as calmer and more guided than typical skincare sites.',
-    'The friction that surfaced was rarely task failure. It was labelling that didn’t match user expectations, feedback signals that felt too subtle to confirm an action, and discoverability gaps for features that existed but weren’t easily found. These observations drove the four targeted iterations in the following section.',
-  ];
-  return (
-    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Usability Testing" />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px', marginBottom: '64px' }} className="max-md:!grid-cols-2 max-md:!gap-8 max-lg:!grid-cols-2 max-lg:!gap-8">
-        {stats.map((s) => (
-          <div key={s.label}>
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 5vw, 64px)', color: C.primary, margin: '0 0 8px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.4 }}>{s.label}</p>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '800px' }}>
-        {insights.map((insight, i) => (
-          <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>{insight}</p>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Iterations() {
-  const issues = [
-    {
-      label: 'Skin Profile Quiz',
-      task: 'Complete the Skin Profile Quiz as a First-Time User',
-      successRate: '100% (5/5)',
-      problem: '2/5 users wanted to select more than one skin type (e.g. combination + sensitive) but the quiz only allowed a single selection. Both proceeded with one selection but the constraint introduced inaccuracy into their recommendations.',
-      solution: 'Remove the "sensitive" button from skin type since sensitivity is already represented under "Redness and sensitivity" in the skin concern section. This means skin type is more about oil production (Dry, Oily, Combination, or Normal).',
-    },
-    {
-      label: 'Trial Sample Feedback',
-      task: 'Request a Trial Sample from Quiz Recommendations',
-      successRate: '100% (5/5)',
-      problem: '3/5 users did not notice that the cart icon counter updates when a sample is added, as there was no visible indication. They expected a motion animation from the product to the cart, as seen on other e-commerce sites.',
-      solution: 'Add a press animation when the button is clicked and transform the button state to "✓ Sample Added!" briefly on click before reverting.',
-    },
-    {
-      label: 'Review Filter Discoverability',
-      task: 'Filter Product Reviews by Skin Type',
-      successRate: '100% (5/5)',
-      problem: '2/5 users had difficulty finding their way to the specific product page to access written reviews and the skin type filter. Both expected a review discovery path that didn’t require navigating to an individual product page.',
-      solution: 'Under the "Loved by the Community" UGC section on the homepage, add a "Read reviews →" link, linking directly to the reviews section of that product page.',
-    },
-    {
-      label: 'Ingredient Compare Input',
-      task: 'Check Ingredient Compatibility with an Existing Product',
-      successRate: '100% (5/5)',
-      problem: '2/5 users typed their external toner’s name into the site’s global search bar first, rather than the dedicated "your own product" input inside the Compare tool. The input exists but is not visually distinct enough to be discovered without prompting.',
-      solution: 'Update the placeholder to "Search for Lumis Skincare product to compare..." making it clear this bar is not for external products. Apply a dashed border and plus (+) icon to the external input, rename the button to "Add your own", add a label "Not sold on Lumis." below it, and show a one-time tooltip on first visit.',
-    },
+    'Task completion across all 4 key tasks was unanimous. The core journey held together from discovering products to trialling and comparing them.',
+    'The skin profile quiz was the most positively received feature. Participants responded well to the interactive bare-skin photo upload and concern selection mapped to a face diagram.',
+    'The ingredient comparison tool generated strong interest. Participants found the side-by-side layout intuitive once they located the correct input. Discoverability of the external product input was a recurring point of friction.',
+    'Friction was consistently about labelling, feedback, and discoverability rather than flow. Users knew what they wanted to do; they just needed clearer signposting to do it.',
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Top Issues Found & Changes Made" />
-      <h2 className="cs-section-header">What Changed & Why</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
-        {issues.map((issue) => (
-          <div key={issue.label}>
-            <p className="cs-category-label">{issue.label}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: '0 0 8px 0', fontStyle: 'italic', maxWidth: '760px' }}>
-              Task: {issue.task}
-            </p>
-            <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 20px 0', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Success Rate: <span style={{ color: C.primary }}>{issue.successRate}</span>
-            </p>
-            <p className="cs-body-text" style={{ margin: '0 0 16px 0', maxWidth: '760px' }}>{issue.problem}</p>
-            <p className="cs-body-text" style={{ margin: '0 0 40px 0', maxWidth: '760px' }}>{issue.solution}</p>
-            <BeforeAfter
-              style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}
-              className="max-md:!grid-cols-1 max-md:!gap-8 max-lg:!grid-cols-1 max-lg:!gap-8"
-              before={<WebsiteMockup label="Before" />}
-              after={<WebsiteMockup label="After" />}
-            />
+      <SectionLabel text="Usability Testing" />
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          flexWrap: 'wrap',
+          rowGap: '20px',
+          marginBottom: '48px',
+          paddingBottom: '28px',
+          borderBottom: `1px solid ${C.cardBorder}`,
+        }}
+      >
+        {inlineStats.map((s, i) => (
+          <div
+            key={s.label}
+            style={{
+              paddingLeft: i > 0 ? '32px' : 0,
+              paddingRight: '32px',
+              borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
+            }}
+            className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
+          >
+            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
           </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '820px' }}>
+        {insights.map((insight, i) => (
+          <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>
+            {insight}
+          </p>
         ))}
       </div>
     </section>
   );
 }
 
-function Impact() {
-  const outcomes = [
-    { title: 'Labelling friction identified', desc: 'Words used in the interface did not always match what users expected, causing momentary confusion.' },
-    { title: 'Insufficient interface feedback', desc: 'Users completed actions but the interface did not respond visibly enough to confirm success.' },
-    { title: 'Discoverability issues surfaced', desc: 'Features existed on the website but users could not find them easily or did not notice them without extra effort.' },
-    { title: '4 of 4 key tasks achieved 100% success', desc: 'All highlighted tasks achieved full completion while still surfacing actionable improvements for iteration.' },
+// ─── 7. Top Issues & Iterations (side-by-side Before/After) ─────────────────
+function Iterations() {
+  const issues: { label: string; problem: string; solution: string; beforeImg?: string; afterImg?: string; beforeVideo?: string; afterVideo?: string; beforeTrim?: number; afterTrim?: number }[] = [
+    {
+      label: 'Skin Profile Quiz',
+      problem: 'Users wanted to select multiple skin types but the quiz only allowed one, introducing inaccuracy into their recommendations.',
+      solution: 'Remove "Sensitive" from skin type since sensitivity is already captured under "Redness & Sensitivity" in skin concerns. Skin type now focuses on oil production: Dry, Oily, Combination, or Normal.',
+      beforeImg: 'https://res.cloudinary.com/dvunn40le/image/upload/w_1600,q_auto,f_auto/Task_1_old_lumis_ti6fs3.png',
+      afterImg: 'https://res.cloudinary.com/dvunn40le/image/upload/w_1600,q_auto,f_auto/Task_1_new_lumis_yyqtf8.png',
+    },
+    {
+      label: 'Trial Sample Feedback',
+      problem: "Users didn't notice the cart counter updating when a sample was added, expecting a visible motion animation like other e-commerce sites.",
+      solution: 'Add a press animation on click and briefly change the button state to "✓ Sample Added!" before reverting.',
+      beforeVideo: 'https://res.cloudinary.com/dvunn40le/video/upload/w_1600,q_auto,f_auto/Task_2_old_lumis_d7bauh.mp4',
+      beforeTrim: 0.08,
+      afterVideo: 'https://res.cloudinary.com/dvunn40le/video/upload/w_1600,q_auto,f_auto/Task_2_new_lumis_hibi82.mp4',
+      afterTrim: 0.08,
+    },
+    {
+      label: 'Review Filter Discoverability',
+      problem: "Users couldn't find their way to a specific product page to access written reviews and the skin type filter, expecting a path that didn't require navigating there first.",
+      solution: 'Add a "Read reviews →" link under each product in the "Loved by the Community" section, linking directly to that product\'s reviews tab.',
+      beforeVideo: 'https://res.cloudinary.com/dvunn40le/video/upload/w_1600,q_auto,f_auto/Task_3_old_lumis_ss213q.mp4',
+      afterVideo: 'https://res.cloudinary.com/dvunn40le/video/upload/w_1600,q_auto,f_auto/Task_3_new_lumis_kabq34.mp4',
+    },
+    {
+      label: 'Ingredient Compare Input',
+      problem: 'Users typed their external product into the global search bar instead of the "Your own" input inside the Compare tool, which wasn\'t distinct enough to find.',
+      solution: 'Update the placeholder to "Search for Lumis Skincare product to compare..." and apply a dashed border, plus (+) icon, and "Not sold on Lumis." label to the external input. Show a one-time tooltip on first visit.',
+      beforeImg: 'https://res.cloudinary.com/dvunn40le/image/upload/w_1600,q_auto,f_auto/Task_4_old_lumis_ti9u8e.png',
+      afterImg: 'https://res.cloudinary.com/dvunn40le/image/upload/w_1600,q_auto,f_auto/Task_4_new_lumis_b8lj8r.png',
+    },
   ];
-  return (
-    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
-      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 4.5vw, 52px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.1, letterSpacing: '-0.02em', fontWeight: 400, textAlign: 'center' }}>
-        User Satisfaction
-      </h2>
-      <p style={{ fontFamily: F.sans, fontSize: 'clamp(17px, 2vw, 20px)', color: C.primary, margin: '0 auto 72px auto', lineHeight: 1.6, maxWidth: '780px', textAlign: 'center' }}>
-        Overall satisfaction was high across all 5 participants. Aesthetic, ingredient features, and the quiz flow received particularly strong positive sentiment.
-      </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', maxWidth: '1080px', margin: '0 auto' }} className="max-md:!grid-cols-1">
-        {outcomes.map((o) => (
-          <div key={o.title} style={{ border: `1px solid ${C.cardBorder}`, padding: '28px' }}>
-            <h4 style={{ fontFamily: F.editorial, fontSize: '22px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{o.title}</h4>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{o.desc}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Reflections() {
-  const cards = [
-    { number: '01', title: 'Quiz Design Requires Careful Constraint Choices', body: 'The skin type quiz exposed how a seemingly simple single-select constraint can introduce inaccuracy. Designing personalisation tools means being especially careful about where to constrain and where to allow flexibility.' },
-    { number: '02', title: 'Feedback Signals Need to Match User Expectations', body: "The trial sample finding showed that e-commerce conventions like cart animations have become user expectations. Subtle updates to counters aren't enough. The interface needs to actively confirm that an action was registered." },
-    { number: '03', title: "Discoverability Can't Be Assumed", body: 'Multiple tasks revealed that features users needed were present but not found. Labels, placement, and visual hierarchy all need to be designed for first-time discovery, not just for repeat use.' },
-    { number: '04', title: 'Input Differentiation is Critical', body: 'The ingredient compatibility tool showed that when multiple input fields serve different purposes, they need strong visual and textual differentiation to avoid users defaulting to the most familiar pattern.' },
-  ];
+  const tagStyle: React.CSSProperties = {
+    fontFamily: F.sans,
+    fontSize: '11px',
+    letterSpacing: '0.16em',
+    textTransform: 'uppercase',
+    color: '#8A8A82',
+    margin: '0 0 16px 0',
+    display: 'block',
+  };
+  const sideText: React.CSSProperties = {
+    fontFamily: F.sans,
+    fontSize: '15px',
+    color: C.primary,
+    lineHeight: 1.6,
+    margin: '20px 0 0 0',
+    maxWidth: '420px',
+  };
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Reflections & Next Steps" />
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
-        {cards.map((card) => (
-          <div key={card.number} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
-            <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 16px 0', letterSpacing: '0.08em' }}>{card.number}</p>
-            <h3 style={{ fontFamily: F.editorial, fontSize: '22px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{card.title}</h3>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{card.body}</p>
+      <SectionLabel text="Top Issues & Iterations" />
+      <h2 className="cs-section-header">
+        What Changed & Why
+      </h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
+        {issues.map((issue, i) => (
+          <div
+            key={issue.label}
+            style={i > 0 ? { borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' } : undefined}
+          >
+            <p className="cs-category-label" style={{ marginBottom: '32px' }}>{issue.label}</p>
+            <div
+              style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'start' }}
+              className="max-md:!grid-cols-1 max-md:!gap-10"
+            >
+              {/* Before */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={tagStyle}>Before</span>
+                <WebsiteMockup src={issue.beforeImg} videoSrc={issue.beforeVideo} videoBottomTrim={issue.beforeTrim} />
+                <p style={sideText}>{issue.problem}</p>
+              </div>
+              {/* After */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={tagStyle}>After</span>
+                <WebsiteMockup src={issue.afterImg} videoSrc={issue.afterVideo} videoBottomTrim={issue.afterTrim} />
+                <p style={sideText}>{issue.solution}</p>
+              </div>
+            </div>
           </div>
         ))}
-      </StaggerCards>
+      </div>
     </section>
   );
 }
 
+// ─── 8. Impact (pull quote + outcome statements) ────────────────────────────
+function Impact() {
+  const outcomes = [
+    'All 4 key tasks achieved 100% success rate, validating the core journey from discovery to commitment.',
+    'Friction was categorised into three clear types: labelling mismatches, insufficient interface feedback, and discoverability gaps. Each was directly addressed in the iterated designs.',
+    'The skin profile quiz and ingredient comparison tool were the most positively received features, confirming that personalisation and transparency are the right design bets for this product.',
+  ];
+  // Drive both quote+bar animations from a single observer on the wrapper.
+  // Tracking the bar directly fails because its initial scaleY: 0 collapses
+  // its bounding box to 0px, which IntersectionObserver doesn't see as
+  // "in view". Watching the stable-sized wrapper avoids that race.
+  const quotesRef = useRef<HTMLDivElement>(null);
+  const quotesInView = useInView(quotesRef, { once: true, margin: '-100px' });
+  return (
+    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
+      {/* Two participant quotes sharing one continuous accent bar.
+          AnimatedQuote draws its bar per blockquote, so for the "one bar
+          covers both" treatment we render the bar manually on a wrapper
+          and put plain motion blockquotes inside. The bar scaleY animates
+          in (mirrors AnimatedQuote's beat), then each quote fades in. */}
+      <div ref={quotesRef} style={{ position: 'relative', paddingLeft: '24px', maxWidth: '900px', margin: '0 auto 32px auto', textAlign: 'left' }}>
+        <motion.div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: '4px',
+            bottom: '4px',
+            width: '3px',
+            backgroundColor: 'var(--accent-color, #2E9461)',
+            transformOrigin: 'top center',
+            willChange: 'transform',
+          }}
+          initial={{ scaleY: 0 }}
+          animate={quotesInView ? { scaleY: 1 } : { scaleY: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        />
+        <motion.blockquote
+          initial={{ opacity: 0 }}
+          animate={quotesInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.3, delay: 0.4, ease: 'easeOut' }}
+          style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 0 16px 0', lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400 }}
+        >
+          "I love the aesthetic of the website."
+        </motion.blockquote>
+        <motion.blockquote
+          initial={{ opacity: 0 }}
+          animate={quotesInView ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.3, delay: 0.55, ease: 'easeOut' }}
+          style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: 0, lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400 }}
+        >
+          "This is a cool website. Did you create it?"
+        </motion.blockquote>
+      </div>
+      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 72px auto' }}>
+         Usability Test Participants
+      </p>
+      <ul style={{ listStyle: 'none', padding: 0, margin: '0 auto', maxWidth: '760px', display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
+        {outcomes.map((o, i) => (
+          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.6 }}>
+            <span style={{ fontFamily: F.editorial, color: '#C4A265', minWidth: '28px', fontSize: '18px' }}>{String(i + 1).padStart(2, '0')}</span>
+            <span>{o}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+// ─── 10. Prototype CTA ──────────────────────────────────────────────────────
 function PrototypeCTA() {
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', textAlign: 'left' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 4.5vw, 52px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 1.1, letterSpacing: '-0.02em', fontWeight: 400 }}>Experience Lumis.</h2>
+      <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 4.5vw, 52px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 1.1, letterSpacing: '-0.02em', fontWeight: 400 }}>
+        Experience Lumis Skincare.
+      </h2>
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: '0 0 32px 0', lineHeight: 1.7, maxWidth: '580px' }}>
-        Explore the full interactive prototype, from first discovery to a completed skincare routine.
+        Explore the full interactive prototype: skin profile quiz, personalised recommendations, ingredient comparison, and trial sampling in action.
       </p>
-      <a href="#" style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${C.border}`, paddingBottom: '4px', transition: 'border-color 0.2s' }}
+      <a
+        href="https://parse-handle-22255637.figma.site"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${C.border}`, paddingBottom: '4px', transition: 'border-color 0.2s' }}
         onMouseEnter={e => (e.currentTarget.style.borderColor = C.primary)}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
+        onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
+      >
         Open Prototype
       </a>
     </section>
   );
 }
 
+// ─── 11. Next Project Navigation ────────────────────────────────────────────
 function NextProject() {
   const navigate = useNavigate();
   return (
@@ -627,51 +733,50 @@ function NextProject() {
       className="max-md:!px-6 max-md:!items-start max-lg:!px-10"
       onClick={() => navigate('/neighbourlah')}
     >
-      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>Next Project</p>
-      <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3.5vw, 42px)', color: C.primary, margin: 0, letterSpacing: '-0.01em', lineHeight: 1.1, fontWeight: 400 }}
+      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
+        Next Project
+      </p>
+      <p
+        style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3.5vw, 42px)', color: C.primary, margin: 0, letterSpacing: '-0.01em', lineHeight: 1.1, fontWeight: 400 }}
         onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+      >
         NeighbourLah
       </p>
     </section>
   );
 }
 
+// ─── Page ───────────────────────────────────────────────────────────────────
 const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
-  { id: 'research', label: 'Research' },
   { id: 'problem', label: 'Problem' },
-  { id: 'solution', label: 'Solution' },
-  { id: 'information-architecture', label: 'Information Architecture' },
+  { id: 'research', label: 'What I Found' },
+  { id: 'design-decisions', label: 'Design Decisions' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
   { id: 'impact', label: 'Impact' },
-  { id: 'reflections', label: 'Reflections' },
 ];
 
 export function LumisPage() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
-    <PasswordGate storageKey="lumis-unlocked">
     <div style={{ backgroundColor: C.bg, minHeight: '100vh', '--accent-color': '#C4A265' } as React.CSSProperties}>
       <Navigation showBack />
       <div className="cs-layout">
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp id="research"><ResearchFindings /></FadeUp>
           <FadeUp id="problem"><ProblemStatement /></FadeUp>
-          <FadeUp id="solution"><SolutionStatement /></FadeUp>
-          <FadeUp id="information-architecture"><InformationArchitecture /></FadeUp>
+          <FadeUp id="research"><ResearchFindings /></FadeUp>
+          <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>
           <FadeUp id="impact"><Impact /></FadeUp>
-          <FadeUp id="reflections"><Reflections /></FadeUp>
           <FadeUp><PrototypeCTA /></FadeUp>
           <FadeUp><NextProject /></FadeUp>
         </div>
       </div>
     </div>
-    </PasswordGate>
   );
 }
