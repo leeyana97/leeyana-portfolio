@@ -575,7 +575,7 @@ const projects = [
     // logo image in place of the brand-name prefix, with `nameSuffix`
     // taking over the rest of the title. `name` is still used as the
     // fallback / accessible name.
-    nameLogoSrc: 'https://res.cloudinary.com/dvunn40le/image/upload/q_auto,f_auto/AXS_logo_jrvfwm.jpg',
+    nameLogoSrc: 'https://res.cloudinary.com/dvunn40le/image/upload/w_700,q_auto,f_auto/AXS_logo_g0zlwp.png',
     nameLogoAlt: 'AXS',
     nameSuffix: '· Vault',
   },

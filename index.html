@@ -10,6 +10,12 @@
       <!-- Favicon: NL monogram served from /public so it's at a stable URL -->
       <link rel="icon" type="image/svg+xml" href="/nl-monogram.svg" />
 
+      <!-- Preconnect to Google Fonts so DNS + TLS handshake completes
+           before the CSS @import requests the font files. Saves ~100-300ms
+           of font-blocked rendering on first paint. -->
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
       <!-- Social / OpenGraph card preview (Facebook, LinkedIn, iMessage, Slack…) -->
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content="Nur Leeyana" />
