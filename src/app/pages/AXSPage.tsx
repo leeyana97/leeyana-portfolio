@@ -1367,7 +1367,7 @@ function NextProject() {
       className="max-md:!px-6 max-md:!items-start max-lg:!px-10"
       onClick={() => navigate('/tripsync')}
     >
-      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>Back to First Project</p>
+      <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>Next Project</p>
       <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3.5vw, 42px)', color: C.primary, margin: 0, letterSpacing: '-0.01em', lineHeight: 1.1, fontWeight: 400 }}
         onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
         onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>

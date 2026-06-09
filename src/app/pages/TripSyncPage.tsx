@@ -1121,7 +1121,7 @@ function NextProject() {
     <section
       style={{ backgroundColor: C.bg, padding: '80px', borderTop: `1px solid #1A1A1A`, display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'column', cursor: 'pointer' }}
       className="max-md:!px-6 max-md:!items-start max-lg:!px-10"
-      onClick={() => navigate('/lumis')}
+      onClick={() => navigate('/neighbourlah')}
     >
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.12em', textTransform: 'uppercase', margin: '0 0 12px 0' }}>
         Next Project
@@ -1131,7 +1131,7 @@ function NextProject() {
         onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
         onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
       >
-        Lumis Skincare
+        NeighbourLah
       </p>
     </section>
   );
