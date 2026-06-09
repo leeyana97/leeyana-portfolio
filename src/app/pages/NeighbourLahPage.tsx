@@ -5,7 +5,16 @@ import { Navigation } from '../components/Navigation';
 import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { useImagesLoaded } from '../components/useImagesLoaded';
 import neighbourlahImg from '../../imports/NeighbourLah_home_app.png';
+
+// Hero phone images served from Cloudinary. w_900 gives ~2x retina
+// sharpness for the ~360px max-width display on desktop while keeping
+// the wire size small. The layered stacked→fanned animation below uses
+// these directly; mobile only shows the centre phone.
+const nlbHeroLeft   = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/neighbourlah_1_hero_szdsgt.png';
+const nlbHeroCentre = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/neighbourlah_3_hero.png_hxh98d.png';
+const nlbHeroRight  = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/neighbourlah_2_hero_uhtk2z.png';
 
 const C = {
   bg: '#0D0D0D',
@@ -61,28 +70,151 @@ function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number
 }
 
 function CaseStudyHero() {
-  // On mobile we keep the single overview image but reorder it AFTER the
-  // text block so the project name reads first without any scroll.
+  // Gate the stacked→fanned entrance on all three phone images being
+  // downloaded AND decoded so the animation runs against in-memory
+  // bitmaps. Without this the slide-out would fire mid-stream and
+  // produce visible pop-in.
+  const imagesReady = useImagesLoaded([nlbHeroLeft, nlbHeroCentre, nlbHeroRight]);
+
+  // Shared timing for the fan-out. 300ms hold (stacked) → 700ms ease-in-out
+  // outward slide. All three phones share the same delay/duration so they
+  // fan apart simultaneously rather than stagger.
+  const FAN_DELAY = 0.3;
+  const FAN_DURATION = 0.7;
+  const FAN_EASE: [number, number, number, number] = [0.4, 0, 0.2, 1]; // cubic-bezier ease-in-out
+
+  // Single set of geometry values used on both viewports — mobile
+  // mirrors desktop exactly. The wrapper goes edge-to-edge on mobile
+  // (see classes below); any side-phone overflow past the viewport
+  // is clipped by the wrapper's overflow:hidden, identical to how
+  // desktop renders when the wrapper itself is narrower than 1280px.
+  const sideOffsetPct = 55;
+  const centreScale   = 1;
+  const sideScale     = 0.9;
+  const initialScale  = 0.85;
+
   return (
     <section
       style={{ paddingTop: '120px', paddingBottom: '0', paddingLeft: '80px', paddingRight: '80px', backgroundColor: C.bg }}
       className="max-md:!px-6 max-md:!pt-24 max-lg:!px-10 max-md:!flex max-md:!flex-col"
     >
+      {/* ─── 3-phone hero (stacked → fanned) ────────────────────────────
+          All three phones start centred and stacked (same transform
+          origin) at `initialScale` with opacity 0. After FAN_DELAY they
+          fan outward over FAN_DURATION to their final positions:
+            - Left phone:   x = -50% - sideOffsetPct%, scale sideScale
+            - Centre phone: x = -50%,                  scale centreScale
+            - Right phone:  x = -50% + sideOffsetPct%, scale sideScale
+          Z-order ensures the centre phone overlays the side phones.
+          Mobile uses smaller offset + smaller scales so all three fit
+          inside a ~375px viewport without clipping or hiding. */}
       <div
-        style={{ width: '100%', maxWidth: '1280px', height: 'clamp(300px, 55vw, 640px)', overflow: 'hidden', margin: '0 auto' }}
-        className="max-md:!order-2 max-md:!mt-6 max-md:!h-[clamp(280px,78vw,460px)]"
+        // On mobile the wrapper goes edge-to-edge of the viewport so the
+        // side phones have ~48px more horizontal room to fan out without
+        // clipping (the section's px-6 padding is countered by w-screen
+        // + a negative left margin that pulls the wrapper back to the
+        // viewport's left edge). Desktop margins are unchanged.
+        className="max-md:!order-2 max-md:!mt-6 max-md:!h-[clamp(280px,78vw,460px)] max-md:!w-screen max-md:!-ml-6 max-md:!max-w-none"
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '1280px',
+          margin: '0 auto',
+          height: 'clamp(300px, 55vw, 640px)',
+          // The phones are positioned absolutely against this container;
+          // overflow:hidden clips anything that would otherwise stretch
+          // the page during the brief stacked → fanned transition.
+          overflow: 'hidden',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
       >
-        <img
-          src={neighbourlahImg}
+        {/* Left phone */}
+        <motion.img
+          src={nlbHeroLeft}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          initial={{ x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
+          animate={imagesReady
+            ? { x: `calc(-50% - ${sideOffsetPct}%)`, y: '-50%', scale: sideScale, opacity: 1 }
+            : { x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
+          transition={{ duration: FAN_DURATION, delay: FAN_DELAY, ease: FAN_EASE }}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            height: '92%',
+            width: 'auto',
+            zIndex: 1,
+            display: 'block',
+            pointerEvents: 'none',
+            // The source PNGs have a solid #000 background around each
+            // phone shape. `mix-blend-mode: lighten` keeps the lighter
+            // of the image vs the page bg per-channel — pure black
+            // (0,0,0) becomes the page colour #0D0D0D, effectively
+            // hiding the rectangular border, while the phone bezel
+            // and screen content (all brighter than #0D0D0D) render
+            // unchanged.
+            mixBlendMode: 'lighten',
+            // motion.* sets `x`/`y`/`scale` via the transform property;
+            // `translate(-50%, -50%)` baseline is achieved through `x`/`y`
+            // values above so the animation interpolates a single transform.
+          }}
+        />
+
+        {/* Centre phone — always rendered (desktop + mobile) */}
+        <motion.img
+          src={nlbHeroCentre}
           alt="NeighbourLah app overview"
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
-          // Mobile uses `object-contain` so the tall portrait image scales
-          // down to fit the clamped 281px container without cropping.
-          // Desktop keeps `object-cover` for the original full-bleed crop.
-          className="max-md:!object-contain"
+          initial={{ x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
+          animate={imagesReady
+            ? { x: '-50%', y: '-50%', scale: centreScale, opacity: 1 }
+            : { x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
+          transition={{ duration: FAN_DURATION, delay: FAN_DELAY, ease: FAN_EASE }}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            height: '100%',
+            width: 'auto',
+            zIndex: 3,
+            display: 'block',
+            pointerEvents: 'none',
+            mixBlendMode: 'lighten',
+          }}
+        />
+
+        {/* Right phone */}
+        <motion.img
+          src={nlbHeroRight}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          initial={{ x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
+          animate={imagesReady
+            ? { x: `calc(-50% + ${sideOffsetPct}%)`, y: '-50%', scale: sideScale, opacity: 1 }
+            : { x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
+          transition={{ duration: FAN_DURATION, delay: FAN_DELAY, ease: FAN_EASE }}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            height: '92%',
+            width: 'auto',
+            zIndex: 2,
+            display: 'block',
+            pointerEvents: 'none',
+            mixBlendMode: 'lighten',
+          }}
         />
       </div>
       <motion.div
