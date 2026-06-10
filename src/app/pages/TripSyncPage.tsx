@@ -475,7 +475,31 @@ function StatsStrip() {
   );
 }
 
-// ─── 3. Problem Statement ────────────────────────────────────────────────────
+// ─── 3. The Challenge (framing paragraph that sets up the research) ────────
+// The brief / context block. Used to be called "The Problem." but that
+// label was doing two jobs — framing the brief AND naming the synthesised
+// POV. The synthesised POV now lives in its own ProblemStatement section
+// that sits AFTER research, where it belongs in the design-thinking flow.
+function Challenge() {
+  return (
+    <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <h2 className="cs-section-header">
+        The Challenge.
+      </h2>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 24px 0', maxWidth: '720px' }}>
+        In group travel, the hard part isn't the destination. It's getting four or five people with different budgets, schedules, and energy levels to actually agree on a plan, without forcing consensus that frustrates everyone or letting chaos drag the decision out for weeks.
+      </p>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
+        TripSync was designed to address this exact challenge. It turns the messy WhatsApp-and-spreadsheet sprawl of group trip planning into a structured experience, one that doesn't force everyone to agree but instead surfaces where they already do, and lets each person opt out of activities without disrupting the trip for the rest.
+      </p>
+    </section>
+  );
+}
+
+// ─── 5. Problem Statement (synthesised POV — output of research) ───────────
+// Lives AFTER research. Lead with the designer-authored POV (editorial
+// italic statement), followed by the four pain-point cards that the
+// research surfaced and that the POV synthesises.
 function ProblemStatement() {
   const painPoints = [
     { title: 'Scattered Planning', desc: 'Groups bounce between messaging apps, spreadsheets, and booking sites with no single source of truth, creating confusion and missed decisions.' },
@@ -484,12 +508,10 @@ function ProblemStatement() {
     { title: 'Awkward Opt-Outs', desc: "Telling the group you can't make an activity feels socially difficult. There's no graceful way to opt out without creating tension." },
   ];
   return (
-    <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <h2 className="cs-section-header">
-        The Problem.
-      </h2>
-      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        Group trip planners managing travel for 3 or more people struggle to accommodate diverse preferences without requiring full consensus. Planning is scattered across multiple apps, there's no structured way to collect input, decisions drag on for days, and opting out of activities feels socially uncomfortable.
+    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.statsBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Problem Statement" />
+      <p style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3vw, 36px)', color: C.primary, lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400, margin: '0 0 56px 0' }}>
+        Users need a way to accommodate individual preferences within a group trip without requiring full consensus on every decision because the diversity of travel styles within a group makes unanimous agreement unrealistic and attempting it causes frustration for everyone.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {painPoints.map((p) => (
@@ -502,6 +524,10 @@ function ProblemStatement() {
     </section>
   );
 }
+
+// (Solution Statement has been inlined as the lead-in paragraph at the
+// top of DesignDecisions — see below — so the bet sits immediately
+// above the features that embody it.)
 
 // ─── 4. What I Found (research + affinity mapping photos) ───────────────────
 function ResearchFindings() {
@@ -523,7 +549,24 @@ function ResearchFindings() {
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="What I Found" />
+      <SectionLabel text="Research Findings" />
+
+      {/* Research intro — sets the participant context and the count
+          so the reader knows the shape of what's coming. Quietly
+          previews the Problem Statement that follows. */}
+      <p
+        style={{
+          fontFamily: F.editorial,
+          fontSize: 'clamp(18px, 2vw, 24px)',
+          color: C.primary,
+          lineHeight: 1.55,
+          letterSpacing: '-0.01em',
+          fontWeight: 400,
+          margin: '0 0 48px 0',
+        }}
+      >
+        From conversations with families and friend groups planning trips together, five problems kept coming up. They all came down to one thing: how groups get stuck deciding.
+      </p>
 
       {/* Affinity-map process photos — side by side, smaller */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
@@ -708,6 +751,12 @@ function DesignDecisions() {
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Design Decisions" />
+      {/* Solution statement — the strategic bet that frames the features
+          below. Lives here (rather than as its own section) so the reader
+          sees the bet immediately above the features that embody it. */}
+      <p style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3vw, 36px)', color: C.primary, lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400, margin: '0 0 64px 0' }}>
+        Bridging this gap, TripSync was designed as a structured preference collection and visualisation system that surfaces group overlaps and enables individual opt-out decisions at the activity level.
+      </p>
       <div
         style={{
           display: 'grid',
@@ -798,7 +847,7 @@ function UsabilityTesting() {
   const inlineStats = [
     { number: '5', label: 'Participants' },
     { number: '9', label: 'Tasks' },
-    { number: '2 to 4', label: 'Difficulty Rating (out of 7)' },
+    { number: '2 to 4', label: 'Difficulty Rating (1 = easiest, 7 = hardest)' },
   ];
   const insights = [
     'Task completion was unanimous. The core journey held together from start to finish.',
@@ -1049,7 +1098,7 @@ function Impact() {
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
-      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 32px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
+      <AnimatedQuote scramble style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 32px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
         "Without this, you would usually be on WhatsApp doing a back and forth... at least now this gives you a very clear overview of what your itinerary can look like."
       </AnimatedQuote>
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 72px auto' }}>
@@ -1140,8 +1189,9 @@ function NextProject() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
-  { id: 'problem', label: 'Problem' },
-  { id: 'research', label: 'What I Found' },
+  { id: 'challenge', label: 'Challenge' },
+  { id: 'research', label: 'Research' },
+  { id: 'problem', label: 'Problem Statement' },
   { id: 'design-decisions', label: 'Design Decisions' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
@@ -1159,8 +1209,10 @@ export function TripSyncPage() {
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp id="problem"><ProblemStatement /></FadeUp>
+          <FadeUp id="challenge"><Challenge /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
+          <FadeUp id="problem"><ProblemStatement /></FadeUp>
+          {/* Solution Statement inlined as Design Decisions lead-in. */}
           {/* Visual Design System hidden */}
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>

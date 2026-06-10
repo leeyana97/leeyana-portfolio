@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
-import { FadeUp, StaggerCards, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
+import { FadeUp, StaggerCards, AnimatedLine, scrambleInto, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
 // Lumis homepage screenshot served from Cloudinary (shared with the
 // homepage project card). w_2400 keeps it crisp on retina; q_auto and
@@ -305,7 +305,24 @@ function StatsStrip() {
   );
 }
 
-// ─── 3. Problem Statement ───────────────────────────────────────────────────
+// ─── 3. The Challenge (framing paragraph) ──────────────────────────────────
+function Challenge() {
+  return (
+    <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <h2 className="cs-section-header">
+        The Challenge.
+      </h2>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 24px 0', maxWidth: '720px' }}>
+        In skincare, the hard part isn't finding products. It's knowing which ones suit your skin, without burning your budget on trial and error or trusting strangers online whose skin is nothing like yours.
+      </p>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
+        Lumis takes the guesswork out of skincare shopping. It matches products to a user's actual skin profile, checks compatibility with what they already use, and lets them sample new products at a fraction of the price before committing to a full purchase.
+      </p>
+    </section>
+  );
+}
+
+// ─── 5. Problem Statement (synthesised POV, after research) ────────────────
 function ProblemStatement() {
   const painPoints = [
     { title: 'No reliable skin matching', desc: 'No way to match products to multiple overlapping skin concerns in one place.' },
@@ -314,12 +331,10 @@ function ProblemStatement() {
     { title: 'Reliance on external sources', desc: 'Users depend on friends, social media, and costly trial and error instead of the shopping experience itself.' },
   ];
   return (
-    <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <h2 className="cs-section-header">
-        The Problem.
-      </h2>
-      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        Users need a way to confidently identify and commit to skincare products suited to their specific skin profile, because the current online shopping experience offers no reliable way to match products to multiple overlapping concerns, check compatibility with their existing routine, or trial before committing. This forces them to rely on friends, social media, and costly trial and error instead.
+    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.statsBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Problem Statement" />
+      <p style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3vw, 36px)', color: C.primary, lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400, margin: '0 0 56px 0' }}>
+        Users need a way to confidently identify and commit to skincare products suited to their specific skin profile, because the current online shopping experience offers no reliable way to match products to multiple overlapping concerns, check compatibility with their existing routine, or trial before committing, forcing them to rely on friends, social media, and costly trial and error instead.
       </p>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
         {painPoints.map((p) => (
@@ -332,6 +347,10 @@ function ProblemStatement() {
     </section>
   );
 }
+
+// (Solution Statement has been inlined as the lead-in paragraph at the
+// top of DesignDecisions — see below — so the bet sits immediately
+// above the features that embody it.)
 
 // ─── 4. What I Found (Research findings — sticky notes) ─────────────────────
 function ResearchFindings() {
@@ -353,7 +372,23 @@ function ResearchFindings() {
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="What I Found" />
+      <SectionLabel text="Research Findings" />
+      {/* Research intro — sets the participant context and the count
+          so the reader knows the shape of what's coming. Quietly
+          previews the Problem Statement that follows. */}
+      <p
+        style={{
+          fontFamily: F.editorial,
+          fontSize: 'clamp(18px, 2vw, 24px)',
+          color: C.primary,
+          lineHeight: 1.55,
+          letterSpacing: '-0.01em',
+          fontWeight: 400,
+          margin: '0 0 48px 0',
+        }}
+      >
+        From conversations with people juggling multiple skin concerns, five frustrations kept showing up. Each one explained, in its own way, why product discovery so often misses.
+      </p>
       <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
         {findings.map((f, i) => {
           const s = noteStyles[i % noteStyles.length];
@@ -412,6 +447,12 @@ function DesignDecisions() {
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Design Decisions" />
+      {/* Solution statement — the strategic bet that frames the features
+          below. Lives here (rather than as its own section) so the reader
+          sees the bet immediately above the features that embody it. */}
+      <p style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3vw, 36px)', color: C.primary, lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400, margin: '0 0 64px 0' }}>
+        From this synthesis emerged Lumis, a personalised skin-matching and product discovery system that surfaces compatible recommendations across multiple skin concerns and enables low-risk trialling before full purchase commitment.
+      </p>
       <div
         style={{
           display: 'grid',
@@ -643,7 +684,43 @@ function Impact() {
   // its bounding box to 0px, which IntersectionObserver doesn't see as
   // "in view". Watching the stable-sized wrapper avoids that race.
   const quotesRef = useRef<HTMLDivElement>(null);
+  const quote1Ref = useRef<HTMLQuoteElement>(null);
+  const quote2Ref = useRef<HTMLQuoteElement>(null);
   const quotesInView = useInView(quotesRef, { once: true, margin: '-100px' });
+
+  // Capture each quote's final text on mount so the scramble has a stable
+  // settle target. The actual scramble fires after the bar's 0.4s draw-in,
+  // mirroring AnimatedQuote's beat. The second quote starts ~0.15s after
+  // the first so they don't scramble in perfect lock-step.
+  useEffect(() => {
+    if (!quotesInView) return;
+    const e1 = quote1Ref.current;
+    const e2 = quote2Ref.current;
+    if (!e1 || !e2) return;
+    const text1 = e1.textContent ?? '';
+    const text2 = e2.textContent ?? '';
+    // Hide until scramble starts so we don't briefly show the final text.
+    e1.style.visibility = 'hidden';
+    e2.style.visibility = 'hidden';
+    const t1 = window.setTimeout(() => {
+      if (!e1) return;
+      e1.style.visibility = 'visible';
+      cancel1 = scrambleInto(e1, text1);
+    }, 400);
+    const t2 = window.setTimeout(() => {
+      if (!e2) return;
+      e2.style.visibility = 'visible';
+      cancel2 = scrambleInto(e2, text2);
+    }, 550);
+    let cancel1: (() => void) | undefined;
+    let cancel2: (() => void) | undefined;
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      cancel1?.();
+      cancel2?.();
+    };
+  }, [quotesInView]);
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
       {/* Two participant quotes sharing one continuous accent bar.
@@ -668,22 +745,18 @@ function Impact() {
           animate={quotesInView ? { scaleY: 1 } : { scaleY: 0 }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
         />
-        <motion.blockquote
-          initial={{ opacity: 0 }}
-          animate={quotesInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.3, delay: 0.4, ease: 'easeOut' }}
+        <blockquote
+          ref={quote1Ref}
           style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 0 16px 0', lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400 }}
         >
           "I love the aesthetic of the website."
-        </motion.blockquote>
-        <motion.blockquote
-          initial={{ opacity: 0 }}
-          animate={quotesInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.3, delay: 0.55, ease: 'easeOut' }}
+        </blockquote>
+        <blockquote
+          ref={quote2Ref}
           style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: 0, lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400 }}
         >
           "This is a cool website. Did you create it?"
-        </motion.blockquote>
+        </blockquote>
       </div>
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 72px auto' }}>
          Usability Test Participants
@@ -750,8 +823,9 @@ function NextProject() {
 // ─── Page ───────────────────────────────────────────────────────────────────
 const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
-  { id: 'problem', label: 'Problem' },
-  { id: 'research', label: 'What I Found' },
+  { id: 'challenge', label: 'Challenge' },
+  { id: 'research', label: 'Research' },
+  { id: 'problem', label: 'Problem Statement' },
   { id: 'design-decisions', label: 'Design Decisions' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
@@ -767,8 +841,9 @@ export function LumisPage() {
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp id="problem"><ProblemStatement /></FadeUp>
+          <FadeUp id="challenge"><Challenge /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
+          <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>

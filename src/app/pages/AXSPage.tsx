@@ -642,24 +642,52 @@ function StatsStrip() {
   );
 }
 
-function ProblemStatement() {
-  const painPoints = [
-    { title: 'No Structured Bill Handover', desc: 'First jobbers inherit bills from parents through verbal handoffs and password-sharing, with no structured way to take over accounts.' },
-    { title: 'Hidden Visibility Mismatch', desc: "Couples don't want a joint account app, but they need both partners to see what's been paid. This leads to double payments and awkward catch-ups." },
-    { title: 'Manual Tracking Across Apps', desc: 'The household bill handler tracks everything across spreadsheets, calendar reminders, and 4 to 6 separate biller apps every month.' },
-    { title: 'Failures Discovered Too Late', desc: 'Missed payments, GIRO failures, and duplicate payments are only discovered after the fact through SMS alerts or casual conversation.' },
-  ];
+// ─── The Challenge (framing paragraph that sets up the research) ───────────
+function Challenge() {
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <h2 className="cs-section-header">The Problem.</h2>
-      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        First jobbers and young couples in Singapore manage household bills through fragmented, informal systems: verbal handoffs, spreadsheets, scattered biller apps, and memory. AXS already handles bill payments, but offers no way to see what's been paid across a household, inherit bills from parents, or share visibility with a partner without changing who pays what.
+      <h2 className="cs-section-header">The Challenge.</h2>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 24px 0', maxWidth: '720px' }}>
+        In household admin, the cost of getting things wrong is rarely dramatic, just constant. A missed payment here, a forgotten renewal there, hours every month tracking what's been paid across biller apps, and one person quietly carrying the whole schedule for everyone else.
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
-        {painPoints.map((p) => (
-          <div key={p.title} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: '0 0 10px 0', fontWeight: 500 }}>{p.title}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
+        AXS Vault is the feature we designed to take that weight off. It turns a single-user payment app into a household bill management system, where the primary handler sets bills up once, partners see what's been paid without asking, and first jobbers get the inherited structure their parents never had a way to hand down.
+      </p>
+    </section>
+  );
+}
+
+// ─── Problem Statement (3 persona-based POVs, after research + journey maps) ─
+function ProblemStatement() {
+  const statements = [
+    {
+      number: '01',
+      tag: 'First Jobber (Marcus)',
+      text: 'Marcus is a first jobber taking on bills from his parents. He needs a way to inherit accounts, passwords, and payment knowledge that were never structured for handover. Without that handover, he carries the cost in hours, late fees, and missed payments.',
+    },
+    {
+      number: '02',
+      tag: 'The Delegator (Hana)',
+      text: "Hana is a partner whose other half handles most of the household bills. She needs a way to see what's been paid and when, without having to ask. Without that visibility, she has to keep checking in with her partner to feel like an informed contributor.",
+    },
+    {
+      number: '03',
+      tag: 'The Household CFO (Firdaus)',
+      text: "Firdaus is the primary bill handler for his household. He needs to set up his bills once in one place and see what's paid and what's pending. Without that single view, he's stuck manually tracking and cross-checking across spreadsheets and biller apps every month.",
+    },
+  ];
+  return (
+    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.statsBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Problem Statement" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+        {statements.map((s) => (
+          <div key={s.number}>
+            <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#4296CE', margin: '0 0 8px 0', letterSpacing: '0.12em' }}>
+              {s.number} — {s.tag}
+            </p>
+            <p style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(22px, 2.6vw, 30px)', color: C.primary, lineHeight: 1.4, letterSpacing: '-0.01em', fontWeight: 400, margin: 0 }}>
+              {s.text}
+            </p>
           </div>
         ))}
       </div>
@@ -700,6 +728,23 @@ function ResearchFindings() {
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Research Findings" />
+      {/* Research intro — sets the participant context (both user
+          groups) and the count so the reader knows the shape of what's
+          coming. The "no one's keeping score" close cues why AXS Vault
+          becomes the response. */}
+      <p
+        style={{
+          fontFamily: F.editorial,
+          fontSize: 'clamp(18px, 2vw, 24px)',
+          color: C.primary,
+          lineHeight: 1.55,
+          letterSpacing: '-0.01em',
+          fontWeight: 400,
+          margin: '0 0 48px 0',
+        }}
+      >
+        From interviews with first jobbers handling bills on their own for the first time and young couples managing the household together, five themes came up. They all traced back to one thing: how easily bills slip through the cracks when no one's keeping score.
+      </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
         {groups.map((group) => (
           <div key={group.label}>
@@ -823,7 +868,7 @@ function DesignDecisions() {
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Solution Statements" />
+      <SectionLabel text="Solution Statement" />
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 56px 0', maxWidth: '720px' }}>
         Vault is anchored around three user personas. Each statement names the persona it serves and the specific Vault behaviour that addresses their need.
       </p>
@@ -907,7 +952,7 @@ function UsabilityTesting() {
   const resultStats = [
     { number: '6', label: 'Tasks Tested' },
     { number: '5', label: 'Participants' },
-    { number: '3 / 5', label: 'Overall Ease of Use' },
+    { number: '3 / 5', label: 'Overall Ease of Use (1 = easiest, 5 = hardest)' },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.statsBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -1379,10 +1424,11 @@ function NextProject() {
 
 const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
-  { id: 'problem', label: 'Problem' },
+  { id: 'challenge', label: 'Challenge' },
   { id: 'research', label: 'Research' },
   { id: 'journey-maps', label: 'Journey Maps' },
-  { id: 'design-decisions', label: 'Solution Statements' },
+  { id: 'problem', label: 'Problem Statement' },
+  { id: 'design-decisions', label: 'Solution Statement' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
   { id: 'impact', label: 'Impact' },
@@ -1398,9 +1444,10 @@ export function AXSPage() {
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp id="problem"><ProblemStatement /></FadeUp>
+          <FadeUp id="challenge"><Challenge /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
           <FadeUp id="journey-maps"><UserJourneyMaps /></FadeUp>
+          <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>

@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { PasswordGate } from '../components/PasswordGate';
@@ -56,13 +56,118 @@ function SectionLabel({ text }: { text: string }) {
   );
 }
 
-function ScreenMockup({ label, opacity = 1 }: { label?: string; opacity?: number }) {
+// Phone frame ported from TripSync's ScreenMockup so both case studies
+// share the same iPhone shell: brushed-metal gradient bezel, dynamic
+// island, side power/volume/ringer detail buttons, inset highlights,
+// and an outer drop shadow. `src` is optional — call sites pass it for
+// real screen images; when omitted the imported hero PNG renders as a
+// placeholder for blocks where the final asset hasn't been wired in yet.
+function ScreenMockup({ label, opacity = 1, src, maxWidth = 260 }: { label?: string; opacity?: number; src?: string; maxWidth?: number }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '260px' }}>
-        {label && <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>}
-        <div style={{ width: '100%', aspectRatio: '9 / 19.5', overflow: 'hidden', borderRadius: '24px', opacity }}>
-          <img src={neighbourlahImg} alt={label || 'NeighbourLah screen'} loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }} />
+      {/* Label + image share an image-width column so the label sits
+          directly on top of the image rather than off at the cell edge. */}
+      <div style={{ width: '100%', maxWidth: `${maxWidth}px` }}>
+        {label && (
+          <span style={{ display: 'block', textAlign: 'center', fontFamily: F.sans, fontSize: '13px', color: C.secondary, marginBottom: '10px' }}>{label}</span>
+        )}
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            padding: '11px',
+            background: 'linear-gradient(135deg, #45464A 0%, #2E2F33 50%, #1E1F22 100%)',
+            borderRadius: '46px',
+            boxShadow:
+              'inset 0 0 0 1.5px rgba(255,255,255,0.08), inset 0 0 0 3.5px #0a0a0a, 0 12px 32px rgba(0,0,0,0.5)',
+            opacity,
+          }}
+        >
+          {/* Right side: power button */}
+          <div
+            style={{
+              position: 'absolute',
+              right: '-2px',
+              top: '24%',
+              width: '3px',
+              height: '17%',
+              background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)',
+              borderRadius: '1px 2px 2px 1px',
+              zIndex: 0,
+            }}
+          />
+          {/* Left side: action/ringer switch */}
+          <div
+            style={{
+              position: 'absolute',
+              left: '-2px',
+              top: '14%',
+              width: '3px',
+              height: '6%',
+              background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)',
+              borderRadius: '2px 1px 1px 2px',
+              zIndex: 0,
+            }}
+          />
+          {/* Left side: volume up */}
+          <div
+            style={{
+              position: 'absolute',
+              left: '-2px',
+              top: '23%',
+              width: '3px',
+              height: '9%',
+              background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)',
+              borderRadius: '2px 1px 1px 2px',
+              zIndex: 0,
+            }}
+          />
+          {/* Left side: volume down */}
+          <div
+            style={{
+              position: 'absolute',
+              left: '-2px',
+              top: '34%',
+              width: '3px',
+              height: '9%',
+              background: 'linear-gradient(180deg, #55565A 0%, #3A3B3F 50%, #25262A 100%)',
+              borderRadius: '2px 1px 1px 2px',
+              zIndex: 0,
+            }}
+          />
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              aspectRatio: '9 / 19.5',
+              overflow: 'hidden',
+              borderRadius: '36px',
+              backgroundColor: '#000',
+              zIndex: 1,
+            }}
+          >
+            {/* Dynamic island */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '32%',
+                height: '20px',
+                backgroundColor: '#000',
+                borderRadius: '14px',
+                zIndex: 3,
+              }}
+            />
+            <img
+              src={src ?? neighbourlahImg}
+              alt={label || 'NeighbourLah screen'}
+              loading="lazy"
+              decoding="async"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -253,10 +358,10 @@ function CaseStudyHero() {
 function StatsStrip() {
   const stats = [
     { number: '2 Weeks', label: 'Duration' },
-    { number: '9', label: 'Users Interviewed' },
+    { number: '10', label: 'Users Interviewed' },
     { number: '5', label: 'Users Tested' },
     { number: '5', label: 'Tasks Tested' },
-    { number: '4', label: 'Core Features' },
+    { number: '5', label: 'Core Features' },
   ];
   return (
     <div
@@ -289,24 +394,446 @@ function StatsStrip() {
   );
 }
 
-function ProblemStatement() {
-  const painPoints = [
-    { title: 'Social Fragmentation', desc: 'High-density housing in Singapore creates proximity without community. Residents live metres apart but interact as strangers.' },
-    { title: 'Information Silos', desc: 'Important neighbourhood information: maintenance notices, lost pets, community events, circulates only through those who already know each other.' },
-    { title: 'Trust Barriers', desc: 'Neighbours are often willing to help each other but lack a low-friction way to offer or ask without feeling intrusive or vulnerable.' },
-    { title: 'Existing App Friction', desc: 'Apps like Nextdoor require real identity verification that deters many. Others are too generic for Singapore\'s specific HDB context.' },
-  ];
+// ─── The Challenge (framing paragraph that sets up the research) ───────────
+function Challenge() {
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <h2 className="cs-section-header">The Problem.</h2>
-      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 48px 0', maxWidth: '720px' }}>
-        Singapore's HDB estates house millions of people in close quarters, yet loneliness and social isolation are growing. Neighbours share walls but not names. Community bonds that used to form naturally, through corridors, void decks, and kopitiam conversations, are fading. NeighbourLah was designed to create the conditions for connection, without forcing it.
+      <h2 className="cs-section-header">The Challenge.</h2>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 24px 0', maxWidth: '720px' }}>
+        In high-density estates, you can live metres from your neighbour for years without ever knowing their name. The kampung spirit is still there, but the everyday infrastructure that used to support it isn't, leaving goodwill with nowhere to land.
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
-        {painPoints.map((p) => (
-          <div key={p.title} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: '0 0 10px 0', fontWeight: 500 }}>{p.title}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{p.desc}</p>
+      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
+        NeighbourLah rebuilds that infrastructure for today's HDB estates. The app surfaces relevant events nearby, connects neighbours over shared interests, and provides a trusted channel for everyday exchanges of help, items, and services.
+      </p>
+    </section>
+  );
+}
+
+// ─── Problem Statement (3 synthesised POVs, one per opportunity area) ──────
+// ─── Competitive Analysis ──────────────────────────────────────────────────
+// Sits between Research Findings and Problem Statement. Maps the three
+// unmet needs from research against the closest competing apps so the
+// gap that NeighbourLah is built into is visually obvious before the
+// problem is stated. Cells render as Partial (amber) or No (muted red)
+// — no app covers all three, which is the point.
+function CompetitiveAnalysis() {
+  // Each app is rendered as its own editorial verdict card rather than
+  // as a row in a table — three cards lined up like magazine reviews.
+  // `icon` is the real app icon (Cloudinary, mixed aspect ratios → use
+  // object-fit: cover in the renderer). `url` is a research receipt,
+  // surfaced only as a small Sources line at the bottom of the section;
+  // replace the `#` placeholders with the real links when confirmed.
+  type Coverage = {
+    dim: string;
+    state: 'partial' | 'no';
+    note: string;
+  };
+  type App = {
+    name: string;
+    icon: string;
+    url: string;
+    coverage: Coverage[];
+  };
+  const apps: App[] = [
+    {
+      name: "PA's Community",
+      icon: 'https://res.cloudinary.com/dvunn40le/image/upload/PA_community_app_fuhznl.png',
+      url: '#',
+      coverage: [
+        { dim: 'Discover Relevant Events',        state: 'partial', note: 'No interest filter or search bar; events scattered across confusing tabs.' },
+        { dim: 'Connect by Interest',             state: 'no',      note: 'No way to connect neighbours by interest.' },
+        { dim: 'Exchange Help, Items & Services', state: 'no',      note: 'No marketplace or requests feature.' },
+      ],
+    },
+    {
+      name: 'GoodHood',
+      icon: 'https://res.cloudinary.com/dvunn40le/image/upload/Goodhood_app_zibrh8.webp',
+      url: '#',
+      coverage: [
+        { dim: 'Discover Relevant Events',        state: 'no',      note: 'Events buried in an unfiltered feed of random posts.' },
+        { dim: 'Connect by Interest',             state: 'no',      note: 'No way to connect neighbours by interest.' },
+        { dim: 'Exchange Help, Items & Services', state: 'partial', note: 'Listings and requests exist, but requests lack filtering and go stale.' },
+      ],
+    },
+    {
+      name: 'Olio',
+      icon: 'https://res.cloudinary.com/dvunn40le/image/upload/Olio_app_dkx37g.jpg',
+      url: '#',
+      coverage: [
+        { dim: 'Discover Relevant Events',        state: 'no',      note: 'No events feature.' },
+        { dim: 'Connect by Interest',             state: 'no',      note: 'Forum is topic-based, not people-based.' },
+        { dim: 'Exchange Help, Items & Services', state: 'partial', note: 'Item sharing only; no services, not neighbourhood-scoped.' },
+      ],
+    },
+  ];
+
+  // Status palette. Partial → warm amber (a workaround exists), No →
+  // muted red (no coverage). The dot is the colour signal; no full-cell
+  // tint, which keeps the cards reading as editorial rather than as a
+  // patchwork data grid.
+  const STATUS = {
+    partial: { color: '#D4A04A', label: 'Partial', filled: true },
+    no:      { color: '#C26B6B', label: 'No',      filled: false },
+  } as const;
+
+  return (
+    <section
+      style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.problemBg } as React.CSSProperties}
+      className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14"
+    >
+      <SectionLabel text="Competitive Analysis" />
+      <p
+        style={{
+          fontFamily: F.editorial,
+          fontStyle: 'italic',
+          fontSize: 'clamp(20px, 2.2vw, 26px)',
+          color: C.primary,
+          lineHeight: 1.45,
+          letterSpacing: '-0.01em',
+          fontWeight: 400,
+          margin: '0 0 48px 0',
+        }}
+      >
+        No existing app addressed all three unmet needs we identified from research.
+      </p>
+
+      {/* Three verdict cards in a 9-row × 3-column subgrid. The outer
+          grid declares 9 explicit row tracks (header, header-divider,
+          coverage 1, divider 1, coverage 2, divider 2, coverage 3,
+          divider 3, footer). Each card uses `grid-template-rows:
+          subgrid` and spans all 9 rows, so every conceptual row in
+          every card resolves to the same height — the tallest content
+          across the three cards. Result: dividers line up exactly.
+          Trade-off: short content rows get whitespace below to fill
+          the matched height. On tablet/mobile each card stands alone
+          (1 column), so the alignment behaviour is moot but the
+          layout still renders correctly. */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gridTemplateRows: 'auto auto auto auto auto auto auto auto auto',
+          gap: '24px',
+        }}
+        className="max-md:!grid-cols-1 max-lg:!grid-cols-1"
+      >
+        {apps.map((app) => (
+          <div
+            key={app.name}
+            style={{
+              backgroundColor: '#1A1A1A',
+              border: `1px solid ${C.cardBorder}`,
+              borderRadius: '12px',
+              padding: '32px',
+              display: 'grid',
+              gridTemplateRows: 'subgrid',
+              gridRow: '1 / -1',
+              rowGap: 0,
+            }}
+          >
+            {/* Row 1 — Card header: 40×40 icon + app name. Icon sits
+                in a rounded clip with a hair border so disparate source
+                aspect ratios (PNG, WEBP, JPG) all read as the same
+                size; `object-fit: cover` crops non-square sources. */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', paddingBottom: '24px' }}>
+              <img
+                src={app.icon}
+                alt={`${app.name} icon`}
+                width={40}
+                height={40}
+                loading="lazy"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  flexShrink: 0,
+                  borderRadius: '10px',
+                  border: `1px solid ${C.cardBorder}`,
+                  objectFit: 'cover',
+                  display: 'block',
+                  backgroundColor: '#2A2A2A',
+                }}
+              />
+              <h3
+                style={{
+                  fontFamily: F.editorial,
+                  fontSize: '22px',
+                  color: C.primary,
+                  lineHeight: 1.25,
+                  margin: 0,
+                  fontWeight: 500,
+                }}
+              >
+                {app.name}
+              </h3>
+            </div>
+
+            {/* Row 2 — Header divider */}
+            <div style={{ height: '1px', backgroundColor: C.border, alignSelf: 'end' }} />
+
+            {/* Rows 3-8 — Three coverage rows interleaved with three
+                dividers. Each coverage row content is a separate grid
+                item and so is each divider. Subgrid syncs the heights
+                across cards. */}
+            {app.coverage.map((c) => {
+              const status = STATUS[c.state];
+              return (
+                <Fragment key={c.dim}>
+                  <div style={{ paddingTop: '24px', paddingBottom: '24px' }}>
+                    {/* Verdict line — dimension label on the left as
+                        the heading; status pill (dot + label) flush
+                        right. `space-between` pushes them to opposite
+                        edges; `flexShrink: 0` on the pill keeps the
+                        verdict at fixed width even when the dimension
+                        wraps. */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '16px',
+                        marginBottom: c.note ? '12px' : 0,
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontFamily: F.sans,
+                          fontSize: '12px',
+                          letterSpacing: '0.18em',
+                          textTransform: 'uppercase',
+                          color: '#E8632B',
+                          margin: 0,
+                          fontWeight: 600,
+                          lineHeight: 1.35,
+                        }}
+                      >
+                        {c.dim}
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                        {/* Status dot: filled for Partial, hollow for No */}
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            width: '8px',
+                            height: '8px',
+                            borderRadius: '50%',
+                            backgroundColor: status.filled ? status.color : 'transparent',
+                            border: `1.5px solid ${status.color}`,
+                            display: 'inline-block',
+                            flexShrink: 0,
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: F.sans,
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            letterSpacing: '0.1em',
+                            textTransform: 'uppercase',
+                            color: status.color,
+                          }}
+                        >
+                          {status.label}
+                        </span>
+                      </div>
+                    </div>
+                    {c.note && (
+                      <p
+                        style={{
+                          fontFamily: F.sans,
+                          fontSize: '13px',
+                          color: C.secondary,
+                          lineHeight: 1.55,
+                          margin: 0,
+                        }}
+                      >
+                        {c.note}
+                      </p>
+                    )}
+                  </div>
+                  {/* Divider after this coverage row. `alignSelf: end`
+                      pins it to the bottom of the subgrid track so it
+                      sits at the same vertical position across all
+                      three cards, even when the row above is short. */}
+                  <div style={{ height: '1px', backgroundColor: C.border, alignSelf: 'end' }} />
+                </Fragment>
+              );
+            })}
+
+            {/* Row 9 — Summary footer. None of the apps fully cover any
+                need, so all three cards read "0 of 3" and the thesis
+                (no overlap) lands hard. */}
+            <div style={{ paddingTop: '20px' }}>
+              <span
+                style={{
+                  fontFamily: F.sans,
+                  fontSize: '12px',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: '#C26B6B',
+                  fontWeight: 600,
+                }}
+              >
+                0 of 3 fully addressed
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Sources footnote — receipts for the analysis. Quiet underline,
+          no arrow, no "Visit site" affordance. Reviewers who want to
+          verify can click; everyone else skims past. */}
+      <p
+        style={{
+          fontFamily: F.sans,
+          fontSize: '12px',
+          color: C.secondary,
+          margin: '40px 0 0 0',
+          letterSpacing: '0.04em',
+          lineHeight: 1.6,
+        }}
+      >
+        Apps reviewed:{' '}
+        {apps.map((app, i) => (
+          <span key={app.name}>
+            <a
+              href={app.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: C.secondary, textDecoration: 'underline', textUnderlineOffset: '3px' }}
+            >
+              {app.name}
+            </a>
+            {i < apps.length - 1 && ' · '}
+          </span>
+        ))}
+      </p>
+    </section>
+  );
+}
+
+function ProblemStatement() {
+  const statements = [
+    {
+      number: '01',
+      tag: 'Discovering Relevant Events',
+      text: 'Users need a way to discover and join community events with neighbours from their estate because existing platforms show events that appear too broad to feel personally relevant, so despite genuine interest, they rarely commit to attending.',
+    },
+    {
+      number: '02',
+      tag: 'Connecting Over Shared Interests',
+      text: 'Users need a way to find and connect with neighbours who share their interests because without knowing who lives nearby with things in common, potential connections never form even when both sides would be open to them.',
+    },
+    {
+      number: '03',
+      tag: 'Exchanging Help, Items and Services',
+      text: 'Users need a trusted way to exchange items, services and requests with verified neighbours in their estate because without an established channel among people they already live near, mutual willingness on both sides rarely translates into actual help.',
+    },
+  ];
+  return (
+    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.statsBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Problem Statement" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+        {statements.map((s) => (
+          <div key={s.number}>
+            <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#E8632B', margin: '0 0 8px 0', letterSpacing: '0.12em' }}>
+              {s.number} — {s.tag}
+            </p>
+            <p style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(22px, 2.6vw, 30px)', color: C.primary, lineHeight: 1.4, letterSpacing: '-0.01em', fontWeight: 400, margin: 0 }}>
+              {s.text}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── Solution Statement (3 paired responses with a shared intro line) ──────
+function SolutionStatement() {
+  // Three action pillars that follow the opener. Headlines are single
+  // crisp nouns so they read as the load-bearing parts of the platform
+  // rather than a numbered list (which Problem Statement above already
+  // owns). Bodies stay in DM Sans — the switch from Playfair italic
+  // (used in the opener) to clean sans-serif signals the move from
+  // "thesis" to "build."
+  const pillars = [
+    { name: 'Surface Events',     body: 'Filtered by interest and demographic, so they feel personally relevant to each resident.' },
+    { name: 'Connect Neighbours', body: 'Through shared interests, giving first conversations a natural starting point.' },
+    { name: 'Open Exchange',      body: 'A trusted channel for items, services, and requests between verified neighbours.' },
+  ];
+  return (
+    <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.problemBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Solution Statement" />
+      {/* Storyline opener — a single declarative thesis sentence that
+          mirrors TripSync's "Bridging this gap…" and Lumis's "From
+          this synthesis emerged…" patterns. Playfair Display in
+          upright regular weight (no italic) keeps the editorial
+          gravitas without the cursive feel, and the typographic shift
+          from upright serif → DM Sans bold in the pillars below
+          signals the move from thesis to architecture. */}
+      <p
+        style={{
+          fontFamily: F.editorial,
+          fontSize: 'clamp(24px, 3vw, 36px)',
+          color: C.primary,
+          lineHeight: 1.35,
+          letterSpacing: '-0.01em',
+          fontWeight: 400,
+          margin: '0 0 64px 0',
+        }}
+      >
+        From these three unmet needs emerged NeighbourLah, a neighbourhood platform that makes events feel personally relevant, turns shared interests into real connections, and creates a trusted exchange for everyday help.
+      </p>
+
+      {/* Three action pillars in a horizontal grid. The shape — three
+          short cards across — visually rhymes with the Competitive
+          Analysis verdict cards two sections back, giving the case
+          study a recurring "trio" motif (three problems → three
+          competitor failures → three solution pillars). Sans-serif
+          body and a short orange accent rule above each pillar break
+          the typographic rhythm from the italic editorial Problem
+          Statement so the two sections stop looking like the same
+          template. */}
+      <div
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}
+        className="max-md:!grid-cols-1 max-lg:!grid-cols-1"
+      >
+        {pillars.map((p) => (
+          <div
+            key={p.name}
+            style={{
+              borderTop: `2px solid #E8632B`,
+              paddingTop: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: F.sans,
+                fontSize: 'clamp(28px, 3vw, 36px)',
+                color: C.primary,
+                lineHeight: 1.1,
+                letterSpacing: '-0.01em',
+                fontWeight: 600,
+                margin: 0,
+              }}
+            >
+              {p.name}
+            </h3>
+            <p
+              style={{
+                fontFamily: F.sans,
+                fontSize: '15px',
+                color: C.secondary,
+                lineHeight: 1.6,
+                margin: 0,
+              }}
+            >
+              {p.body}
+            </p>
           </div>
         ))}
       </div>
@@ -316,25 +843,45 @@ function ProblemStatement() {
 
 function ResearchFindings() {
   const findings = [
-    { title: 'Willingness Is Not the Problem', desc: 'Every participant expressed genuine interest in being a better neighbour. The barrier was never motivation; it was mechanism. Nobody knew how to start.' },
-    { title: 'Trust Requires Gradual Exposure', desc: 'Participants wanted to observe community activity before participating. An app that required immediate self-disclosure before showing value would fail at the first screen.' },
-    { title: 'Practical Help as Entry Point', desc: 'The most comfortable form of interaction was practical and transactional: borrowing items, sharing excess food, reporting issues. Emotional community came later.' },
-    { title: 'HDB Context is Specific', desc: 'Existing community apps didn\'t understand the HDB block structure. Participants wanted to interact with their floor, their block, and their estate, in that order.' },
-    { title: 'Privacy Concerns Are Real', desc: 'Participants were wary of apps that shared too much personal information publicly. Anonymised or semi-anonymous initial interaction significantly reduced anxiety.' },
+    { title: 'Residents feel uncertain whether events are suitable for them or socially comfortable to attend.', desc: '' },
+    { title: 'Information about community events is fragmented and easily missed.', desc: '' },
+    { title: 'Shared interests help develop a natural entry point for connection.', desc: '' },
+    { title: 'Helpfulness between neighbours is generally limited to small, low-risk acts.', desc: '' },
+    { title: 'Higher-risk actions require a level of trust and confidence in neighbours’ capabilities.', desc: '' },
+    { title: 'The kampung spirit is universally desired but has no modern infrastructure to support it.', desc: '' },
   ];
-  // Per-note colour + rotation: five dark tints (brown, teal, purple, red,
-  // blue), each with a matching tape colour and a slight rotation.
+  // Per-note colour + rotation: six dark tints (brown, teal, purple, red,
+  // blue, green), each with a matching tape colour and a slight rotation.
   const noteStyles = [
     { from: '#2A2520', to: '#1E1B17', tape: 'rgba(190, 150, 100, 0.5)', rot: '-1.5deg' },
     { from: '#1C2A28', to: '#141E1C', tape: 'rgba(90, 185, 170, 0.5)',  rot: '0.8deg'  },
     { from: '#251F2E', to: '#1A1622', tape: 'rgba(160, 120, 200, 0.5)', rot: '-0.6deg' },
     { from: '#2C1E1E', to: '#1F1515', tape: 'rgba(200, 95, 95, 0.5)',   rot: '1.2deg'  },
     { from: '#1C2230', to: '#141923', tape: 'rgba(95, 135, 205, 0.5)',  rot: '-1.0deg' },
+    { from: '#1F2A1F', to: '#161E16', tape: 'rgba(120, 195, 120, 0.5)', rot: '0.6deg'  },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Research Findings" />
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
+      {/* Research intro — sets the participant context and the count
+          so the reader knows the shape of what's coming. The trailing
+          clause quietly previews the Problem Statement that follows. */}
+      <p
+        style={{
+          fontFamily: F.editorial,
+          fontSize: 'clamp(18px, 2vw, 24px)',
+          color: C.primary,
+          lineHeight: 1.55,
+          letterSpacing: '-0.01em',
+          fontWeight: 400,
+          margin: '0 0 48px 0',
+        }}
+      >
+        From conversations with HDB residents about how they engage with their neighbours (or don't), six patterns kept surfacing. Each one was a gap NeighbourLah would need to close.
+      </p>
+      {/* 6 sticky notes laid out in a 3-column × 2-row grid on desktop,
+          collapsing to 2 columns on tablet and 1 column on mobile. */}
+      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
         {findings.map((f, i) => {
           const s = noteStyles[i % noteStyles.length];
           return (
@@ -350,7 +897,7 @@ function ResearchFindings() {
               >
                 <p className="sticky-note__num">0{i + 1}</p>
                 <h3 className="sticky-note__title">{f.title}</h3>
-                <p className="sticky-note__body">{f.desc}</p>
+                {f.desc && <p className="sticky-note__body">{f.desc}</p>}
               </div>
             </div>
           );
@@ -361,115 +908,134 @@ function ResearchFindings() {
 }
 
 function DesignDecisions() {
-  const features = [
+  // Layout mirrors TripSync's Design Decisions block: two overlapping
+  // phone mockups on the left (slightly rotated for depth) and a 2-col
+  // grid of compact decision cards on the right. With 5 features the
+  // grid forms two full rows of 2 plus a 5th card alone in row 3,
+  // matching the same pattern used in the Lumis case study.
+  const features: Array<{ number: string; name: string; body: string }> = [
     {
-      number: '01', name: 'Community Feed',
-      bullets: [
-        'A hyper-local feed scoped to floor, block, and estate, switchable by the user depending on the radius of their interest.',
-        'Posts are lightweight: a short text, optional image, and category tag. The design prevents the feed from becoming a social media performance.',
-        'Pinned notices from the Town Council or block committee appear at the top, ensuring critical information reaches residents.',
-      ],
-      imageFirst: false,
+      number: '01',
+      name: 'Attend Events',
+      body: 'Events are scoped to the block and estate so residents see what is happening nearby. Before RSVPing they can check who else is attending, giving them enough context to decide if the event feels right for them.',
     },
     {
-      number: '02', name: 'Help & Borrow',
-      bullets: [
-        'A dedicated space for practical requests: borrowing items, offering surplus food, requesting errands help from neighbours who are available.',
-        'Requests expire automatically after 48 hours, keeping the list current and preventing stale posts from cluttering the experience.',
-        'Both sides rate the interaction, building a trust score that makes future requests easier to accept.',
-      ],
-      imageFirst: true,
+      number: '02',
+      name: 'Join Interest Groups',
+      body: 'Groups are organised around shared interests and scoped to the estate, keeping membership small and locally relevant.',
     },
     {
-      number: '03', name: 'Neighbourhood Notices',
-      bullets: [
-        'A structured notice board separate from the social feed, for maintenance schedules, estate announcements, and community reminders.',
-        'Notices can be acknowledged with a simple "seen" tap, giving organisers visibility into awareness without requiring responses.',
-        'Residents can subscribe to specific notice categories, only getting what\'s relevant to their level of HDB engagement.',
-      ],
-      imageFirst: false,
+      number: '03',
+      name: 'Connect with Neighbours',
+      body: 'A shared interest profile gives residents a low-friction way to reach out to someone they recognise but have never spoken to.',
     },
     {
-      number: '04', name: 'Interest Circles',
-      bullets: [
-        'Opt-in groups around shared interests: morning walks, elderly check-ins, plant swaps, hawker recommendations.',
-        'Circles are estate-scoped, keeping groups intimate and locally relevant rather than turning into city-wide forums.',
-        'Discovery is passive: the app suggests Circles based on engagement patterns without requiring a formal application or profile.',
-      ],
-      imageFirst: true,
+      number: '04',
+      name: 'Help and Share',
+      body: 'A dedicated space for free reciprocal exchanges between verified estate residents keeps interactions low-stakes. Knowing the other person lives in the same block makes it easier to ask for help or offer something without feeling vulnerable.',
+    },
+    {
+      number: '05',
+      name: 'Marketplace',
+      body: 'Listings are scoped to the estate so transactions stay within a community residents already have some familiarity with. Proximity makes handoffs convenient and keeps the marketplace from feeling like a city-wide stranger pool.',
     },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Design Decisions" />
-      <StaggerCards style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
-        {features.map((feat) => (
-          <div key={feat.number} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }} className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10">
-            {feat.imageFirst ? (
-              <>
-                <div className="max-md:!order-2"><ScreenMockup /></div>
-                <div className="max-md:!order-1">
-                  <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 12px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
-                  <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{feat.name}</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    {feat.bullets.map((b, bi) => (
-                      <li key={bi} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>{b}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </>
-            ) : (
-              <>
-                <div>
-                  <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 12px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
-                  <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{feat.name}</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    {feat.bullets.map((b, bi) => (
-                      <li key={bi} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
-                        <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>{b}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div><ScreenMockup /></div>
-              </>
-            )}
+      <div
+        style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '80px', alignItems: 'center' }}
+        className="max-md:!grid-cols-1 max-md:!gap-12 max-lg:!grid-cols-1 max-lg:!gap-12"
+      >
+        {/* Overlapping mobile screens — slight rotation gives the pair
+            a sense of depth without relying on a drop shadow. Until the
+            final decision-screen assets are ready both ScreenMockups
+            fall back to the imported NeighbourLah hero PNG. */}
+        <div
+          style={{ position: 'relative', width: '100%', minHeight: '560px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          className="max-md:!min-h-[460px]"
+        >
+          <div style={{ position: 'absolute', left: '8%', top: '6%', width: '58%', transform: 'rotate(-4deg)', zIndex: 1, opacity: 0.85 }}>
+            {/* TODO: swap placeholder for a Design Decisions back-mockup once available */}
+            <ScreenMockup />
           </div>
-        ))}
-      </StaggerCards>
+          <div style={{ position: 'absolute', right: '8%', bottom: '4%', width: '58%', transform: 'rotate(3deg)', zIndex: 2 }}>
+            {/* TODO: swap placeholder for a Design Decisions front-mockup once available */}
+            <ScreenMockup />
+          </div>
+        </div>
+
+        {/* 2-column grid of decision boxes. 5 features = two full rows
+            + a 5th card alone in row 3 column 1. */}
+        <StaggerCards
+          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}
+          className="max-md:!grid-cols-1"
+        >
+          {features.map((feat) => (
+            <div
+              key={feat.number}
+              style={{ border: `1px solid ${C.cardBorder}`, padding: '24px', display: 'flex', flexDirection: 'column' }}
+            >
+              <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#E8632B', margin: '0 0 14px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
+              <h3 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{feat.name}</h3>
+              <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: 0 }}>{feat.body}</p>
+            </div>
+          ))}
+        </StaggerCards>
+      </div>
     </section>
   );
 }
 
 function UsabilityTesting() {
-  const stats = [
-    { number: '88%', label: 'Would Use Daily' },
-    { number: '7', label: 'Participants' },
-    { number: '10', label: 'Tasks Tested' },
-    { number: '2.1', label: 'Avg. Difficulty (out of 7)' },
+  // Inline horizontal stats with vertical dividers — same pattern as
+  // TripSync's Usability Testing section so the two case studies feel
+  // visually consistent.
+  const inlineStats = [
+    { number: '5', label: 'Participants' },
+    { number: '5', label: 'Tasks' },
+    { number: '1 to 2.75', label: 'Difficulty Rating (1 = easiest, 7 = hardest)' },
   ];
   const insights = [
-    '88% of participants said they\'d use NeighbourLah at least once a day if it were available in their estate, a striking adoption signal for an app targeting a behaviour people claim to want but rarely do.',
-    'The Help & Borrow feature resonated most strongly. Participants immediately thought of things they could offer: excess cooking, unused tools, a spare charger, and appreciated that the framing was reciprocal, not charitable.',
-    'The hyper-local scoping was the most differentiated feature. Being able to see only floor-level activity first felt genuinely novel and personally relevant in a way that city-wide community apps never achieved.',
-    'Privacy settings needed more prominence. Three participants felt uncomfortable with the default sharing scope and wanted to see privacy controls before they committed to posting. Surfacing this during onboarding resolved the concern.',
+    'All 5 participants completed every task successfully. The Market was the most intuitive feature, matching familiar patterns from Carousell.',
+    "Events and Groups caused confusion across 3 of 5 participants as both are interest-based and users couldn't distinguish between a one-off event and an ongoing group.",
+    'Comfort levels were higher when users knew the app was government-backed. Showing block numbers on neighbour profiles raised privacy concerns.',
+    'Users were more willing to reach out to neighbours when they had a shared interest or prior interaction as a starting point.',
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Usability Testing" />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px', marginBottom: '64px' }} className="max-md:!grid-cols-2 max-md:!gap-8 max-lg:!grid-cols-2 max-lg:!gap-8">
-        {stats.map((s) => (
-          <div key={s.label}>
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(42px, 5vw, 64px)', color: C.primary, margin: '0 0 8px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400 }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: 0, lineHeight: 1.4 }}>{s.label}</p>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          flexWrap: 'wrap',
+          rowGap: '20px',
+          marginBottom: '48px',
+          paddingBottom: '28px',
+          borderBottom: `1px solid ${C.cardBorder}`,
+        }}
+      >
+        {inlineStats.map((s, i) => (
+          <div
+            key={s.label}
+            style={{
+              paddingLeft: i > 0 ? '32px' : 0,
+              paddingRight: '32px',
+              borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
+            }}
+            className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
+          >
+            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '800px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '820px' }}>
         {insights.map((insight, i) => (
-          <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>{insight}</p>
+          <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>
+            {insight}
+          </p>
         ))}
       </div>
     </section>
@@ -479,19 +1045,29 @@ function UsabilityTesting() {
 function Iterations() {
   const issues = [
     {
-      label: 'Privacy Default Settings',
-      problem: 'Default sharing scope was set to "Block" on first post. Participants felt exposed not knowing who could see their content before they posted it.',
-      solution: 'Added a Privacy Setup step to the onboarding flow, letting users choose their default sharing scope before they see the feed. A persistent scope indicator now appears at the top of each post composer.',
+      label: 'Events not prominent on home page',
+      problem: 'My Events was buried on the home page so users explored other tabs first.',
+      solution: 'Moved My Events to the top of the home page with a Find More Events link.',
     },
     {
-      label: 'Help Request Discovery',
-      problem: 'Active help requests from neighbours were scattered in the general feed with no way to filter or surface them efficiently. Participants missed requests they would have responded to.',
-      solution: 'Created a dedicated Help & Borrow tab with filter controls by category (borrow, offer, errands), proximity (floor/block/estate), and urgency. Requests now have a clear visual treatment that distinguishes them from general posts.',
+      label: 'Groups and Events felt overlapping',
+      problem: "Users couldn't distinguish between a one-off event and an ongoing group as both felt interest-based.",
+      solution: 'Added short descriptors beneath each tab label to clarify the difference.',
     },
     {
-      label: 'Interest Circle Onboarding',
-      problem: 'Interest Circles weren\'t surfaced until users had scrolled through the app for several minutes. Two participants never discovered them during the session.',
-      solution: 'Introduced a "Join a Circle" prompt during onboarding, showing the 3 most active Circles in the user\'s estate. Circles are now prominently featured on the homepage below the feed.',
+      label: 'Say Hello CTA felt ambiguous',
+      problem: 'Users hesitated to tap Say Hello as it sounded like it would auto-send a message.',
+      solution: 'Replaced with a Chat label so users knew they would be taken to a compose screen.',
+    },
+    {
+      label: 'Market and Requests felt too similar',
+      problem: 'Users went to Market when they needed to post a request as the distinction between the two was not clear.',
+      solution: 'Added short subtitles to each tab. Market: Buy, sell or offer services. Requests: Ask neighbours for help.',
+    },
+    {
+      label: 'Block number on neighbour profiles felt exposing',
+      problem: 'Showing a specific block number made neighbours feel physically locatable in a way that raised discomfort.',
+      solution: 'Replaced block number with a distance indicator such as 200m away to convey proximity without revealing exact location.',
     },
   ];
   return (
@@ -534,15 +1110,132 @@ function Iterations() {
   );
 }
 
+// Final Screens — modelled 1:1 on the TripSync Final Screens block.
+// Each screen renders a 65/35 (image:text) grid with the image side
+// alternating left/right per row. ScreenMockup is called WITHOUT a
+// `src` for now, so it shows the generic NeighbourLah hero PNG as a
+// placeholder; the `placeholderFor` field on each screen records the
+// final image's intended subject so the right asset can be wired in
+// later. Mobile collapses each row to a single column with the text
+// stacking above the placeholder (max-md:!order-1 / max-md:!order-2).
+function FinalScreens() {
+  const screens: Array<{
+    name: string;
+    placeholderFor: string;
+    highlights: Array<{ heading: string; text: string }>;
+    imageFirst: boolean;
+  }> = [
+    {
+      name: 'Attend Events',
+      placeholderFor: 'Attend Events',
+      highlights: [
+        { heading: 'Estate-Scoped Discovery', text: 'Browse events within your block or estate, filtered by date and interest category so relevant events surface.' },
+        { heading: "Who's Going", text: 'A breakdown of attendees by household type and language spoken helps residents gauge whether an event feels like the right fit before committing.' },
+      ],
+      imageFirst: false,
+    },
+    {
+      name: 'Join Interest Groups',
+      placeholderFor: 'Join Interest Groups',
+      highlights: [
+        { heading: 'Interest-Based Circles', text: 'Find and join groups of neighbours who share your interests, from morning runs to cooking and gardening.' },
+        { heading: 'Estate-Scoped Membership', text: 'Having something in common gives both sides a natural reason to connect without it feeling like a cold approach.' },
+      ],
+      imageFirst: true,
+    },
+    {
+      name: 'Connect with Neighbours',
+      placeholderFor: 'Connect with Neighbours',
+      highlights: [
+        { heading: 'Discover by Interest', text: 'Browse neighbours who share your interests and start a conversation directly in the app.' },
+        { heading: 'In-App Messaging', text: 'Conversations happen in-app so neither side has to share personal contact details to get started.' },
+      ],
+      imageFirst: false,
+    },
+    {
+      name: 'Help and Share',
+      placeholderFor: 'Help and Share',
+      highlights: [
+        { heading: 'Request and Offer', text: 'Post requests for help or items to borrow, or offer things you no longer need to neighbours nearby.' },
+        { heading: 'Verified Residents Only', text: 'All exchanges happen between verified estate residents, reducing the friction and anxiety of asking a stranger for help.' },
+      ],
+      imageFirst: true,
+    },
+    {
+      name: 'Marketplace',
+      placeholderFor: 'Marketplace',
+      highlights: [
+        { heading: 'Buy, Sell and Offer Services', text: 'List items for sale, give things away for free or offer local services like tutoring or dog walking to neighbours.' },
+        { heading: 'Proximity-Based Listings', text: 'All listings are scoped to your neighbourhood so handoffs stay convenient and the marketplace stays community-focused.' },
+      ],
+      imageFirst: false,
+    },
+  ];
+  return (
+    <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Final Screens" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
+        {screens.map((screen) => (
+          <div
+            key={screen.name}
+            style={{ display: 'grid', gridTemplateColumns: screen.imageFirst ? '1.85fr 1fr' : '1fr 1.85fr', gap: '64px', alignItems: 'center' }}
+            className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10"
+          >
+            {screen.imageFirst ? (
+              <>
+                <div className="max-md:!order-2">
+                  {/* TODO: swap placeholder for the final {screen.placeholderFor} mockup once available */}
+                  <ScreenMockup label={screen.placeholderFor} maxWidth={294} />
+                </div>
+                <div className="max-md:!order-1">
+                  <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    {screen.highlights.map((h, hi) => (
+                      <li key={hi} style={{ fontFamily: F.sans, fontSize: '17px', lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>
+                        <span style={{ display: 'block', color: C.primary, fontWeight: 600, marginBottom: '2px' }}>{h.heading}</span>
+                        <span style={{ display: 'block', color: C.secondary }}>{h.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    {screen.highlights.map((h, hi) => (
+                      <li key={hi} style={{ fontFamily: F.sans, fontSize: '17px', lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>
+                        <span style={{ display: 'block', color: C.primary, fontWeight: 600, marginBottom: '2px' }}>{h.heading}</span>
+                        <span style={{ display: 'block', color: C.secondary }}>{h.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  {/* TODO: swap placeholder for the final {screen.placeholderFor} mockup once available */}
+                  <ScreenMockup label={screen.placeholderFor} maxWidth={294} />
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Impact() {
   const outcomes = [
-    { title: 'Connection Model Validated', desc: 'The hyper-local scoping approach proved that proximity alone isn\'t community, but proximity plus the right tools can be. Every participant described a specific neighbour they\'d want to connect with after the session.' },
-    { title: '3 Key Flows Iterated', desc: 'Privacy setup, Help & Borrow discoverability, and Circle onboarding were all meaningfully improved based on observed behaviour during testing.' },
-    { title: 'Behaviour Change Potential', desc: '88% daily use intent is a strong signal that the core concept: making neighbourly interaction low-friction, landed. The design reduces the gap between wanting to connect and actually doing it.' },
+    { title: 'Information architecture was the key friction point.', desc: "Users couldn't distinguish Events from Groups and defaulted to familiar patterns like WhatsApp and Carousell." },
+    { title: 'Trust and privacy shaped willingness to engage.', desc: 'Comfort levels rose when users knew the app was government-backed and small details like block numbers raised concern.' },
+    { title: 'Barrier to connection validated the core concept.', desc: 'Users were more willing to reach out when a shared interest gave them a natural starting point.' },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
-      <AnimatedQuote style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
+      <AnimatedQuote scramble style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
         "I've lived in my block for six years and I don't know a single neighbour's name. This app would have changed that."
       </AnimatedQuote>
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 64px auto' }}>Usability Test Participant</p>
@@ -558,29 +1251,6 @@ function Impact() {
   );
 }
 
-function Reflections() {
-  const cards = [
-    { number: '01', title: 'Safety by Design', body: "Community apps carry real safety responsibilities. The design needed to make it easy to report harmful content or block users, and those mechanisms needed to be visible, not hidden." },
-    { number: '02', title: 'Moderation at Scale', body: "A hyperlocal feed works when there's moderate activity. With high volume, quality control becomes critical. The design would need a clear moderation model before launch." },
-    { number: '03', title: 'Elderly Inclusion', body: "Singapore's ageing population includes many residents who would most benefit from a neighbourhood connection tool but are least likely to adopt a new app. Accessibility and simplicity need deeper exploration." },
-    { number: '04', title: 'Institutional Partnerships', body: "The app's full value requires buy-in from Town Councils and HDB bodies for official notices and estate data. A B2G distribution model would be more viable than pure consumer acquisition." },
-  ];
-  return (
-    <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Reflections & Next Steps" />
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
-        {cards.map((card) => (
-          <div key={card.number} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
-            <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 16px 0', letterSpacing: '0.08em' }}>{card.number}</p>
-            <h3 style={{ fontFamily: F.editorial, fontSize: '22px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{card.title}</h3>
-            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{card.body}</p>
-          </div>
-        ))}
-      </StaggerCards>
-    </section>
-  );
-}
-
 function PrototypeCTA() {
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', textAlign: 'left' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -588,9 +1258,14 @@ function PrototypeCTA() {
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: '0 0 32px 0', lineHeight: 1.7, maxWidth: '580px' }}>
         Explore the full interactive prototype: community feed, help requests, and interest circles in action.
       </p>
-      <a href="#" style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${C.border}`, paddingBottom: '4px' }}
+      <a
+        href="https://precious-basbousa-9fdab7.netlify.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${C.border}`, paddingBottom: '4px' }}
         onMouseEnter={e => (e.currentTarget.style.borderColor = C.primary)}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}>
+        onMouseLeave={e => (e.currentTarget.style.borderColor = C.border)}
+      >
         Open Prototype
       </a>
     </section>
@@ -617,13 +1292,16 @@ function NextProject() {
 
 const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
-  { id: 'problem', label: 'Problem' },
+  { id: 'challenge', label: 'Challenge' },
   { id: 'research', label: 'Research' },
+  { id: 'competitive-analysis', label: 'Competitive Analysis' },
+  { id: 'problem', label: 'Problem Statement' },
+  { id: 'solution', label: 'Solution Statement' },
   { id: 'design-decisions', label: 'Design Decisions' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
+  { id: 'final-screens', label: 'Final Screens' },
   { id: 'impact', label: 'Impact' },
-  { id: 'reflections', label: 'Reflections' },
 ];
 
 export function NeighbourLahPage() {
@@ -636,13 +1314,16 @@ export function NeighbourLahPage() {
         <CaseStudySidebar items={sidebarItems} />
         <div className="cs-content">
           <div id="overview"><CaseStudyHero /></div>
-          <FadeUp id="problem"><ProblemStatement /></FadeUp>
+          <FadeUp id="challenge"><Challenge /></FadeUp>
           <FadeUp id="research"><ResearchFindings /></FadeUp>
+          <FadeUp id="competitive-analysis"><CompetitiveAnalysis /></FadeUp>
+          <FadeUp id="problem"><ProblemStatement /></FadeUp>
+          <FadeUp id="solution"><SolutionStatement /></FadeUp>
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>
+          <FadeUp id="final-screens"><FinalScreens /></FadeUp>
           <FadeUp id="impact"><Impact /></FadeUp>
-          <FadeUp id="reflections"><Reflections /></FadeUp>
           <FadeUp><PrototypeCTA /></FadeUp>
           <FadeUp><NextProject /></FadeUp>
         </div>

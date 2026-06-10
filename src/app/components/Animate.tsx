@@ -131,7 +131,7 @@ const SCRAMBLE_GLYPHS =
 const SCRAMBLE_TICK = 30;
 const SCRAMBLE_DURATION = 1200;
 
-function scrambleInto(el: HTMLElement, text: string): () => void {
+export function scrambleInto(el: HTMLElement, text: string): () => void {
   const render = (revealed: number) => {
     let out = '';
     for (let i = 0; i < text.length; i++) {

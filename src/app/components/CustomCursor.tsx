@@ -27,12 +27,23 @@ function NLMonogram({ size = 30 }: { size?: number }) {
   );
 }
 
+// Dot-trail length: 12 fading circles behind the NL monogram head.
+// Tweak this in isolation to make the trail longer or shorter — the
+// rest of the trail code reads from this constant.
+const TRAIL_LENGTH = 12;
+
 export function CustomCursor() {
   const [enabled, setEnabled] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
   const monogramRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const modeRef = useRef<CursorMode>('default');
+  // Trail state: a fixed-length history of recent cursor positions and
+  // a parallel array of refs to the rendered dot elements. Updating
+  // both lists in lockstep on every mousemove avoids the React re-render
+  // tax — we mutate inline styles directly.
+  const trailRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const positionsRef = useRef<Array<{ x: number; y: number }>>([]);
 
   useEffect(() => {
     const mql = window.matchMedia('(hover: hover) and (pointer: fine)');
@@ -50,26 +61,251 @@ export function CustomCursor() {
     if (!el || !monogram || !label) return;
 
     gsap.set(el, { xPercent: -50, yPercent: -50, opacity: 0 });
-    gsap.set(monogram, { opacity: 0.7, scale: 1 });
+    // Monogram opacity is now driven by the rAF loop (so it can blend
+    // smoothly between the bg-light and bg-dark targets) — GSAP only
+    // handles `scale` for the cta mode bump.
+    gsap.set(monogram, { scale: 1 });
+    monogram.style.opacity = '0.9';
     gsap.set(label, { opacity: 0, scale: 1 });
+
+    // Cache refs to the SVG paths inside the monogram so each frame can
+    // mutate their fill directly without re-rendering React.
+    const paths = Array.from(monogram.querySelectorAll('path')) as SVGPathElement[];
 
     const xTo = gsap.quickTo(el, 'x', { duration: 0.35, ease: 'power3.out' });
     const yTo = gsap.quickTo(el, 'y', { duration: 0.35, ease: 'power3.out' });
 
     let visible = false;
+    let rafId = 0;
+
+    // Background-adaptive colour state — referenced by both `setMode`
+    // and the rAF loop, so it's hoisted to the closure top.
+    //   currentBgIsLight ∈ [0, 1]: smoothly interpolated; 0 = dark bg
+    //   (light monogram, #EBEBE5), 1 = light bg (dark monogram, #0D0D0D).
+    //   targetBgIsLight: the snap-target sampled this frame (0 or 1).
+    //   current/target MonoOpacity: same shape but for the monogram's
+    //   overall opacity so mode transitions stay smooth.
+    // LERP_RATE = 1/8 settles a target in ~8 frames (~133 ms at 60fps).
+    const LERP_RATE = 1 / 8;
+    let currentBgIsLight = 0;
+    let targetBgIsLight = 0;
+    let currentMonoOpacity = 0.9;
+    let targetMonoOpacity = 0.9;
+
+    // Single offscreen 1×1 canvas reused for every sample. willReadFrequently
+    // hints the browser to optimise getImageData for repeat calls.
+    const sampleCanvas = document.createElement('canvas');
+    sampleCanvas.width = 1;
+    sampleCanvas.height = 1;
+    const sampleCtx = sampleCanvas.getContext('2d', { willReadFrequently: true });
+
+    // Cache of CORS-flagged twins keyed by src. The <img> elements that
+    // ship in the page mostly come from Cloudinary without a crossOrigin
+    // attribute, so drawing them to a canvas taints it and getImageData
+    // throws. To work around that we load a parallel copy of each image
+    // with `crossOrigin = 'anonymous'`; Cloudinary serves CORS headers,
+    // so the twin's pixels become readable once it's loaded.
+    //   value: HTMLImageElement → sample from this image when complete
+    //   value: 'failed'         → CORS load errored; never retry
+    const corsTwins = new Map<string, HTMLImageElement | 'failed'>();
+    const ensureCorsTwin = (src: string): HTMLImageElement | null => {
+      const cached = corsTwins.get(src);
+      if (cached === 'failed') return null;
+      if (cached) return cached.complete && cached.naturalWidth > 0 ? cached : null;
+      const twin = new Image();
+      twin.crossOrigin = 'anonymous';
+      twin.onerror = () => corsTwins.set(src, 'failed');
+      twin.src = src;
+      corsTwins.set(src, twin);
+      return null; // Will be sampleable on a later frame.
+    };
+
+    // Read the background brightness underneath a viewport point. We
+    // walk the element stack at (x, y) looking for the topmost
+    // <img>/<canvas>/<video> — page CSS backgrounds are uniformly dark
+    // on this site, but project-card images carry bright illustrations
+    // that the cursor needs to react to. Once a paintable element is
+    // found, we draw a 1×1 crop at the cursor's mapped position into a
+    // reusable offscreen canvas and read the pixel. If the canvas gets
+    // tainted (cross-origin image without CORS), getImageData throws —
+    // we catch it and continue searching, finally falling back to the
+    // CSS `background-color` walk as a last resort.
+    const sampleBrightness = (x: number, y: number): number => {
+      const stack = document.elementsFromPoint(x, y);
+
+      // First pass: look for a paintable source whose pixel we can read.
+      for (const e of stack) {
+        if (!sampleCtx) break;
+        const tag = e.tagName;
+        if (tag !== 'IMG' && tag !== 'CANVAS' && tag !== 'VIDEO') continue;
+
+        const rect = e.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+
+        // Pick a CanvasImageSource we can sample from. For <img> we route
+        // through the CORS twin cache so cross-origin images (Cloudinary)
+        // don't taint the canvas. <canvas>/<video> use the live element.
+        let source: CanvasImageSource | null = null;
+        let srcW = 0;
+        let srcH = 0;
+        if (tag === 'IMG') {
+          const img = e as HTMLImageElement;
+          if (!img.complete || img.naturalWidth === 0) continue;
+          const twin = ensureCorsTwin(img.src);
+          if (!twin) continue; // Not loaded yet — try again next frame.
+          source = twin;
+          srcW = twin.naturalWidth;
+          srcH = twin.naturalHeight;
+        } else if (tag === 'VIDEO') {
+          const v = e as HTMLVideoElement;
+          if (v.readyState < 2 || v.videoWidth === 0) continue;
+          source = v;
+          srcW = v.videoWidth;
+          srcH = v.videoHeight;
+        } else {
+          const c = e as HTMLCanvasElement;
+          source = c;
+          srcW = c.width;
+          srcH = c.height;
+        }
+        if (!source || !srcW || !srcH) continue;
+
+        // Linear map of viewport coords → intrinsic coords. This is exact
+        // for object-fit: fill, and a good-enough approximation for cover
+        // / contain at the resolution we need (a single pixel).
+        const relX = Math.max(0, Math.min(srcW - 1, ((x - rect.left) / rect.width) * srcW));
+        const relY = Math.max(0, Math.min(srcH - 1, ((y - rect.top) / rect.height) * srcH));
+
+        try {
+          sampleCtx.clearRect(0, 0, 1, 1);
+          sampleCtx.drawImage(
+            source,
+            relX, relY, 1, 1,  // crop 1×1 around cursor in source coords
+            0, 0, 1, 1,        // paint to the whole 1×1 canvas
+          );
+          const data = sampleCtx.getImageData(0, 0, 1, 1).data;
+          // Skip mostly-transparent pixels — they shouldn't represent the
+          // visible background.
+          if (data[3] > 128) {
+            return data[0] * 0.299 + data[1] * 0.587 + data[2] * 0.114;
+          }
+        } catch {
+          // Cross-origin taint or other draw failure — fall through.
+        }
+      }
+
+      // Second pass: walk up from the topmost element looking for an
+      // opaque CSS background. This catches solid colour blocks where no
+      // image is involved (sections, the body, etc).
+      let node: Element | null = stack[0] ?? null;
+      while (node) {
+        const bg = getComputedStyle(node).backgroundColor;
+        const m = bg.match(/rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\)/);
+        if (m) {
+          const a = m[4] !== undefined ? parseFloat(m[4]) : 1;
+          if (a > 0.5) {
+            const r = parseInt(m[1], 10);
+            const g = parseInt(m[2], 10);
+            const b = parseInt(m[3], 10);
+            return r * 0.299 + g * 0.587 + b * 0.114;
+          }
+        }
+        node = node.parentElement;
+      }
+      // Final fall-back: dark page bg.
+      return 13;
+    };
+
+    // Trail update loop. We sample the cursor HEAD's currently-rendered
+    // (GSAP-smoothed) position once per frame and push it onto the front
+    // of `positionsRef`. The rendered dots then read history[i + 1] — i.e.
+    // dot 0 corresponds to the head's position one frame ago, dot 11 to
+    // twelve frames ago. That keeps the entire trail strictly behind the
+    // head (z-index already lower) with a visible separation that grows
+    // as the cursor accelerates and collapses to zero when it's still.
+    //
+    // `MIN_TRAIL_OFFSET` hides any dot whose sampled position falls
+    // within ~15 px of the head — i.e. underneath the NL monogram. This
+    // prevents the trail from stacking into a visible centre dot when
+    // the cursor is stationary or moving slowly, so the monogram is
+    // always the only thing rendered at the head's exact location.
+    const MIN_TRAIL_OFFSET = 15;
+    const updateTrail = () => {
+      const headX = Number(gsap.getProperty(el, 'x')) || 0;
+      const headY = Number(gsap.getProperty(el, 'y')) || 0;
+
+      // Background brightness → target colour state. Snap target to 0 or 1,
+      // then ease the displayed value toward it at LERP_RATE per frame so
+      // the colour transition is not jarring.
+      const brightness = sampleBrightness(headX, headY);
+      targetBgIsLight = brightness > 128 ? 1 : 0;
+      currentBgIsLight += (targetBgIsLight - currentBgIsLight) * LERP_RATE;
+
+      // For default/cta modes, the bg-aware opacity target is the source
+      // of truth. View (0) and text (0.4) modes hold their own targets.
+      if (modeRef.current === 'default' || modeRef.current === 'cta') {
+        targetMonoOpacity = currentBgIsLight > 0.5 ? 0.85 : 0.9;
+      }
+      currentMonoOpacity += (targetMonoOpacity - currentMonoOpacity) * LERP_RATE;
+      monogram.style.opacity = String(currentMonoOpacity);
+
+      // Interpolate the monogram fill between #EBEBE5 (dark bg) and
+      // #0D0D0D (light bg). currentBgIsLight ∈ [0, 1] drives the mix.
+      const t = currentBgIsLight;
+      const cr = Math.round(235 + (13 - 235) * t);
+      const cg = Math.round(235 + (13 - 235) * t);
+      const cb = Math.round(229 + (13 - 229) * t);
+      const fillColor = `rgb(${cr}, ${cg}, ${cb})`;
+      for (let i = 0; i < paths.length; i++) {
+        paths[i].style.fill = fillColor;
+      }
+      // Trail dots share the same hue at 0.45 alpha.
+      const trailBg = `rgba(${cr}, ${cg}, ${cb}, 0.45)`;
+
+      positionsRef.current = [{ x: headX, y: headY }, ...positionsRef.current].slice(0, TRAIL_LENGTH + 1);
+      for (let i = 0; i < TRAIL_LENGTH; i++) {
+        const pos = positionsRef.current[i + 1];
+        const dot = trailRefs.current[i];
+        if (!dot) continue;
+        // Keep the colour in lockstep with the bg target even when the
+        // dot is hidden, so when motion resumes the dot is already the
+        // right tone instead of fading from a stale colour.
+        dot.style.backgroundColor = trailBg;
+        if (!pos || !visible) {
+          dot.style.opacity = '0';
+          continue;
+        }
+        const dx = pos.x - headX;
+        const dy = pos.y - headY;
+        // Squared distance check avoids a sqrt per dot per frame.
+        if (dx * dx + dy * dy < MIN_TRAIL_OFFSET * MIN_TRAIL_OFFSET) {
+          dot.style.opacity = '0';
+          continue;
+        }
+        dot.style.transform = `translate(${pos.x - 4}px, ${pos.y - 4}px)`;
+        dot.style.opacity = String(1 - i / TRAIL_LENGTH);
+      }
+      rafId = requestAnimationFrame(updateTrail);
+    };
+    rafId = requestAnimationFrame(updateTrail);
 
     const setMode = (next: CursorMode) => {
       if (next === modeRef.current) return;
       modeRef.current = next;
 
-      const monoOpacity =
-        next === 'view' ? 0 : next === 'text' ? 0.4 : 0.7;
+      // Mode-driven target. For default/cta we use the current bg-aware
+      // opacity (0.85 over light bg / 0.9 over dark bg) so the cursor
+      // doesn't jump back to a fixed value when modes change. The rAF
+      // loop continues to track the bg-aware target in real time.
+      const bgDefaultOpacity = currentBgIsLight > 0.5 ? 0.85 : 0.9;
+      targetMonoOpacity =
+        next === 'view' ? 0 : next === 'text' ? 0.4 : bgDefaultOpacity;
       const monoScale = next === 'cta' ? 1.2 : 1;
       const labelOpacity = next === 'view' ? 1 : 0;
       const labelScale = next === 'view' ? 1 : 0.9;
 
+      // Only animate scale here — opacity is interpolated in the rAF.
       gsap.to(monogram, {
-        opacity: monoOpacity,
         scale: monoScale,
         duration: 0.25,
         ease: 'power2.out',
@@ -122,6 +358,8 @@ export function CustomCursor() {
     const onLeave = () => {
       visible = false;
       gsap.to(el, { opacity: 0, duration: 0.2 });
+      // Trail dots are hidden by the rAF loop on the next tick because
+      // it reads `visible` — no manual style mutation needed here.
     };
 
     const onEnter = () => {
@@ -133,6 +371,7 @@ export function CustomCursor() {
     document.documentElement.addEventListener('mouseenter', onEnter);
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener('mousemove', onMove);
       document.documentElement.removeEventListener('mouseleave', onLeave);
       document.documentElement.removeEventListener('mouseenter', onEnter);
@@ -142,51 +381,102 @@ export function CustomCursor() {
   if (!enabled) return null;
 
   return (
-    <div
-      ref={cursorRef}
-      aria-hidden="true"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: 30,
-        height: 30,
-        pointerEvents: 'none',
-        zIndex: 100000,
-        mixBlendMode: 'normal',
-        willChange: 'transform',
-      }}
-    >
+    <>
+      {/* Dot trail — 12 fading circles rendered as fixed-position
+          siblings of the head. They live one z-index below the head so
+          the NL monogram (or the View label) always sits on top of the
+          most recent dot. Position + per-dot opacity are mutated
+          directly by `onMove`, so we never re-render from React. */}
+      {Array.from({ length: TRAIL_LENGTH }).map((_, i) => (
+        <div
+          key={i}
+          ref={(node) => {
+            trailRefs.current[i] = node;
+          }}
+          aria-hidden="true"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            backgroundColor: 'rgba(235, 235, 229, 0.5)',
+            opacity: 0,
+            pointerEvents: 'none',
+            zIndex: 99999,
+            transform: 'translate(-9999px, -9999px)',
+            willChange: 'transform, opacity',
+          }}
+        />
+      ))}
       <div
-        ref={monogramRef}
+        ref={cursorRef}
+        aria-hidden="true"
         style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          willChange: 'opacity, transform',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: 30,
+          height: 30,
+          pointerEvents: 'none',
+          zIndex: 100000,
+          mixBlendMode: 'normal',
+          willChange: 'transform',
         }}
       >
-        <NLMonogram size={30} />
+        <div
+          ref={monogramRef}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            willChange: 'opacity, transform',
+          }}
+        >
+          <NLMonogram size={30} />
+        </div>
+        <div
+          ref={labelRef}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            willChange: 'opacity, transform',
+          }}
+        >
+          {/* Dark circular backdrop with a soft black glow so the
+              "View" label stays legible over any card background
+              colour. The 48px circle extends beyond the 30px cursor
+              container; that's intentional. The text colour stays
+              #EBEBE5 — only the surround changes. */}
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              // flexShrink:0 keeps the 48px circle from being squashed
+              // by the 30px-wide labelRef flex container.
+              flexShrink: 0,
+              borderRadius: '50%',
+              backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              boxShadow: '0 0 14px 2px rgba(0, 0, 0, 0.85)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: '"Playfair Display", Georgia, serif',
+              fontSize: 14,
+              color: '#EBEBE5',
+              letterSpacing: '0.02em',
+            }}
+          >
+            View
+          </div>
+        </div>
       </div>
-      <div
-        ref={labelRef}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: '"Playfair Display", Georgia, serif',
-          fontSize: 14,
-          color: '#EBEBE5',
-          letterSpacing: '0.02em',
-          willChange: 'opacity, transform',
-        }}
-      >
-        View
-      </div>
-    </div>
+    </>
   );
 }
