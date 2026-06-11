@@ -1,5 +1,5 @@
-import { motion } from 'motion/react';
-import { Fragment, useEffect } from 'react';
+import { motion, useInView } from 'motion/react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { PasswordGate } from '../components/PasswordGate';
@@ -62,7 +62,7 @@ function SectionLabel({ text }: { text: string }) {
 // and an outer drop shadow. `src` is optional — call sites pass it for
 // real screen images; when omitted the imported hero PNG renders as a
 // placeholder for blocks where the final asset hasn't been wired in yet.
-function ScreenMockup({ label, opacity = 1, src, maxWidth = 260 }: { label?: string; opacity?: number; src?: string; maxWidth?: number }) {
+function ScreenMockup({ label, opacity = 1, src, videoSrc, maxWidth = 260 }: { label?: string; opacity?: number; src?: string; videoSrc?: string; maxWidth?: number }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       {/* Label + image share an image-width column so the label sits
@@ -160,13 +160,25 @@ function ScreenMockup({ label, opacity = 1, src, maxWidth = 260 }: { label?: str
                 zIndex: 3,
               }}
             />
-            <img
-              src={src ?? neighbourlahImg}
-              alt={label || 'NeighbourLah screen'}
-              loading="lazy"
-              decoding="async"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
-            />
+            {videoSrc ? (
+              <video
+                src={videoSrc}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+              />
+            ) : (
+              <img
+                src={src ?? neighbourlahImg}
+                alt={label || 'NeighbourLah screen'}
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -405,6 +417,39 @@ function Challenge() {
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
         NeighbourLah rebuilds that infrastructure for today's HDB estates. The app surfaces relevant events nearby, connects neighbours over shared interests, and provides a trusted channel for everyday exchanges of help, items, and services.
       </p>
+      {/* Skip-ahead button for confident readers who want to see the
+          working artefact before reading the design narrative. Pill-
+          shaped, filled with the case study's accent (picked up via
+          var(--accent-color) set on the page root), dark text for
+          contrast. The full editorial PrototypeCTA still sits at the
+          end of the case study; this is the early fast-track. */}
+      <div style={{ marginTop: '40px' }}>
+        <a
+          href="https://precious-basbousa-9fdab7.netlify.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: F.sans,
+            fontSize: '14px',
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            color: C.bg,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            backgroundColor: 'var(--accent-color)',
+            padding: '12px 24px',
+            borderRadius: '999px',
+            transition: 'opacity 0.2s ease',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+        >
+          Try the prototype
+          <span aria-hidden="true" style={{ fontSize: '12px' }}>↗</span>
+        </a>
+      </div>
     </section>
   );
 }
@@ -803,8 +848,14 @@ function SolutionStatement() {
           <div
             key={p.name}
             style={{
-              borderTop: `2px solid #E8632B`,
-              paddingTop: '24px',
+              // Soft pill card with subtle grey lift over the section
+              // background. Matches the lift shade (#1A1A1A) used by
+              // the Competitive Analysis verdict cards earlier in the
+              // case study so both card patterns share the same grey
+              // hierarchy instead of introducing a tinted colour.
+              backgroundColor: '#1A1A1A',
+              borderRadius: '16px',
+              padding: '32px',
               display: 'flex',
               flexDirection: 'column',
               gap: '16px',
@@ -813,9 +864,9 @@ function SolutionStatement() {
             <h3
               style={{
                 fontFamily: F.sans,
-                fontSize: 'clamp(28px, 3vw, 36px)',
+                fontSize: 'clamp(20px, 2.2vw, 26px)',
                 color: C.primary,
-                lineHeight: 1.1,
+                lineHeight: 1.25,
                 letterSpacing: '-0.01em',
                 fontWeight: 600,
                 margin: 0,
@@ -846,8 +897,7 @@ function ResearchFindings() {
     { title: 'Residents feel uncertain whether events are suitable for them or socially comfortable to attend.', desc: '' },
     { title: 'Information about community events is fragmented and easily missed.', desc: '' },
     { title: 'Shared interests help develop a natural entry point for connection.', desc: '' },
-    { title: 'Helpfulness between neighbours is generally limited to small, low-risk acts.', desc: '' },
-    { title: 'Higher-risk actions require a level of trust and confidence in neighbours’ capabilities.', desc: '' },
+    { title: 'Neighbourly help defaults to small, low-risk acts. Bigger asks need trust that has to be built first.', desc: '' },
     { title: 'The kampung spirit is universally desired but has no modern infrastructure to support it.', desc: '' },
   ];
   // Per-note colour + rotation: six dark tints (brown, teal, purple, red,
@@ -877,11 +927,12 @@ function ResearchFindings() {
           margin: '0 0 48px 0',
         }}
       >
-        From conversations with HDB residents about how they engage with their neighbours (or don't), six patterns kept surfacing. Each one was a gap NeighbourLah would need to close.
+        From conversations with HDB residents about how they engage with their neighbours (or don't), five patterns kept surfacing. Each one was a gap NeighbourLah would need to close.
       </p>
-      {/* 6 sticky notes laid out in a 3-column × 2-row grid on desktop,
-          collapsing to 2 columns on tablet and 1 column on mobile. */}
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
+      {/* 5 sticky notes laid out in a single row of 5 on desktop,
+          mirroring Lumis Research Findings. Collapses to 2 columns on
+          tablet and 1 column on mobile. */}
+      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
         {findings.map((f, i) => {
           const s = noteStyles[i % noteStyles.length];
           return (
@@ -917,27 +968,27 @@ function DesignDecisions() {
     {
       number: '01',
       name: 'Attend Events',
-      body: 'Events are scoped to the block and estate so residents see what is happening nearby. Before RSVPing they can check who else is attending, giving them enough context to decide if the event feels right for them.',
+      body: 'Estate-scoped events show who else is attending so residents can RSVP with confidence.',
     },
     {
       number: '02',
       name: 'Join Interest Groups',
-      body: 'Groups are organised around shared interests and scoped to the estate, keeping membership small and locally relevant.',
+      body: 'Interest-based groups scoped to the estate keep membership small and locally relevant.',
     },
     {
       number: '03',
       name: 'Connect with Neighbours',
-      body: 'A shared interest profile gives residents a low-friction way to reach out to someone they recognise but have never spoken to.',
+      body: 'A shared interest profile lets residents reach out to neighbours they recognise but have never spoken to.',
     },
     {
       number: '04',
       name: 'Help and Share',
-      body: 'A dedicated space for free reciprocal exchanges between verified estate residents keeps interactions low-stakes. Knowing the other person lives in the same block makes it easier to ask for help or offer something without feeling vulnerable.',
+      body: 'Free exchanges between verified estate residents stay low-stakes because both sides already share a neighbourhood.',
     },
     {
       number: '05',
       name: 'Marketplace',
-      body: 'Listings are scoped to the estate so transactions stay within a community residents already have some familiarity with. Proximity makes handoffs convenient and keeps the marketplace from feeling like a city-wide stranger pool.',
+      body: 'Listings scoped to the estate keep transactions inside a familiar community and handoffs convenient.',
     },
   ];
   return (
@@ -987,51 +1038,100 @@ function DesignDecisions() {
   );
 }
 
+// Animated counter — counts from 0 to `to` when scrolled into view (once).
+// Mirrors AXS's CountUp so all case studies share the same animation
+// vocabulary for hero stats.
+function CountUp({ to, durationMs = 1200, formatter }: { to: number; durationMs?: number; formatter: (v: number) => string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    let raf = 0;
+    const tick = () => {
+      const elapsed = performance.now() - start;
+      const t = Math.min(elapsed / durationMs, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(to * eased);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, to, durationMs]);
+  return <span ref={ref}>{formatter(value)}</span>;
+}
+
 function UsabilityTesting() {
-  // Inline horizontal stats with vertical dividers — same pattern as
-  // TripSync's Usability Testing section so the two case studies feel
-  // visually consistent.
-  const inlineStats = [
-    { number: '5', label: 'Participants' },
-    { number: '5', label: 'Tasks' },
-    { number: '1 to 2.75', label: 'Difficulty Rating (1 = easiest, 7 = hardest)' },
+  const planRows = [
+    { label: 'Participants',   value: '5 HDB residents keen to be closer to their neighbourhood' },
+    { label: 'Environment',    value: "Online testing using participant's own devices" },
+    { label: 'Data Collected', value: 'Success rate, Ease of Use rating (1 = very easy, 7 = very difficult), observation, post-test questionnaires' },
   ];
+  // Two concrete, observation-level insights about specific feature
+  // interactions. The high-altitude takeaways (trust as accumulated
+  // signal, interest as the right on-ramp) have moved into Impact
+  // where they become evidence for strategic claims, not findings to
+  // restate.
   const insights = [
-    'All 5 participants completed every task successfully. The Market was the most intuitive feature, matching familiar patterns from Carousell.',
-    "Events and Groups caused confusion across 3 of 5 participants as both are interest-based and users couldn't distinguish between a one-off event and an ongoing group.",
-    'Comfort levels were higher when users knew the app was government-backed. Showing block numbers on neighbour profiles raised privacy concerns.',
-    'Users were more willing to reach out to neighbours when they had a shared interest or prior interaction as a starting point.',
+    'The Market was the most intuitive feature, matching the patterns users already knew from Carousell.',
+    "Events and Groups confused 3 of 5 participants because both surfaced interest-based content without a clear distinction between a one-off and an ongoing commitment.",
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Usability Testing" />
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          flexWrap: 'wrap',
-          rowGap: '20px',
-          marginBottom: '48px',
-          paddingBottom: '28px',
-          borderBottom: `1px solid ${C.cardBorder}`,
-        }}
-      >
-        {inlineStats.map((s, i) => (
-          <div
-            key={s.label}
-            style={{
-              paddingLeft: i > 0 ? '32px' : 0,
-              paddingRight: '32px',
-              borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
-            }}
-            className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
-          >
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
+
+      {/* Subheader — names who was tested and ties recruitment back to
+          the target group from research. */}
+      <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0' }}>
+        Usability testing was conducted with 5 HDB residents who are keen to be closer to their neighbourhood.
+      </p>
+
+      {/* Test Plan — 3-card grid mirroring AXS so the case studies
+          share the same testing-setup vocabulary. */}
+      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.25, fontWeight: 400 }}>Test Plan</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '64px' }} className="max-md:!grid-cols-1">
+        {planRows.map((r) => (
+          <div key={r.label} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
+            <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 10px 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{r.label}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: 0, lineHeight: 1.6 }}>{r.value}</p>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '820px' }}>
+
+      {/* Hero difficulty rating — animated CountUp from 0 to 1.9 (the
+          midpoint of the 1–2.75 range observed across tasks). Range and
+          scale appear below the hero number so the reader keeps the
+          full context. Treatment mirrors AXS's "3 / 5" hero moment. */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease }}
+        style={{ textAlign: 'center', paddingTop: '24px', marginBottom: '64px' }}
+      >
+        <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 24px 0', letterSpacing: '0.16em', textTransform: 'uppercase' }}>Overall Ease of Use Rating</p>
+        <div
+          style={{
+            fontFamily: F.editorial,
+            fontSize: 'clamp(64px, 9vw, 96px)',
+            lineHeight: 1,
+            letterSpacing: '-0.03em',
+            fontWeight: 400,
+            margin: '0 0 28px 0',
+            color: '#EBEBE5',
+          }}
+        >
+          <CountUp to={1.8} formatter={(v) => v.toFixed(1)} />
+          <span style={{ color: '#5A5A54' }}>/7</span>
+        </div>
+        <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 auto', letterSpacing: '0.12em', textTransform: 'uppercase', maxWidth: '640px' }}>
+          5 tasks tested
+        </p>
+      </motion.div>
+
+      {/* Insights — qualitative takeaways from the testing. */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         {insights.map((insight, i) => (
           <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>
             {insight}
@@ -1043,68 +1143,111 @@ function UsabilityTesting() {
 }
 
 function Iterations() {
-  const issues = [
+  // `videoBefore` / `videoAfter` are optional fields per issue. When
+  // present, the ScreenMockup renders a looping muted video instead of
+  // the default placeholder image. Matches the AXS Iterations video
+  // pattern so both case studies use the same vocabulary.
+  type Issue = {
+    label: string;
+    problem: string;
+    solution: string;
+    imgBefore?: string;
+    imgAfter?: string;
+    videoBefore?: string;
+    videoAfter?: string;
+  };
+  const issues: Issue[] = [
     {
       label: 'Events not prominent on home page',
       problem: 'My Events was buried on the home page so users explored other tabs first.',
       solution: 'Moved My Events to the top of the home page with a Find More Events link.',
+      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/Task_1_before_oo6ryc.mp4',
     },
     {
       label: 'Groups and Events felt overlapping',
       problem: "Users couldn't distinguish between a one-off event and an ongoing group as both felt interest-based.",
-      solution: 'Added short descriptors beneath each tab label to clarify the difference.',
+      solution: 'Added a header description on the Events and Groups tabs in Explore to orient users when they land there.',
+      imgBefore: 'https://res.cloudinary.com/dvunn40le/image/upload/task2p3_before_mba3fp.png',
+    },
+    {
+      label: 'Searching for neighbours by name returned empty',
+      problem: 'Users searched for a neighbour by name in Messages, but the search only looks through existing conversations. With no prior chat history, results came up empty and users had to find their way to the Neighbours tab in Explore on their own.',
+      solution: 'Added a Find Neighbours button below the search bar in Messages to redirect users to the Neighbours tab in Explore.',
+      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/task3_before_ccy03c.mp4',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/task3_after_enu7bq.mp4',
     },
     {
       label: 'Say Hello CTA felt ambiguous',
       problem: 'Users hesitated to tap Say Hello as it sounded like it would auto-send a message.',
       solution: 'Replaced with a Chat label so users knew they would be taken to a compose screen.',
+      imgBefore: 'https://res.cloudinary.com/dvunn40le/image/upload/task3p2_before_iiuuhn.png',
     },
     {
       label: 'Market and Requests felt too similar',
       problem: 'Users went to Market when they needed to post a request as the distinction between the two was not clear.',
-      solution: 'Added short subtitles to each tab. Market: Buy, sell or offer services. Requests: Ask neighbours for help.',
-    },
-    {
-      label: 'Block number on neighbour profiles felt exposing',
-      problem: 'Showing a specific block number made neighbours feel physically locatable in a way that raised discomfort.',
-      solution: 'Replaced block number with a distance indicator such as 200m away to convey proximity without revealing exact location.',
+      solution: "Added short subtitles to each tab — Market: Buy, sell or offer services. Requests: Ask neighbours for help. Also added a fallback prompt in Market for users who still landed in the wrong place: Can't find what you need? Post a request.",
+      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/task5_before_zzpmpt.mp4',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/task5_after_uxr5tm.mp4',
     },
   ];
+  // Shared inline styles for the per-mockup tag (BEFORE / AFTER) and
+  // the description that sits beneath each mockup. Matches TripSync's
+  // Iterations vocabulary so the two case studies' iteration sections
+  // read as one design language.
+  const tagStyle: React.CSSProperties = {
+    fontFamily: F.sans,
+    fontSize: '11px',
+    letterSpacing: '0.16em',
+    textTransform: 'uppercase',
+    color: '#8A8A82',
+    margin: '0 0 16px 0',
+    display: 'block',
+  };
+  const sideText: React.CSSProperties = {
+    fontFamily: F.sans,
+    fontSize: '15px',
+    color: C.primary,
+    lineHeight: 1.6,
+    margin: '20px 0 0 0',
+    maxWidth: '320px',
+  };
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Top Issues & Iterations" />
       <h2 className="cs-section-header">What Changed & Why</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
-        {issues.map((issue, i) => {
-          // Alternate sides on desktop: odd issues (1st, 3rd…) keep text left /
-          // mockups right; even issues flip to mockups left / text right via
-          // order. Below lg the grid collapses to one column with text first.
-          const mockLeft = i % 2 === 1;
-          return (
+        {issues.map((issue, i) => (
+          <div
+            key={issue.label}
+            style={i > 0 ? { borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' } : undefined}
+          >
+            {/* Issue title at the top of the block — same cs-category-label
+                treatment used in TripSync so the two case studies share
+                the same hierarchy. */}
+            <p className="cs-category-label" style={{ marginBottom: '32px' }}>{issue.label}</p>
             <div
-              key={issue.label}
-              style={i > 0 ? { borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' } : undefined}
+              style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'start' }}
+              className="max-md:!grid-cols-1 max-md:!gap-10"
             >
-              <div
-                style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'start' }}
-                className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10"
-              >
-                <div className={mockLeft ? 'lg:order-2' : undefined}>
-                  <p className="cs-category-label">{issue.label}</p>
-                  <p className="cs-body-text" style={{ margin: '0 0 16px 0' }}>{issue.problem}</p>
-                  <p className="cs-body-text" style={{ margin: 0 }}>{issue.solution}</p>
-                </div>
-                <div
-                  className={mockLeft ? 'lg:order-1' : undefined}
-                  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}
-                >
-                  <ScreenMockup label="Before" />
-                  <ScreenMockup label="After" />
-                </div>
+              {/* Before — small uppercase tag, mockup, then the problem
+                  description below it. ScreenMockup uses videoSrc if
+                  present, falls back to src (image), then to the
+                  default placeholder. */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={tagStyle}>Before</span>
+                <ScreenMockup src={issue.imgBefore} videoSrc={issue.videoBefore} />
+                <p style={sideText}>{issue.problem}</p>
+              </div>
+              {/* After — small uppercase tag, mockup, then the solution
+                  description below it. */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={tagStyle}>After</span>
+                <ScreenMockup src={issue.imgAfter} videoSrc={issue.videoAfter} />
+                <p style={sideText}>{issue.solution}</p>
               </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -1228,15 +1371,22 @@ function FinalScreens() {
 }
 
 function Impact() {
+  // Three strategic-altitude outcomes. Each carries a fact from the
+  // testing data (5/5 reaching out, the government-backed trust boost,
+  // the Market vs Events/Groups contrast) but escalates the
+  // interpretation: what does this mean for the product, the design
+  // language, the next steps. Usability Testing above keeps the
+  // concrete behavioural observations, so the reader climbs altitude
+  // rather than re-reading the same beats.
   const outcomes = [
-    { title: 'Information architecture was the key friction point.', desc: "Users couldn't distinguish Events from Groups and defaulted to familiar patterns like WhatsApp and Carousell." },
-    { title: 'Trust and privacy shaped willingness to engage.', desc: 'Comfort levels rose when users knew the app was government-backed and small details like block numbers raised concern.' },
-    { title: 'Barrier to connection validated the core concept.', desc: 'Users were more willing to reach out when a shared interest gave them a natural starting point.' },
+    { title: 'Interest-based connection is the right entry point.', desc: 'All 5 participants reached out more readily when a shared interest gave them a starting point. This confirmed the core thesis that connection in dense estates needs a softer on-ramp than direct introduction.' },
+    { title: 'Trust signals carried more weight than expected.', desc: 'Comfort with the app rose sharply when users learned it was government-backed, while a small detail like a block number on a neighbour profile raised concern. Trust is not a single moment to design for, it is an accumulating signal that needs to be earned across the app.' },
+    { title: 'Familiarity drove adoption faster than novelty.', desc: 'The Market succeeded because it leaned on patterns users already knew from Carousell. Events and Groups failed because they introduced an unfamiliar IA model. For everyday community features, mirroring what users already know beats inventing new structure.' },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
       <AnimatedQuote scramble style={{ fontFamily: F.editorial, fontStyle: 'italic', fontSize: 'clamp(24px, 3.5vw, 40px)', color: C.primary, margin: '0 auto 48px auto', lineHeight: 1.35, maxWidth: '900px', letterSpacing: '-0.01em', fontWeight: 400, paddingTop: '4px', paddingBottom: '4px' }}>
-        "I've lived in my block for six years and I don't know a single neighbour's name. This app would have changed that."
+        "I'll be, frankly speaking, feeling a bit awkward... unless there's a common interest."
       </AnimatedQuote>
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 64px auto' }}>Usability Test Participant</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">

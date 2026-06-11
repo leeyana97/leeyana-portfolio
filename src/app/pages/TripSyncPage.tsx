@@ -1,5 +1,5 @@
-import { motion } from 'motion/react';
-import { useEffect, useRef } from 'react';
+import { motion, useInView } from 'motion/react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Navigation } from '../components/Navigation';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
@@ -23,7 +23,6 @@ import tripsyncPhone2 from '../../imports/tripsync-phone-2.webp';
 import tripsyncPhone3 from '../../imports/tripsync-phone-3-v2.webp';
 import tripsyncPhone4 from '../../imports/tripsync-phone-4-v3.webp';
 import affinityMapP1 from '../../imports/affinity_map_p1.webp';
-import affinityMapP2 from '../../imports/affinity_map_p2.webp';
 
 // Hero showcase: 4 phones layered with staggered reveal. Phone 4 (right,
 // held by hand) enters first; phone 1 (left) enters last.
@@ -492,6 +491,39 @@ function Challenge() {
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
         TripSync was designed to address this exact challenge. It turns the messy WhatsApp-and-spreadsheet sprawl of group trip planning into a structured experience, one that doesn't force everyone to agree but instead surfaces where they already do, and lets each person opt out of activities without disrupting the trip for the rest.
       </p>
+      {/* Skip-ahead button for confident readers who want to see the
+          working artefact before reading the design narrative. Pill-
+          shaped, filled with the case study's accent (picked up via
+          var(--accent-color) set on the page root), dark text for
+          contrast. The full editorial PrototypeCTA still sits at the
+          end of the case study; this is the early fast-track. */}
+      <div style={{ marginTop: '40px' }}>
+        <a
+          href="https://iso-pond-75627619.figma.site/splash"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: F.sans,
+            fontSize: '14px',
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            color: C.bg,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            backgroundColor: 'var(--accent-color)',
+            padding: '12px 24px',
+            borderRadius: '999px',
+            transition: 'opacity 0.2s ease',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+        >
+          Try the prototype
+          <span aria-hidden="true" style={{ fontSize: '12px' }}>↗</span>
+        </a>
+      </div>
     </section>
   );
 }
@@ -582,11 +614,11 @@ function ResearchFindings() {
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '6px', aspectRatio: '4 / 3' }}
           />
           <img
-            src={affinityMapP2}
+            src="https://res.cloudinary.com/dvunn40le/image/upload/affinity_map_p2_copy_chmq6t.png"
             alt="Whiteboard with all sticky notes grouped into research themes after affinity mapping"
             loading="lazy"
             decoding="async"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', borderRadius: '6px', aspectRatio: '4 / 3' }}
+            style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', borderRadius: '6px', aspectRatio: '4 / 3' }}
           />
         </div>
         <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#5A5A54', fontStyle: 'italic', margin: '16px 0 0 0', textAlign: 'center', lineHeight: 1.5 }}>
@@ -843,14 +875,41 @@ function DesignDecisions() {
 }
 
 // ─── 6. Usability Testing ────────────────────────────────────────────────────
+// Animated counter — counts from 0 to `to` when scrolled into view (once).
+// Mirrors AXS's CountUp so all case studies share the same animation
+// vocabulary for hero stats.
+function CountUp({ to, durationMs = 1200, formatter }: { to: number; durationMs?: number; formatter: (v: number) => string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    let raf = 0;
+    const tick = () => {
+      const elapsed = performance.now() - start;
+      const t = Math.min(elapsed / durationMs, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(to * eased);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, to, durationMs]);
+  return <span ref={ref}>{formatter(value)}</span>;
+}
+
 function UsabilityTesting() {
-  const inlineStats = [
-    { number: '5', label: 'Participants' },
-    { number: '9', label: 'Tasks' },
-    { number: '2 to 4', label: 'Difficulty Rating (1 = easiest, 7 = hardest)' },
+  const planRows = [
+    { label: 'Participants',   value: '5 members of the public, each the main planner of a group trip' },
+    { label: 'Environment',    value: "In-person testing using tester's personal device" },
+    { label: 'Data Collected', value: 'Success rate, Ease of Use rating (1 = very easy, 7 = very difficult), observation' },
   ];
+  // Three concrete, observation-level insights about specific features.
+  // The high-altitude "task completion was unanimous" beat has moved
+  // into Impact where the 100% stat becomes evidence for the strategic
+  // claim, not a finding to restate.
   const insights = [
-    'Task completion was unanimous. The core journey held together from start to finish.',
     'The preference quiz was described as "surprisingly fun," turning a potential chore into something closer to a game.',
     'The overlap dashboard gave participants an immediate sense of momentum and shared direction.',
     "The opt-out feature needed clearer labelling. Two participants weren't sure if it removed them from the whole trip or just one activity.",
@@ -858,33 +917,62 @@ function UsabilityTesting() {
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Usability Testing" />
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          flexWrap: 'wrap',
-          rowGap: '20px',
-          marginBottom: '48px',
-          paddingBottom: '28px',
-          borderBottom: `1px solid ${C.cardBorder}`,
-        }}
-      >
-        {inlineStats.map((s, i) => (
-          <div
-            key={s.label}
-            style={{
-              paddingLeft: i > 0 ? '32px' : 0,
-              paddingRight: '32px',
-              borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
-            }}
-            className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
-          >
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
+
+      {/* Subheader — names who was tested and ties recruitment back to
+          the target group from research. */}
+      <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0' }}>
+        Usability testing was conducted with 5 members of the public who are the main planner of a group trip.
+      </p>
+
+      {/* Test Plan — 3-card grid mirroring AXS so the case studies
+          share the same testing-setup vocabulary. */}
+      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.25, fontWeight: 400 }}>Test Plan</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '64px' }} className="max-md:!grid-cols-1">
+        {planRows.map((r) => (
+          <div key={r.label} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
+            <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 10px 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{r.label}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: 0, lineHeight: 1.6 }}>{r.value}</p>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '820px' }}>
+
+      {/* Hero difficulty rating — animated CountUp from 0 to 3 (the
+          midpoint of the 2–4 range observed across tasks). Range and
+          scale appear below the hero number so the reader keeps the
+          full context. Treatment mirrors AXS's "3 / 5" hero moment. */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.6, ease }}
+        style={{ textAlign: 'center', paddingTop: '24px', marginBottom: '64px' }}
+      >
+        <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 24px 0', letterSpacing: '0.16em', textTransform: 'uppercase' }}>Overall Ease of Use Rating</p>
+        <div
+          style={{
+            fontFamily: F.editorial,
+            fontSize: 'clamp(64px, 9vw, 96px)',
+            lineHeight: 1,
+            letterSpacing: '-0.03em',
+            fontWeight: 400,
+            margin: '0 0 28px 0',
+            color: '#EBEBE5',
+          }}
+        >
+          {/* Static "2-4 / 7" range — the AXS-style CountUp doesn't
+              translate cleanly to a two-ended range (the two counters
+              would race), so the rating displays statically while the
+              motion.div fade-up still gives the moment some entrance. */}
+          2-4
+          <span style={{ color: '#5A5A54' }}>/7</span>
+        </div>
+        <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 auto', letterSpacing: '0.12em', textTransform: 'uppercase', maxWidth: '640px' }}>
+          9 tasks tested
+        </p>
+      </motion.div>
+
+      {/* Insights — qualitative takeaways from the testing. */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         {insights.map((insight, i) => (
           <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>
             {insight}
@@ -1091,10 +1179,19 @@ function FinalScreens() {
 
 // ─── 9. Impact ───────────────────────────────────────────────────────────────
 function Impact() {
+  // Three strategic-altitude outcomes. Each carries a fact from the
+  // testing data (5/5 completion, 3 of 4 screens iterated, opt-out as
+  // the standout) but escalates the interpretation: what does this
+  // mean for the product, the design space, the next steps. Usability
+  // Testing above keeps the concrete behavioural observations, so the
+  // reader climbs altitude rather than re-reading the same beats.
+  // Outcomes structured as `{title, desc}` to match the 3-up titled-
+  // card pattern used in NeighbourLah and AXS. Title carries the
+  // strategic claim; body carries the evidence.
   const outcomes = [
-    'Core concept validated by all 5 participants.',
-    '3 of 4 key screens iterated based on direct usability feedback.',
-    'Opt-out feature highlighted as the most valuable for reducing social friction.',
+    { title: 'Structured preference collection is the right bet for group travel.', desc: 'All 5 participants completed the core journey, confirming the quiz-and-dashboard model can replace the WhatsApp back-and-forth groups currently default to.' },
+    { title: 'Three of four key screens were iterated from direct testing feedback.', desc: 'Every observed friction point was addressed in the final redesigns.' },
+    { title: "Opt-out emerged as the design's most valuable move.", desc: 'By letting users decline a single activity without dropping out of the whole trip, it addressed a social problem other group-coordination tools ignore.' },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
@@ -1104,14 +1201,18 @@ function Impact() {
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 72px auto' }}>
          Usability Test Participant
       </p>
-      <ul style={{ listStyle: 'none', padding: 0, margin: '0 auto', maxWidth: '760px', display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
-        {outcomes.map((o, i) => (
-          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.6 }}>
-            <span style={{ fontFamily: F.editorial, color: '#52B788', minWidth: '28px', fontSize: '18px' }}>{String(i + 1).padStart(2, '0')}</span>
-            <span>{o}</span>
-          </li>
+      {/* 3-up titled-card grid matching the Impact pattern used in
+          NeighbourLah and AXS. h4 title (Playfair 20px) carries the
+          strategic claim, body (DM Sans 17px secondary) carries the
+          evidence. Stacks to 1 column on tablet and mobile. */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
+        {outcomes.map((o) => (
+          <div key={o.title}>
+            <h4 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 12px 0', lineHeight: 1.3, fontWeight: 400 }}>{o.title}</h4>
+            <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: 0, lineHeight: 1.7 }}>{o.desc}</p>
+          </div>
         ))}
-      </ul>
+      </div>
     </section>
   );
 }

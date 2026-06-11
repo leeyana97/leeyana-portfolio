@@ -318,6 +318,39 @@ function Challenge() {
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
         Lumis takes the guesswork out of skincare shopping. It matches products to a user's actual skin profile, checks compatibility with what they already use, and lets them sample new products at a fraction of the price before committing to a full purchase.
       </p>
+      {/* Skip-ahead button for confident readers who want to see the
+          working artefact before reading the design narrative. Pill-
+          shaped, filled with the case study's accent (picked up via
+          var(--accent-color) set on the page root), dark text for
+          contrast. The full editorial PrototypeCTA still sits at the
+          end of the case study; this is the early fast-track. */}
+      <div style={{ marginTop: '40px' }}>
+        <a
+          href="https://parse-handle-22255637.figma.site"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: F.sans,
+            fontSize: '14px',
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            color: C.bg,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            backgroundColor: 'var(--accent-color)',
+            padding: '12px 24px',
+            borderRadius: '999px',
+            transition: 'opacity 0.2s ease',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+        >
+          Try the prototype
+          <span aria-hidden="true" style={{ fontSize: '12px' }}>↗</span>
+        </a>
+      </div>
     </section>
   );
 }
@@ -531,49 +564,47 @@ function DesignDecisions() {
   );
 }
 
-// ─── 6. Usability Testing (TripSync prose style) ────────────────────────────
+// ─── 6. Usability Testing ────────────────────────────────────────────────────
 function UsabilityTesting() {
-  const inlineStats = [
-    { number: '5', label: 'Participants' },
-    { number: '10', label: 'Tasks' },
-    { number: '100%', label: 'Success Rate (Key Tasks)' },
+  const planRows = [
+    { label: 'Participants',   value: '5 members of the public who purchase and use skincare products' },
+    { label: 'Tasks',          value: '10 across the skin profile, comparison, and trial flow' },
+    { label: 'Data Collected', value: 'Success rate (100% on key tasks), post-test feedback, observation' },
   ];
+  // Two concrete, observation-level insights specific to features
+  // tested. The high-altitude takeaways (100% completion, friction
+  // categories) have been moved into Impact where they become evidence
+  // for strategic claims rather than restated findings.
   const insights = [
-    'Task completion across all 4 key tasks was unanimous. The core journey held together from discovering products to trialling and comparing them.',
-    'The skin profile quiz was the most positively received feature. Participants responded well to the interactive bare-skin photo upload and concern selection mapped to a face diagram.',
-    'The ingredient comparison tool generated strong interest. Participants found the side-by-side layout intuitive once they located the correct input. Discoverability of the external product input was a recurring point of friction.',
-    'Friction was consistently about labelling, feedback, and discoverability rather than flow. Users knew what they wanted to do; they just needed clearer signposting to do it.',
+    'The skin profile quiz drew the strongest engagement, especially the bare-skin photo upload and the face-diagram concern selection.',
+    'The ingredient comparison tool worked well once participants located the external product input, which proved to be the recurring friction point.',
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Usability Testing" />
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          flexWrap: 'wrap',
-          rowGap: '20px',
-          marginBottom: '48px',
-          paddingBottom: '28px',
-          borderBottom: `1px solid ${C.cardBorder}`,
-        }}
-      >
-        {inlineStats.map((s, i) => (
-          <div
-            key={s.label}
-            style={{
-              paddingLeft: i > 0 ? '32px' : 0,
-              paddingRight: '32px',
-              borderLeft: i > 0 ? `1px solid ${C.cardBorder}` : 'none',
-            }}
-            className="max-md:!pl-0 max-md:!pr-6 max-md:!border-l-0"
-          >
-            <p style={{ fontFamily: F.editorial, fontSize: 'clamp(28px, 3vw, 38px)', color: C.primary, margin: '0 0 6px 0', lineHeight: 1, letterSpacing: '-0.02em', fontWeight: 400, whiteSpace: 'nowrap' }}>{s.number}</p>
-            <p style={{ fontFamily: F.sans, fontSize: '11px', color: '#8A8A82', margin: 0, lineHeight: 1.4, letterSpacing: '0.14em', textTransform: 'uppercase' }}>{s.label}</p>
+
+      {/* Subheader — names who was tested and ties recruitment back to
+          the target group from research. */}
+      <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0' }}>
+        Usability testing was conducted with 5 members of the public who purchase and use skincare products.
+      </p>
+
+      {/* Test Plan — 3-card grid mirroring AXS so the case studies
+          share the same testing-setup vocabulary. The 100% success
+          rate on key tasks lives inside the Data Collected card so
+          it stays surfaced without needing a separate hero stat. */}
+      <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(22px, 2.4vw, 30px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.25, fontWeight: 400 }}>Test Plan</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '64px' }} className="max-md:!grid-cols-1">
+        {planRows.map((r) => (
+          <div key={r.label} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
+            <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, margin: '0 0 10px 0', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{r.label}</p>
+            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.primary, margin: 0, lineHeight: 1.6 }}>{r.value}</p>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '820px' }}>
+
+      {/* Insights — qualitative takeaways from the testing. */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         {insights.map((insight, i) => (
           <p key={i} style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0 }}>
             {insight}
@@ -674,10 +705,19 @@ function Iterations() {
 
 // ─── 8. Impact (pull quote + outcome statements) ────────────────────────────
 function Impact() {
+  // Three strategic-altitude outcomes. Each carries a fact from the
+  // testing data (the 100%, the friction categories, the quiz being
+  // described as fun) but escalates the interpretation: what does this
+  // mean for the product, the team, the next steps. Usability Testing
+  // above keeps the concrete behavioural observations, so the reader
+  // climbs altitude rather than re-reading the same beats.
+  // Outcomes structured as `{title, desc}` to match the 3-up titled-
+  // card pattern used in NeighbourLah and AXS. Title carries the
+  // strategic claim; body carries the evidence.
   const outcomes = [
-    'All 4 key tasks achieved 100% success rate, validating the core journey from discovery to commitment.',
-    'Friction was categorised into three clear types: labelling mismatches, insufficient interface feedback, and discoverability gaps. Each was directly addressed in the iterated designs.',
-    'The skin profile quiz and ingredient comparison tool were the most positively received features, confirming that personalisation and transparency are the right design bets for this product.',
+    { title: 'Personalisation is the right strategic bet for a multi-concern skincare audience.', desc: 'The 100% completion rate on key tasks shows users were happy to invest effort upfront when the recommendations that followed felt earned.' },
+    { title: 'Three friction categories became the iteration brief.', desc: 'Labelling, feedback, and discoverability were each surfaced in testing, and all three were addressed in the final redesigned screens.' },
+    { title: 'The skin profile quiz reframed how I think about onboarding.', desc: 'Users came expecting a chore and left describing it as fun. Personalisation is not friction to minimise, it is the moment users buy in.' },
   ];
   // Drive both quote+bar animations from a single observer on the wrapper.
   // Tracking the bar directly fails because its initial scaleY: 0 collapses
@@ -728,7 +768,7 @@ function Impact() {
           covers both" treatment we render the bar manually on a wrapper
           and put plain motion blockquotes inside. The bar scaleY animates
           in (mirrors AnimatedQuote's beat), then each quote fades in. */}
-      <div ref={quotesRef} style={{ position: 'relative', paddingLeft: '24px', maxWidth: '900px', margin: '0 auto 32px auto', textAlign: 'left' }}>
+      <div ref={quotesRef} style={{ position: 'relative', paddingLeft: '24px', maxWidth: '760px', margin: '0 auto 32px auto', textAlign: 'left' }}>
         <motion.div
           aria-hidden="true"
           style={{
@@ -761,14 +801,18 @@ function Impact() {
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 72px auto' }}>
          Usability Test Participants
       </p>
-      <ul style={{ listStyle: 'none', padding: 0, margin: '0 auto', maxWidth: '760px', display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
-        {outcomes.map((o, i) => (
-          <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.6 }}>
-            <span style={{ fontFamily: F.editorial, color: '#C4A265', minWidth: '28px', fontSize: '18px' }}>{String(i + 1).padStart(2, '0')}</span>
-            <span>{o}</span>
-          </li>
+      {/* 3-up titled-card grid matching the Impact pattern used in
+          NeighbourLah and AXS. h4 title (Playfair 20px) carries the
+          strategic claim, body (DM Sans 17px secondary) carries the
+          evidence. Stacks to 1 column on tablet and mobile. */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
+        {outcomes.map((o) => (
+          <div key={o.title}>
+            <h4 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 12px 0', lineHeight: 1.3, fontWeight: 400 }}>{o.title}</h4>
+            <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: 0, lineHeight: 1.7 }}>{o.desc}</p>
+          </div>
         ))}
-      </ul>
+      </div>
     </section>
   );
 }

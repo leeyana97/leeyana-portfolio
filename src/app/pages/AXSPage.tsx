@@ -653,6 +653,39 @@ function Challenge() {
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
         AXS Vault is the feature we designed to take that weight off. It turns a single-user payment app into a household bill management system, where the primary handler sets bills up once, partners see what's been paid without asking, and first jobbers get the inherited structure their parents never had a way to hand down.
       </p>
+      {/* Skip-ahead button for confident readers who want to see the
+          working artefact before reading the design narrative. Pill-
+          shaped, filled with the case study's accent (picked up via
+          var(--accent-color) set on the page root), dark text for
+          contrast. The full editorial PrototypeCTA still sits at the
+          end of the case study; this is the early fast-track. */}
+      <div style={{ marginTop: '40px' }}>
+        <a
+          href="https://axsapr2026v2.netlify.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: F.sans,
+            fontSize: '14px',
+            fontWeight: 600,
+            letterSpacing: '0.04em',
+            color: C.bg,
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            backgroundColor: 'var(--accent-color)',
+            padding: '12px 24px',
+            borderRadius: '999px',
+            transition: 'opacity 0.2s ease',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+        >
+          Try the prototype
+          <span aria-hidden="true" style={{ fontSize: '12px' }}>↗</span>
+        </a>
+      </div>
     </section>
   );
 }
@@ -869,8 +902,8 @@ function DesignDecisions() {
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Solution Statement" />
-      <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: '0 0 56px 0', maxWidth: '720px' }}>
-        Vault is anchored around three user personas. Each statement names the persona it serves and the specific Vault behaviour that addresses their need.
+      <p style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 3vw, 36px)', color: C.primary, lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 400, margin: '0 0 56px 0' }}>
+        Each of those three problems shaped a specific Vault behaviour. Below, each one is paired with the persona it serves.
       </p>
       <StaggerCards style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {statements.map((s) => (
@@ -968,7 +1001,7 @@ function UsabilityTesting() {
       >
         <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 14px 0', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Internal Review</p>
         <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 1: Design Feedback Workshop</h3>
-        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 36px 0', maxWidth: '720px' }}>
+        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 36px 0' }}>
           Before testing with the public, the team ran a design feedback workshop with AXS staff across 5 tasks. Ease of Use ratings used a 1 to 5 scale (1 = Very Easy, 5 = Very Difficult).
         </p>
         {/* Staggered task cards — each fades up with a 100ms delay between cards.
@@ -1091,10 +1124,10 @@ function UsabilityTesting() {
       >
         <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 14px 0', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Public Testing</p>
         <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 2: Usability Testing</h3>
-        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 12px 0', maxWidth: '720px' }}>
+        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 12px 0' }}>
           Following the internal workshop, the team iterated on the 5 issues surfaced by AXS staff.
         </p>
-        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0', maxWidth: '720px' }}>
+        <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0' }}>
           Usability testing was then conducted with 5 members of the public, including 2 first jobbers and 3 young couples, on their own devices.
         </p>
 
@@ -1231,16 +1264,28 @@ function Iterations() {
                   className={`max-md:!grid-cols-1 max-md:!gap-10 ${mockLeft ? 'lg:order-1' : ''}`.trim()}
                   style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', alignItems: 'start' }}
                 >
-                  <ScreenPlaceholder
-                    label="Before"
-                    text="Before"
-                    videoSrc={issue.videoBefore}
-                  />
-                  <ScreenPlaceholder
-                    label="After"
-                    text="After"
-                    videoSrc={issue.videoAfter}
-                  />
+                  {/* BEFORE / AFTER mockups, each preceded by a small
+                      uppercase tag that mirrors the tag vocabulary used
+                      in TripSync, Lumis, and NeighbourLah Iterations
+                      (11px DM Sans, 0.16em letter-spacing, uppercase,
+                      colour #8A8A82). The `label` prop on the original
+                      ScreenPlaceholder rendered a centred lowercase
+                      caption; replacing it with an explicit tag above
+                      brings AXS in line with the shared vocabulary. */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <span style={{ fontFamily: F.sans, fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8A8A82', margin: '0 0 16px 0', display: 'block' }}>Before</span>
+                    <ScreenPlaceholder
+                      text="Before"
+                      videoSrc={issue.videoBefore}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <span style={{ fontFamily: F.sans, fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8A8A82', margin: '0 0 16px 0', display: 'block' }}>After</span>
+                    <ScreenPlaceholder
+                      text="After"
+                      videoSrc={issue.videoAfter}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
