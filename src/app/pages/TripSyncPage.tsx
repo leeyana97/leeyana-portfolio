@@ -56,6 +56,7 @@ const F = {
 function SectionLabel({ text }: { text: string }) {
   return (
     <motion.div
+      className="cs-section-label-wrap"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -328,7 +329,16 @@ function CaseStudyHero() {
           from heroPhones, fires on mount via `animate` so the cascade plays
           regardless of where the showcase sits in the viewport). */}
       <div
-        className="hidden max-md:!block max-md:!order-2"
+        // Mobile wrapper extends edge-to-edge of the viewport (same
+        // pattern as NeighbourLah): `w-screen` makes it 100vw,
+        // `-ml-6` cancels the section's px-6 (24px) left padding to
+        // pull the wrapper back to the viewport's left edge, and
+        // `max-w-none` removes any inherited width cap. The phones
+        // inside are positioned at percentages of this container, so
+        // a wider container makes them scale up proportionally — the
+        // % positions and the section/animation contract are
+        // unchanged, just bigger overall.
+        className="hidden max-md:!block max-md:!order-2 max-md:!w-screen max-md:!-ml-6 max-md:!max-w-none"
         style={{
           position: 'relative',
           width: '100%',

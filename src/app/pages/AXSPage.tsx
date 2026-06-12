@@ -48,6 +48,7 @@ const F = {
 function SectionLabel({ text }: { text: string }) {
   return (
     <motion.div
+      className="cs-section-label-wrap"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -329,13 +330,24 @@ function AXSHeroCarousel() {
     const update = () => {
       const w = window.innerWidth;
       if (w < 480) {
-        // Mobile: phones 10% smaller than the prior 137 → 123 (containerHeight 252).
-        // yShift 50 = ~20% of containerHeight (5% less down than before).
-        setDims({ phoneWidth: 123, orbitRadius: 85, settleOffset: 69, yShift: 50 });
+        // Mobile: scaled +27% above the original baseline 137 → 174
+        // (= +15% then a further +10%). Container height becomes
+        // 174 × 2.05 = 357px, landing comfortably above NeighbourLah
+        // at the common 375–414px phone widths (NL's clamp lands at
+        // 292–323px there). All four dims scale by the same 1.27×
+        // factor against the original 137-baseline so the orbital
+        // path keeps its exact shape and the L/C/R settle pattern is
+        // unchanged — phones just travel a proportionally larger
+        // orbit at the larger phone size. Animation timing, easing,
+        // and reduced-motion path are untouched. Tablet (w ≥ 480)
+        // and desktop breakpoints are intentionally left alone.
+        setDims({ phoneWidth: 174, orbitRadius: 119, settleOffset: 98, yShift: 70 });
       } else if (w < 768) {
-        // Same 10% reduction at this breakpoint: 224 → 202 (containerHeight 414).
-        // yShift 82 = ~20% of containerHeight.
-        setDims({ phoneWidth: 202, orbitRadius: 166, settleOffset: 128, yShift: 82 });
+        // Same baseline at this breakpoint: phoneWidth 224 → containerHeight
+        // 459, matching the 460px max of the clamp range used by the other
+        // two case studies. yShift / orbitRadius / settleOffset scaled
+        // proportionally from the mobile baseline above.
+        setDims({ phoneWidth: 224, orbitRadius: 184, settleOffset: 142, yShift: 91 });
       } else if (w < 1100) {
         setDims({ phoneWidth: 312, orbitRadius: 296, settleOffset: 216, yShift: 0 });
       } else {

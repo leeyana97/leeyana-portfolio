@@ -33,6 +33,7 @@ const F = {
 function SectionLabel({ text }: { text: string }) {
   return (
     <motion.div
+      className="cs-section-label-wrap"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -560,11 +561,12 @@ function CompetitiveAnalysis() {
           gridTemplateRows: 'auto auto auto auto auto auto auto auto auto',
           gap: '24px',
         }}
-        className="max-md:!grid-cols-1 max-lg:!grid-cols-1"
+        className="competitive-grid max-md:!grid-cols-1 max-lg:!grid-cols-1"
       >
         {apps.map((app) => (
           <div
             key={app.name}
+            className="competitive-card"
             style={{
               backgroundColor: '#1A1A1A',
               border: `1px solid ${C.cardBorder}`,
@@ -1161,12 +1163,20 @@ function Iterations() {
       label: 'Events not prominent on home page',
       problem: 'My Events was buried on the home page so users explored other tabs first.',
       solution: 'Moved My Events to the top of the home page with a Find More Events link.',
-      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/Task_1_before_oo6ryc.mp4',
+      // Source video is recorded at 886×1734 (~9:17.6), wider than the
+      // phone frame's 9:19.5 aspect, so plain `object-fit: cover` was
+      // cropping the words at the sides. The `c_pad,ar_18:39,b_auto`
+      // Cloudinary transform pads the video server-side to 9:19.5 with
+      // an auto-detected background colour (matches the app's
+      // background), so the delivered file fits the phone frame
+      // exactly without cropping or visible bars.
+      videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/c_pad,ar_18:39,b_auto/Task_1_before_oo6ryc.mp4',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/task_1_afternew_otqgqg.mp4',
     },
     {
       label: 'Groups and Events felt overlapping',
       problem: "Users couldn't distinguish between a one-off event and an ongoing group as both felt interest-based.",
-      solution: 'Added a header description on the Events and Groups tabs in Explore to orient users when they land there.',
+      solution: 'Surfaced a one-time tooltip on first visit to guide users on exploring the app. Also added a header description on the Events and Groups tabs in Explore to orient users when they land there.',
       imgBefore: 'https://res.cloudinary.com/dvunn40le/image/upload/task2p3_before_mba3fp.png',
     },
     {
@@ -1179,7 +1189,7 @@ function Iterations() {
     {
       label: 'Say Hello CTA felt ambiguous',
       problem: 'Users hesitated to tap Say Hello as it sounded like it would auto-send a message.',
-      solution: 'Replaced with a Chat label so users knew they would be taken to a compose screen.',
+      solution: 'Replaced with a Chat label so users knew they would be taken to a compose screen. Also added a Chat button within the neighbour profile.',
       imgBefore: 'https://res.cloudinary.com/dvunn40le/image/upload/task3p2_before_iiuuhn.png',
     },
     {

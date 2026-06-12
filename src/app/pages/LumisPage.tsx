@@ -29,6 +29,7 @@ const F = {
 function SectionLabel({ text }: { text: string }) {
   return (
     <motion.div
+      className="cs-section-label-wrap"
       style={{
         display: 'flex',
         alignItems: 'center',

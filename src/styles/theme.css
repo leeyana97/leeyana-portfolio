@@ -623,3 +623,80 @@
   50%      { filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.7)); }
 }
 
+/* ── NeighbourLah Competitive Analysis: tablet/mobile layout fix ───────────
+   Desktop uses CSS subgrid: parent grid is 3 cols × 9 explicit rows,
+   and each card spans all 9 rows via `grid-row: 1 / -1` + inherits the
+   parent's row tracks via `grid-template-rows: subgrid`. This aligns the
+   dividers across all three verdict cards. Below 1024px the columns
+   collapse to 1 (via Tailwind `max-md:!grid-cols-1 max-lg:!grid-cols-1`),
+   but without also overriding the inline `grid-template-rows` and the
+   per-card `grid-row: 1 / -1`, all three cards try to occupy the same
+   single grid cell — causing horizontal overflow that pushes the sticky
+   SectionLabel off-screen and breaks the card layout. This override
+   drops the subgrid pattern below 1024px and lets each card render as
+   a regular flex column. Divider alignment across cards is moot at
+   tablet/mobile (there's only one card per row), so nothing visual is
+   lost. */
+@media (max-width: 1023px) {
+  .competitive-grid {
+    grid-template-rows: auto !important;
+  }
+  .competitive-grid > .competitive-card {
+    grid-row: auto !important;
+    grid-template-rows: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    row-gap: 0 !important;
+  }
+}
+
+/* ── Case study mobile/tablet: contain any horizontal overflow ─────────────
+   Defensive belt-and-braces fix for sticky SectionLabel cut-off. Any
+   case-study section that accidentally overflows its parent horizontally
+   (e.g. a complex inline-styled grid that doesn't collapse cleanly at
+   the tablet/mobile breakpoint) would push the sticky SectionLabel —
+   and its AnimatedLine — past the viewport's right edge, since the
+   sticky element is positioned relative to its parent's bounds rather
+   than the viewport. `overflow-x: clip` on the case-study content
+   container clips that overflow at the cs-content boundary without
+   establishing a new scroll container (unlike `overflow-x: hidden`,
+   which can break sticky-positioned children in some browsers).
+   `overflow-y` stays at its default (visible), so vertical sticky
+   behaviour is untouched. Applies below 1024px to match the tablet
+   breakpoint where the case-study sidebar disappears and inline grids
+   collapse to single columns. */
+@media (max-width: 1023px) {
+  .cs-content {
+    overflow-x: clip;
+  }
+}
+
+/* ── Section label: edge-to-edge on mobile/tablet ─────────────────────────
+   Each case study section uses `padding: 80px` on desktop with Tailwind
+   overrides to `px-10` (40px) at tablet and `px-6` (24px) at mobile. The
+   SectionLabel renders INSIDE that padded section, so the trailing
+   AnimatedLine terminates at the section's content edge — leaving a 24px
+   / 40px dark strip on the right that reads as the label being "cut off"
+   on a narrow viewport. Pulling the SectionLabel wrap out by the exact
+   section padding (negative horizontal margin) and adding the same
+   padding back inside keeps the label TEXT in its original position but
+   lets the AnimatedLine extend visually to the viewport edges. Reads as
+   a deliberate edge-to-edge sticky header rather than a chopped-off
+   tracked label on mobile/tablet. Desktop is untouched. */
+@media (max-width: 1023px) {
+  .cs-section-label-wrap {
+    margin-left: -40px;
+    margin-right: -40px;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+@media (max-width: 767px) {
+  .cs-section-label-wrap {
+    margin-left: -24px;
+    margin-right: -24px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
