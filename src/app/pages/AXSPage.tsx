@@ -696,7 +696,7 @@ function Challenge() {
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
         >
           Try the prototype
-          <span aria-hidden="true" style={{ fontSize: '12px' }}>↗</span>
+          <svg aria-hidden="true" width="11" height="11" viewBox="0 0 11 11" fill="none" style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: '2px' }}><path d="M1.5 9.5L9.5 1.5M9.5 1.5H3.5M9.5 1.5V7.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </a>
       </div>
     </section>
