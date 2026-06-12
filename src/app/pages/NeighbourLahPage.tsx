@@ -6,6 +6,7 @@ import { PasswordGate } from '../components/PasswordGate';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
+import { MobileCarouselWrap } from '../components/MobileCarouselWrap';
 import neighbourlahImg from '../../imports/NeighbourLah_home_app.png';
 
 // Hero phone images served from Cloudinary. w_900 gives ~2x retina
@@ -554,6 +555,7 @@ function CompetitiveAnalysis() {
           the matched height. On tablet/mobile each card stands alone
           (1 column), so the alignment behaviour is moot but the
           layout still renders correctly. */}
+      <MobileCarouselWrap count={apps.length}>
       <div
         style={{
           display: 'grid',
@@ -561,7 +563,7 @@ function CompetitiveAnalysis() {
           gridTemplateRows: 'auto auto auto auto auto auto auto auto auto',
           gap: '24px',
         }}
-        className="competitive-grid max-md:!grid-cols-1 max-lg:!grid-cols-1"
+        className="competitive-grid mobile-card-carousel max-lg:!grid-cols-1"
       >
         {apps.map((app) => (
           <div
@@ -726,6 +728,7 @@ function CompetitiveAnalysis() {
           </div>
         ))}
       </div>
+      </MobileCarouselWrap>
 
       {/* Sources footnote — receipts for the analysis. Quiet underline,
           no arrow, no "Visit site" affordance. Reviewers who want to
@@ -934,28 +937,30 @@ function ResearchFindings() {
       {/* 5 sticky notes laid out in a single row of 5 on desktop,
           mirroring Lumis Research Findings. Collapses to 2 columns on
           tablet and 1 column on mobile. */}
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
-        {findings.map((f, i) => {
-          const s = noteStyles[i % noteStyles.length];
-          return (
-            <div key={f.title}>
-              <div
-                className="sticky-note"
-                style={{
-                  '--note-from': s.from,
-                  '--note-to': s.to,
-                  '--note-tape': s.tape,
-                  '--note-rot': s.rot,
-                } as React.CSSProperties}
-              >
-                <p className="sticky-note__num">0{i + 1}</p>
-                <h3 className="sticky-note__title">{f.title}</h3>
-                {f.desc && <p className="sticky-note__body">{f.desc}</p>}
+      <MobileCarouselWrap count={findings.length}>
+        <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="mobile-card-carousel max-lg:!grid-cols-2">
+          {findings.map((f, i) => {
+            const s = noteStyles[i % noteStyles.length];
+            return (
+              <div key={f.title}>
+                <div
+                  className="sticky-note"
+                  style={{
+                    '--note-from': s.from,
+                    '--note-to': s.to,
+                    '--note-tape': s.tape,
+                    '--note-rot': s.rot,
+                  } as React.CSSProperties}
+                >
+                  <p className="sticky-note__num">0{i + 1}</p>
+                  <h3 className="sticky-note__title">{f.title}</h3>
+                  {f.desc && <p className="sticky-note__body">{f.desc}</p>}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </StaggerCards>
+            );
+          })}
+        </StaggerCards>
+      </MobileCarouselWrap>
     </section>
   );
 }
@@ -1009,32 +1014,32 @@ function DesignDecisions() {
           className="max-md:!min-h-[460px]"
         >
           <div style={{ position: 'absolute', left: '8%', top: '6%', width: '58%', transform: 'rotate(-4deg)', zIndex: 1, opacity: 0.85 }}>
-            {/* TODO: swap placeholder for a Design Decisions back-mockup once available */}
-            <ScreenMockup />
+            <ScreenMockup src="https://res.cloudinary.com/dvunn40le/image/upload/neighbourlahneighbourscreen_rhxayw.png" />
           </div>
           <div style={{ position: 'absolute', right: '8%', bottom: '4%', width: '58%', transform: 'rotate(3deg)', zIndex: 2 }}>
-            {/* TODO: swap placeholder for a Design Decisions front-mockup once available */}
-            <ScreenMockup />
+            <ScreenMockup src="https://res.cloudinary.com/dvunn40le/image/upload/neighbourlahhomescreen_yyvrld.png" />
           </div>
         </div>
 
         {/* 2-column grid of decision boxes. 5 features = two full rows
             + a 5th card alone in row 3 column 1. */}
-        <StaggerCards
-          style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}
-          className="max-md:!grid-cols-1"
-        >
-          {features.map((feat) => (
-            <div
-              key={feat.number}
-              style={{ border: `1px solid ${C.cardBorder}`, padding: '24px', display: 'flex', flexDirection: 'column' }}
-            >
-              <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#E8632B', margin: '0 0 14px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
-              <h3 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{feat.name}</h3>
-              <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: 0 }}>{feat.body}</p>
-            </div>
-          ))}
-        </StaggerCards>
+        <MobileCarouselWrap count={features.length} autoPlay>
+          <StaggerCards
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}
+            className="mobile-card-carousel max-lg:!grid-cols-2"
+          >
+            {features.map((feat) => (
+              <div
+                key={feat.number}
+                style={{ border: `1px solid ${C.cardBorder}`, padding: '24px', display: 'flex', flexDirection: 'column' }}
+              >
+                <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#E8632B', margin: '0 0 14px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
+                <h3 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{feat.name}</h3>
+                <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: 0 }}>{feat.body}</p>
+              </div>
+            ))}
+          </StaggerCards>
+        </MobileCarouselWrap>
       </div>
     </section>
   );
@@ -1145,6 +1150,7 @@ function UsabilityTesting() {
 }
 
 function Iterations() {
+  const [openIdx, setOpenIdx] = useState(0);
   // `videoBefore` / `videoAfter` are optional fields per issue. When
   // present, the ScreenMockup renders a looping muted video instead of
   // the default placeholder image. Matches the AXS Iterations video
@@ -1178,6 +1184,7 @@ function Iterations() {
       problem: "Users couldn't distinguish between a one-off event and an ongoing group as both felt interest-based.",
       solution: 'Surfaced a one-time tooltip on first visit to guide users on exploring the app. Also added a header description on the Events and Groups tabs in Explore to orient users when they land there.',
       imgBefore: 'https://res.cloudinary.com/dvunn40le/image/upload/task2p3_before_mba3fp.png',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/task_2_afternew_dhh9gb.mp4',
     },
     {
       label: 'Searching for neighbours by name returned empty',
@@ -1191,6 +1198,7 @@ function Iterations() {
       problem: 'Users hesitated to tap Say Hello as it sounded like it would auto-send a message.',
       solution: 'Replaced with a Chat label so users knew they would be taken to a compose screen. Also added a Chat button within the neighbour profile.',
       imgBefore: 'https://res.cloudinary.com/dvunn40le/image/upload/task3p2_before_iiuuhn.png',
+      videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/task_3p2_afternew_fsvlyp.mp4',
     },
     {
       label: 'Market and Requests felt too similar',
@@ -1225,31 +1233,54 @@ function Iterations() {
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Top Issues & Iterations" />
       <h2 className="cs-section-header">What Changed & Why</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
+
+      {/* ── Mobile accordion ── */}
+      <div className="md:!hidden" style={{ display: 'flex', flexDirection: 'column', marginBottom: '48px' }}>
+        {issues.map((issue, i) => (
+          <div key={issue.label} style={{ borderTop: `1px solid ${C.cardBorder}` }}>
+            <button
+              onClick={() => setOpenIdx(openIdx === i ? -1 : i)}
+              style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: '12px' }}
+            >
+              <span style={{ fontFamily: F.sans, fontSize: '15px', fontWeight: 600, color: C.primary, lineHeight: 1.3 }}>{issue.label}</span>
+              <span style={{ color: C.secondary, fontSize: '20px', flexShrink: 0, lineHeight: 1 }}>{openIdx === i ? '−' : '+'}</span>
+            </button>
+            {openIdx === i && (
+              <div style={{ paddingBottom: '32px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={tagStyle}>Before</span>
+                  <ScreenMockup src={issue.imgBefore} videoSrc={issue.videoBefore} />
+                  <p style={{ ...sideText, maxWidth: '100%' }}>{issue.problem}</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={tagStyle}>After</span>
+                  <ScreenMockup src={issue.imgAfter} videoSrc={issue.videoAfter} />
+                  <p style={{ ...sideText, maxWidth: '100%' }}>{issue.solution}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        <div style={{ borderTop: `1px solid ${C.cardBorder}` }} />
+      </div>
+
+      {/* ── Desktop stacked layout ── */}
+      <div className="max-md:!hidden" style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
         {issues.map((issue, i) => (
           <div
             key={issue.label}
             style={i > 0 ? { borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' } : undefined}
           >
-            {/* Issue title at the top of the block — same cs-category-label
-                treatment used in TripSync so the two case studies share
-                the same hierarchy. */}
             <p className="cs-category-label" style={{ marginBottom: '32px' }}>{issue.label}</p>
             <div
               style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'start' }}
-              className="max-md:!grid-cols-1 max-md:!gap-10"
+              className="max-lg:!grid-cols-1 max-lg:!gap-10"
             >
-              {/* Before — small uppercase tag, mockup, then the problem
-                  description below it. ScreenMockup uses videoSrc if
-                  present, falls back to src (image), then to the
-                  default placeholder. */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={tagStyle}>Before</span>
                 <ScreenMockup src={issue.imgBefore} videoSrc={issue.videoBefore} />
                 <p style={sideText}>{issue.problem}</p>
               </div>
-              {/* After — small uppercase tag, mockup, then the solution
-                  description below it. */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={tagStyle}>After</span>
                 <ScreenMockup src={issue.imgAfter} videoSrc={issue.videoAfter} />
@@ -1272,15 +1303,18 @@ function Iterations() {
 // later. Mobile collapses each row to a single column with the text
 // stacking above the placeholder (max-md:!order-1 / max-md:!order-2).
 function FinalScreens() {
+  const [activeTab, setActiveTab] = useState(0);
   const screens: Array<{
     name: string;
     placeholderFor: string;
     highlights: Array<{ heading: string; text: string }>;
     imageFirst: boolean;
+    videoSrc?: string;
   }> = [
     {
       name: 'Attend Events',
       placeholderFor: 'Attend Events',
+      videoSrc: 'https://res.cloudinary.com/dvunn40le/video/upload/finalscreen1_pki3we.mp4',
       highlights: [
         { heading: 'Estate-Scoped Discovery', text: 'Browse events within your block or estate, filtered by date and interest category so relevant events surface.' },
         { heading: "Who's Going", text: 'A breakdown of attendees by household type and language spoken helps residents gauge whether an event feels like the right fit before committing.' },
@@ -1290,6 +1324,7 @@ function FinalScreens() {
     {
       name: 'Join Interest Groups',
       placeholderFor: 'Join Interest Groups',
+      videoSrc: 'https://res.cloudinary.com/dvunn40le/video/upload/finalscreen2_zhruna.mp4',
       highlights: [
         { heading: 'Interest-Based Circles', text: 'Find and join groups of neighbours who share your interests, from morning runs to cooking and gardening.' },
         { heading: 'Estate-Scoped Membership', text: 'Having something in common gives both sides a natural reason to connect without it feeling like a cold approach.' },
@@ -1299,6 +1334,7 @@ function FinalScreens() {
     {
       name: 'Connect with Neighbours',
       placeholderFor: 'Connect with Neighbours',
+      videoSrc: 'https://res.cloudinary.com/dvunn40le/video/upload/finalscreen3_gqnz5m.mp4',
       highlights: [
         { heading: 'Discover by Interest', text: 'Browse neighbours who share your interests and start a conversation directly in the app.' },
         { heading: 'In-App Messaging', text: 'Conversations happen in-app so neither side has to share personal contact details to get started.' },
@@ -1308,6 +1344,7 @@ function FinalScreens() {
     {
       name: 'Help and Share',
       placeholderFor: 'Help and Share',
+      videoSrc: 'https://res.cloudinary.com/dvunn40le/video/upload/finalscreen4_rl5w3n.mp4',
       highlights: [
         { heading: 'Request and Offer', text: 'Post requests for help or items to borrow, or offer things you no longer need to neighbours nearby.' },
         { heading: 'Verified Residents Only', text: 'All exchanges happen between verified estate residents, reducing the friction and anxiety of asking a stranger for help.' },
@@ -1317,6 +1354,7 @@ function FinalScreens() {
     {
       name: 'Marketplace',
       placeholderFor: 'Marketplace',
+      videoSrc: 'https://res.cloudinary.com/dvunn40le/video/upload/finalscreen5_vlfvqi.mp4',
       highlights: [
         { heading: 'Buy, Sell and Offer Services', text: 'List items for sale, give things away for free or offer local services like tutoring or dog walking to neighbours.' },
         { heading: 'Proximity-Based Listings', text: 'All listings are scoped to your neighbourhood so handoffs stay convenient and the marketplace stays community-focused.' },
@@ -1324,23 +1362,64 @@ function FinalScreens() {
       imageFirst: false,
     },
   ];
+  const active = screens[activeTab];
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Final Screens" />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
+
+      {/* ── Mobile tab layout ── */}
+      <div className="md:!hidden">
+        <div className="scrollbar-hide" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '32px' }}>
+          {screens.map((screen, i) => (
+            <button
+              key={screen.name}
+              onClick={() => setActiveTab(i)}
+              style={{
+                flexShrink: 0,
+                padding: '8px 16px',
+                borderRadius: '999px',
+                border: `1px solid ${i === activeTab ? 'var(--accent-color)' : C.cardBorder}`,
+                backgroundColor: i === activeTab ? 'color-mix(in srgb, var(--accent-color) 15%, transparent)' : 'transparent',
+                color: i === activeTab ? 'var(--accent-color)' : C.secondary,
+                fontFamily: F.sans,
+                fontSize: '13px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {screen.name}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '28px' }}>
+          <ScreenMockup label={active.placeholderFor} maxWidth={294} videoSrc={active.videoSrc} />
+          <div style={{ width: '100%' }}>
+            <h3 style={{ fontFamily: F.editorial, fontSize: '26px', color: C.primary, margin: '0 0 20px 0', lineHeight: 1.2, fontWeight: 400 }}>{active.name}</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {active.highlights.map((h, hi) => (
+                <li key={hi} style={{ fontFamily: F.sans, fontSize: '16px', lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>
+                  <span style={{ display: 'block', color: C.primary, fontWeight: 600, marginBottom: '2px' }}>{h.heading}</span>
+                  <span style={{ display: 'block', color: C.secondary }}>{h.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Desktop stacked layout ── */}
+      <div className="max-md:!hidden" style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
         {screens.map((screen) => (
           <div
             key={screen.name}
             style={{ display: 'grid', gridTemplateColumns: screen.imageFirst ? '1.85fr 1fr' : '1fr 1.85fr', gap: '64px', alignItems: 'center' }}
-            className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10"
+            className="max-lg:!grid-cols-1 max-lg:!gap-10"
           >
             {screen.imageFirst ? (
               <>
-                <div className="max-md:!order-2">
-                  {/* TODO: swap placeholder for the final {screen.placeholderFor} mockup once available */}
-                  <ScreenMockup label={screen.placeholderFor} maxWidth={294} />
-                </div>
-                <div className="max-md:!order-1">
+                <div><ScreenMockup label={screen.placeholderFor} maxWidth={294} videoSrc={screen.videoSrc} /></div>
+                <div>
                   <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     {screen.highlights.map((h, hi) => (
@@ -1367,10 +1446,7 @@ function FinalScreens() {
                     ))}
                   </ul>
                 </div>
-                <div>
-                  {/* TODO: swap placeholder for the final {screen.placeholderFor} mockup once available */}
-                  <ScreenMockup label={screen.placeholderFor} maxWidth={294} />
-                </div>
+                <div><ScreenMockup label={screen.placeholderFor} maxWidth={294} videoSrc={screen.videoSrc} /></div>
               </>
             )}
           </div>
@@ -1467,7 +1543,6 @@ const sidebarItems: SidebarItem[] = [
 export function NeighbourLahPage() {
   useEffect(() => { window.scrollTo(0, 0); }, []);
   return (
-    <PasswordGate storageKey="neighbourlah-unlocked">
     <div style={{ backgroundColor: C.bg, minHeight: '100vh', '--accent-color': '#E8632B' } as React.CSSProperties}>
       <Navigation showBack />
       <div className="cs-layout">
@@ -1489,6 +1564,5 @@ export function NeighbourLahPage() {
         </div>
       </div>
     </div>
-    </PasswordGate>
   );
 }

@@ -5,6 +5,7 @@ import { Navigation } from '../components/Navigation';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedLine, scrambleInto, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
+import { MobileCarouselWrap } from '../components/MobileCarouselWrap';
 // Lumis homepage screenshot served from Cloudinary (shared with the
 // homepage project card). w_2400 keeps it crisp on retina; q_auto and
 // f_auto compress + format-negotiate per browser.
@@ -423,28 +424,30 @@ function ResearchFindings() {
       >
         From conversations with people juggling multiple skin concerns, five frustrations kept showing up. Each one explained, in its own way, why product discovery so often misses.
       </p>
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
-        {findings.map((f, i) => {
-          const s = noteStyles[i % noteStyles.length];
-          return (
-            <div key={f.title}>
-              <div
-                className="sticky-note"
-                style={{
-                  '--note-from': s.from,
-                  '--note-to': s.to,
-                  '--note-tape': s.tape,
-                  '--note-rot': s.rot,
-                } as React.CSSProperties}
-              >
-                <p className="sticky-note__num">0{i + 1}</p>
-                <h3 className="sticky-note__title">{f.title}</h3>
-                <p className="sticky-note__body">{f.desc}</p>
+      <MobileCarouselWrap count={findings.length}>
+        <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }} className="mobile-card-carousel max-lg:!grid-cols-2">
+          {findings.map((f, i) => {
+            const s = noteStyles[i % noteStyles.length];
+            return (
+              <div key={f.title}>
+                <div
+                  className="sticky-note"
+                  style={{
+                    '--note-from': s.from,
+                    '--note-to': s.to,
+                    '--note-tape': s.tape,
+                    '--note-rot': s.rot,
+                  } as React.CSSProperties}
+                >
+                  <p className="sticky-note__num">0{i + 1}</p>
+                  <h3 className="sticky-note__title">{f.title}</h3>
+                  <p className="sticky-note__body">{f.desc}</p>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </StaggerCards>
+            );
+          })}
+        </StaggerCards>
+      </MobileCarouselWrap>
     </section>
   );
 }
@@ -536,30 +539,32 @@ function DesignDecisions() {
         </div>
 
         {/* 2x2 grid of decision cards */}
-        <StaggerCards
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '16px',
-          }}
-          className="max-md:!grid-cols-1"
-        >
-          {features.map((feat) => (
-            <div
-              key={feat.number}
-              style={{
-                border: `1px solid ${C.cardBorder}`,
-                padding: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#C4A265', margin: '0 0 14px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
-              <h3 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{feat.name}</h3>
-              <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: 0 }}>{feat.body}</p>
-            </div>
-          ))}
-        </StaggerCards>
+        <MobileCarouselWrap count={features.length} autoPlay>
+          <StaggerCards
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '16px',
+            }}
+            className="mobile-card-carousel max-lg:!grid-cols-2"
+          >
+            {features.map((feat) => (
+              <div
+                key={feat.number}
+                style={{
+                  border: `1px solid ${C.cardBorder}`,
+                  padding: '24px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#C4A265', margin: '0 0 14px 0', letterSpacing: '0.08em' }}>{feat.number}</p>
+                <h3 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{feat.name}</h3>
+                <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, lineHeight: 1.6, margin: 0 }}>{feat.body}</p>
+              </div>
+            ))}
+          </StaggerCards>
+        </MobileCarouselWrap>
       </div>
     </section>
   );

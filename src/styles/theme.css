@@ -671,6 +671,68 @@
   }
 }
 
+/* ── Scrollbar hide utility ────────────────────────────────────────────────
+   Apply to any scroll container that should hide its scrollbar. */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Mobile card carousel ─────────────────────────────────────────────────
+   Converts a grid of sticky-note cards into a horizontal swipe carousel on
+   mobile. Apply the `mobile-card-carousel` class to a StaggerCards (or any
+   grid container) whose direct children should become swipeable cards.
+   Each card takes 82% of the container width so the next card peeks in. */
+@media (max-width: 767px) {
+  .mobile-card-carousel {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 14px !important;
+    padding-bottom: 12px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .mobile-card-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  .mobile-card-carousel > * {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    scroll-snap-align: start;
+  }
+  .mobile-carousel-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+  }
+  .mobile-carousel-dot {
+    height: 7px;
+    width: 7px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.25);
+    transition: width 0.3s ease, background 0.3s ease;
+  }
+  .mobile-carousel-dot.active {
+    width: 22px;
+    background: rgba(255,255,255,0.75);
+  }
+}
+
+@media (min-width: 768px) {
+  .mobile-carousel-dots {
+    display: none;
+  }
+}
+
 /* ── Section label: edge-to-edge on mobile/tablet ─────────────────────────
    Each case study section uses `padding: 80px` on desktop with Tailwind
    overrides to `px-10` (40px) at tablet and `px-6` (24px) at mobile. The

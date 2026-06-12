@@ -5,6 +5,7 @@ import { Navigation } from '../components/Navigation';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
+import { MobileCarouselWrap } from '../components/MobileCarouselWrap';
 // All three carousel phones loaded from Cloudinary so the images can be
 // updated without redeploying. (Previously they were bundled by Vite
 // from src/imports/.)
@@ -794,32 +795,34 @@ function ResearchFindings() {
         {groups.map((group) => (
           <div key={group.label}>
             <p className="cs-category-label" style={{ marginBottom: '24px' }}>{group.label}</p>
-            <StaggerCards
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}
-              className="max-md:!grid-cols-1 max-lg:!grid-cols-2"
-            >
-              {group.findings.map((f) => {
-                const i = globalIdx++;
-                const s = noteStyles[i % noteStyles.length];
-                return (
-                  <div key={f.title}>
-                    <div
-                      className="sticky-note"
-                      style={{
-                        '--note-from': s.from,
-                        '--note-to': s.to,
-                        '--note-tape': s.tape,
-                        '--note-rot': s.rot,
-                      } as React.CSSProperties}
-                    >
-                      <p className="sticky-note__num">{String(i + 1).padStart(2, '0')}</p>
-                      <h3 className="sticky-note__title">{f.title}</h3>
-                      <p className="sticky-note__body">{f.desc}</p>
+            <MobileCarouselWrap count={group.findings.length}>
+              <StaggerCards
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}
+                className="mobile-card-carousel max-lg:!grid-cols-2"
+              >
+                {group.findings.map((f) => {
+                  const i = globalIdx++;
+                  const s = noteStyles[i % noteStyles.length];
+                  return (
+                    <div key={f.title}>
+                      <div
+                        className="sticky-note"
+                        style={{
+                          '--note-from': s.from,
+                          '--note-to': s.to,
+                          '--note-tape': s.tape,
+                          '--note-rot': s.rot,
+                        } as React.CSSProperties}
+                      >
+                        <p className="sticky-note__num">{String(i + 1).padStart(2, '0')}</p>
+                        <h3 className="sticky-note__title">{f.title}</h3>
+                        <p className="sticky-note__body">{f.desc}</p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </StaggerCards>
+                  );
+                })}
+              </StaggerCards>
+            </MobileCarouselWrap>
           </div>
         ))}
       </div>
@@ -854,38 +857,38 @@ function UserJourneyMaps() {
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="User Journey Maps" />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '72px' }}>
-        {personas.map((p) => (
-          <div key={p.label}>
-            <h3 style={{ fontFamily: F.sans, fontSize: '18px', fontWeight: 600, color: C.primary, margin: '0 0 6px 0', lineHeight: 1.3 }}>{p.label}</h3>
-            <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: '0 0 20px 0', lineHeight: 1.5 }}>{p.caption}</p>
-            <a
-              href={p.image}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Open ${p.label}'s journey map in a new tab to view at full size`}
-              style={{
-                display: 'block',
-                cursor: 'zoom-in',
-                borderRadius: '6px',
-                overflow: 'hidden',
-                // 10% smaller than the section width, centred so the
-                // breathing space sits evenly on either side.
-                width: '90%',
-                margin: '0 auto',
-              }}
-            >
-              <img
-                src={p.image}
-                alt={p.alt}
-                loading="lazy"
-                decoding="async"
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-            </a>
-          </div>
-        ))}
-      </div>
+      <MobileCarouselWrap count={personas.length}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '72px' }} className="mobile-card-carousel">
+          {personas.map((p) => (
+            <div key={p.label}>
+              <h3 style={{ fontFamily: F.sans, fontSize: '18px', fontWeight: 600, color: C.primary, margin: '0 0 6px 0', lineHeight: 1.3 }}>{p.label}</h3>
+              <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: '0 0 20px 0', lineHeight: 1.5 }}>{p.caption}</p>
+              <a
+                href={p.image}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Open ${p.label}'s journey map in a new tab to view at full size`}
+                style={{
+                  display: 'block',
+                  cursor: 'zoom-in',
+                  borderRadius: '6px',
+                  overflow: 'hidden',
+                  width: '90%',
+                  margin: '0 auto',
+                }}
+              >
+                <img
+                  src={p.image}
+                  alt={p.alt}
+                  loading="lazy"
+                  decoding="async"
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </a>
+            </div>
+          ))}
+        </div>
+      </MobileCarouselWrap>
     </section>
   );
 }
@@ -1191,6 +1194,7 @@ function UsabilityTesting() {
 }
 
 function Iterations() {
+  const [openIdx, setOpenIdx] = useState(0);
   // `videoBefore` / `videoAfter` are optional. When present, the
   // ScreenPlaceholder swaps its placeholder text for a lazy-loaded video
   // that plays only while ~30% visible (auto-pauses when scrolled away).
@@ -1245,7 +1249,51 @@ function Iterations() {
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Top Issues & Iterations" />
       <h2 className="cs-section-header">What Changed & Why</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
+
+      {/* ── Mobile accordion ── */}
+      <div className="md:!hidden" style={{ display: 'flex', flexDirection: 'column', marginBottom: '48px' }}>
+        {issues.map((issue, i) => (
+          <div key={issue.label} style={{ borderTop: `1px solid ${C.cardBorder}` }}>
+            <button
+              onClick={() => setOpenIdx(openIdx === i ? -1 : i)}
+              style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: '12px' }}
+            >
+              <span style={{ fontFamily: F.sans, fontSize: '15px', fontWeight: 600, color: C.primary, lineHeight: 1.3 }}>{issue.label}</span>
+              <span style={{ color: C.secondary, fontSize: '20px', flexShrink: 0, lineHeight: 1 }}>{openIdx === i ? '−' : '+'}</span>
+            </button>
+            {openIdx === i && (
+              <div style={{ paddingBottom: '32px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>{issue.task}</p>
+                <p style={{ fontFamily: F.sans, fontSize: '12px', color: C.secondary, textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>
+                  Success rate: <span style={{ color: C.primary }}>{issue.successRate}</span>
+                </p>
+                <div>
+                  <p style={{ fontFamily: F.sans, fontSize: '13px', fontWeight: 700, color: '#EBEBE5', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 8px 0' }}>Issue</p>
+                  <p className="cs-body-text" style={{ margin: 0 }}>{issue.problem}</p>
+                </div>
+                <div>
+                  <p style={{ fontFamily: F.sans, fontSize: '13px', fontWeight: 700, color: '#EBEBE5', textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 8px 0' }}>Solution</p>
+                  <p className="cs-body-text" style={{ margin: 0 }}>{issue.solution}</p>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <span style={{ fontFamily: F.sans, fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8A8A82', marginBottom: '16px', display: 'block' }}>Before</span>
+                    <ScreenPlaceholder text="Before" videoSrc={issue.videoBefore} />
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <span style={{ fontFamily: F.sans, fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8A8A82', marginBottom: '16px', display: 'block' }}>After</span>
+                    <ScreenPlaceholder text="After" videoSrc={issue.videoAfter} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        <div style={{ borderTop: `1px solid ${C.cardBorder}` }} />
+      </div>
+
+      {/* ── Desktop stacked layout ── */}
+      <div className="max-md:!hidden" style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
         {issues.map((issue, i) => {
           const mockLeft = i % 2 === 1;
           return (
@@ -1303,6 +1351,8 @@ function Iterations() {
             </div>
           );
         })}
+      </div>{/* end desktop stacked layout */}
+
         {/* Other Iterations — supplementary single-screen block. */}
         <div style={{ borderTop: `1px solid ${C.cardBorder}`, paddingTop: '80px' }}>
           <div
@@ -1327,7 +1377,6 @@ function Iterations() {
             </div>
           </div>
         </div>
-      </div>
     </section>
   );
 }

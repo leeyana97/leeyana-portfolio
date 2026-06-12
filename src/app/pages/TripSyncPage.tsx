@@ -5,6 +5,7 @@ import { Navigation } from '../components/Navigation';
 import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySidebar';
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
+import { MobileCarouselWrap } from '../components/MobileCarouselWrap';
 import tripsyncImg from '../../imports/Tripsync_home_app.png';
 import tripsyncActivityFoodImg from '../../imports/tripsync-Activity-and-Food-Overview-new.png';
 import tripsyncOptOutImg from '../../imports/tripsync-opt-out-new.png';
@@ -636,28 +637,30 @@ function ResearchFindings() {
         </p>
       </div>
 
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginTop: '64px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-2">
-        {findings.map((f, i) => {
-          const s = noteStyles[i % noteStyles.length];
-          return (
-            <div key={f.title}>
-              <div
-                className="sticky-note"
-                style={{
-                  '--note-from': s.from,
-                  '--note-to': s.to,
-                  '--note-tape': s.tape,
-                  '--note-rot': s.rot,
-                } as React.CSSProperties}
-              >
-                <p className="sticky-note__num">0{i + 1}</p>
-                <h3 className="sticky-note__title">{f.title}</h3>
-                <p className="sticky-note__body">{f.desc}</p>
+      <MobileCarouselWrap count={findings.length}>
+        <StaggerCards style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px', marginTop: '64px' }} className="mobile-card-carousel max-lg:!grid-cols-2">
+          {findings.map((f, i) => {
+            const s = noteStyles[i % noteStyles.length];
+            return (
+              <div key={f.title}>
+                <div
+                  className="sticky-note"
+                  style={{
+                    '--note-from': s.from,
+                    '--note-to': s.to,
+                    '--note-tape': s.tape,
+                    '--note-rot': s.rot,
+                  } as React.CSSProperties}
+                >
+                  <p className="sticky-note__num">0{i + 1}</p>
+                  <h3 className="sticky-note__title">{f.title}</h3>
+                  <p className="sticky-note__body">{f.desc}</p>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </StaggerCards>
+            );
+          })}
+        </StaggerCards>
+      </MobileCarouselWrap>
     </section>
   );
 }
@@ -848,13 +851,14 @@ function DesignDecisions() {
         </div>
 
         {/* 2x2 grid of decision boxes */}
+        <MobileCarouselWrap count={features.length} autoPlay>
         <StaggerCards
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '16px',
           }}
-          className="max-md:!grid-cols-1"
+          className="mobile-card-carousel max-lg:!grid-cols-2"
         >
           {features.map((feat) => (
             <div
@@ -879,6 +883,7 @@ function DesignDecisions() {
             </div>
           ))}
         </StaggerCards>
+        </MobileCarouselWrap>
       </div>
     </section>
   );
@@ -1088,6 +1093,7 @@ function Iterations() {
 
 // ─── 8. Final Screens ────────────────────────────────────────────────────────
 function FinalScreens() {
+  const [activeTab, setActiveTab] = useState(0);
   const screens = [
     {
       name: 'Preference Quiz',
@@ -1133,22 +1139,64 @@ function FinalScreens() {
       imageFirst: true,
     },
   ];
+  const active = screens[activeTab];
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Final Screens" />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
+
+      {/* ── Mobile tab layout ── */}
+      <div className="md:!hidden">
+        <div className="scrollbar-hide" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '32px' }}>
+          {screens.map((screen, i) => (
+            <button
+              key={screen.name}
+              onClick={() => setActiveTab(i)}
+              style={{
+                flexShrink: 0,
+                padding: '8px 16px',
+                borderRadius: '999px',
+                border: `1px solid ${i === activeTab ? 'var(--accent-color)' : C.cardBorder}`,
+                backgroundColor: i === activeTab ? 'color-mix(in srgb, var(--accent-color) 15%, transparent)' : 'transparent',
+                color: i === activeTab ? 'var(--accent-color)' : C.secondary,
+                fontFamily: F.sans,
+                fontSize: '13px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {screen.name}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '28px' }}>
+          <ScreenMockup src={active.image} videoSrc={active.video} maxWidth={294} />
+          <div style={{ width: '100%' }}>
+            <h3 style={{ fontFamily: F.editorial, fontSize: '26px', color: C.primary, margin: '0 0 20px 0', lineHeight: 1.2, fontWeight: 400 }}>{active.name}</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {active.highlights.map((h, hi) => (
+                <li key={hi} style={{ fontFamily: F.sans, fontSize: '16px', lineHeight: 1.7, paddingLeft: '20px', position: 'relative' }}>
+                  <span style={{ position: 'absolute', left: 0, color: C.secondary }}>·</span>
+                  <span style={{ display: 'block', color: C.primary, fontWeight: 600, marginBottom: '2px' }}>{h.heading}</span>
+                  <span style={{ display: 'block', color: C.secondary }}>{h.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Desktop stacked layout ── */}
+      <div className="max-md:!hidden" style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
         {screens.map((screen) => (
           <div
             key={screen.name}
             style={{ display: 'grid', gridTemplateColumns: screen.imageFirst ? '1.85fr 1fr' : '1fr 1.85fr', gap: '64px', alignItems: 'center' }}
-            className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-10"
+            className="max-lg:!grid-cols-1 max-lg:!gap-10"
           >
             {screen.imageFirst ? (
               <>
-                <div className="max-md:!order-2">
-                  <ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={294} />
-                </div>
-                <div className="max-md:!order-1">
+                <div><ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={294} /></div>
+                <div>
                   <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.5vw, 32px)', color: C.primary, margin: '0 0 24px 0', lineHeight: 1.2, fontWeight: 400 }}>{screen.name}</h3>
                   <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     {screen.highlights.map((h, hi) => (
@@ -1175,9 +1223,7 @@ function FinalScreens() {
                     ))}
                   </ul>
                 </div>
-                <div>
-                  <ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={294} />
-                </div>
+                <div><ScreenMockup src={screen.image} videoSrc={screen.video} maxWidth={294} /></div>
               </>
             )}
           </div>
