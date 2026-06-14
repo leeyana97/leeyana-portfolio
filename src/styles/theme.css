@@ -671,6 +671,27 @@
   }
 }
 
+/* ── Homepage marquee strip ────────────────────────────────────────────────
+   Track holds two copies of the card set; shifting it left by half its width
+   lands copy 2 exactly where copy 1 began, so the loop is seamless. */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee-scroll 35s linear infinite;
+}
+/* Per-card resting tilt comes from the inline `--tilt` custom property so the
+   hover rule can cleanly override it (a CSS rule beats an inline `transform`
+   only when the inline value is a variable consumed here). */
+.marquee-card {
+  transform: rotate(var(--tilt, 0deg)) translate(var(--tx, 0px), var(--ty, 0px));
+  transition: transform 0.25s ease;
+}
+.marquee-card:hover {
+  transform: rotate(0deg) scale(1.04);
+}
+
 /* ── Scrollbar hide utility ────────────────────────────────────────────────
    Apply to any scroll container that should hide its scrollbar. */
 .scrollbar-hide {

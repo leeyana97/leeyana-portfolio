@@ -37,6 +37,30 @@ const neighbourlahMobileImg = 'https://res.cloudinary.com/dvunn40le/image/upload
 const axsHeroImg = 'https://res.cloudinary.com/dvunn40le/image/upload/w_2400,q_auto,f_auto/AXS_hero_image_sxdxgw.png';
 import axsHeroMobileImg from '../../imports/AXS_hero_image_phone.webp';
 
+// ─── Marquee card images ───────────────────────────────────────────────────
+// Each group mirrors the exact mockups, order, and z-stacking of that case
+// study's hero section (reusing the same hero assets — imported paths resolve
+// to the same deduped Vite module; URL strings are referenced verbatim).
+//   TripSync   → hero phones 2 and 3 (z 2 → 3, phone-3 in front)
+import tsMkPhone2 from '../../imports/tripsync-phone-2.webp';
+import tsMkPhone3 from '../../imports/tripsync-phone-3-v2.webp';
+//   Lumis      → the hero's two devices: iPad (front) over laptop (behind)
+import lumisMkLaptop from '../../imports/Lumis_laptop.webp';
+import lumisMkIpad from '../../imports/Lumis_ipad.webp';
+//   NeighbourLah → the three hero phones (left / centre / right). `e_trim`
+//   crops the solid black backdrop away but leaves black in the rectangular
+//   bounding box's rounded-corner gaps; `r_120` rounds the image corners to
+//   match the phone's own radius, clipping those gaps to transparent while
+//   KEEPING the phone's black bezel intact (a colour-based key like
+//   e_make_transparent would strip the black bezel too).
+const nlbMkLeft   = 'https://res.cloudinary.com/dvunn40le/image/upload/e_trim/w_900/r_120/f_png/neighbourlah_1_hero_szdsgt.png';
+const nlbMkCentre = 'https://res.cloudinary.com/dvunn40le/image/upload/e_trim/w_900/r_120/f_png/neighbourlah_3_hero.png_hxh98d.png';
+const nlbMkRight  = 'https://res.cloudinary.com/dvunn40le/image/upload/e_trim/w_900/r_120/f_png/neighbourlah_2_hero_uhtk2z.png';
+//   AXS Vault  → the three hero phones, in hero order [hero2, hero1, hero3]
+const axsMk1 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_image_1_1_rhxmqb.png';
+const axsMk2 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_casestudy_2_1_n0mulz.png';
+const axsMk3 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_casestudy_3_rcc9kp.png';
+
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -870,6 +894,138 @@ function ProjectsSection() {
   );
 }
 
+// ─── Marquee Section ───────────────────────────────────────────────────────
+// Full-width infinite strip of case-study mockups, grouped by project. The
+// track holds 4 project groups (each a tight flex row of that project's
+// mockups, fanned out with a -3°/1°/3° tilt); groups are spaced 32px apart and
+// the whole set is duplicated once so a translateX(0 → -50%) loop reads as
+// seamless. Cards are frameless and label-less, link into the case study via
+// the same SPA route transition the project cards use, and straighten on hover.
+// Phone mockups are 140×240, laptop mockups 240×152, object-fit: cover.
+function MarqueeSection() {
+  const { startTransition } = useRouteTransition();
+  // Each group's cards mirror the exact image selection, left-to-right order,
+  // and z-stacking of that project's hero section. `z` reproduces which card
+  // sits in front in the hero (TripSync stacks rightward 1→4; Lumis floats the
+  // iPad over the laptop; NeighbourLah and AXS push the centre card to front).
+  const groups = [
+    // object-fit contain keeps every phone's full bezel in view (cover would
+    // crop the sides). phone-2's source is a wide landscape frame with the
+    // phone small/tilted within, so it gets a larger per-card imgScale to fill
+    // the card to roughly the same size as the portrait phone-3.
+    // `gapBefore` is the layout gap that precedes each group. Because every
+    // group's mockups sit a different distance inside their card boxes (tilt,
+    // contain letterbox, scale), a uniform flex gap produces uneven *visible*
+    // whitespace; these per-group values compensate so the gap between the
+    // visible mockups is the same (~75px) across the whole strip.
+    { name: 'TripSync',       slug: '/tripsync',     type: 'phone',  fit: 'contain', gapBefore: 38.5, groupTy: '-30px', cards: [{ img: tsMkPhone2, z: 2, imgScale: 2.0, w: 154, h: 264 }, { img: tsMkPhone3, z: 3, imgScale: 1.45, w: 154, h: 264 }] },
+    // Lumis mirrors its hero: a large MacBook sitting behind a smaller iPad
+    // that floats in front (object-fit contain shows each device in full).
+    // overlapPct 0.35 (vs the 0.40 default) opens the gap between them by ~5%.
+    { name: 'Lumis Skincare', slug: '/lumis',        type: 'laptop', fit: 'contain', overlapPct: 0.35, gapBefore: -10.5, groupTy: '20px', cards: [{ img: lumisMkIpad, z: 2, w: 302, h: 228 }, { img: lumisMkLaptop, z: 1, w: 432, h: 271 }] },
+    // NeighbourLah mirrors its hero: an upright fan with the centre phone larger
+    // and in front (z3) overlapping two smaller side phones behind it. `flat`
+    // drops the carousel's tilt + vertical stagger so it reads as the hero does.
+    // Card widths hug each phone (the e_trim'd sources are tight phone shapes,
+    // ~0.40 aspect) so there's no transparent letterbox padding the group — that
+    // keeps the visible gap to the neighbouring groups even.
+    { name: 'NeighbourLah',   slug: '/neighbourlah', type: 'phone', fit: 'contain', flat: true, gapBefore: 0.6, groupTy: '-15px', cards: [{ img: nlbMkLeft, z: 1, w: 100, tx: '-21%' }, { img: nlbMkCentre, z: 3, w: 110, h: 264 }, { img: nlbMkRight, z: 2, w: 100, tx: '21%' }] },
+    // contain keeps each AXS phone's full bezel in view (cover cropped the sides).
+    { name: 'AXS Vault',      slug: '/axs',          type: 'phone', fit: 'contain', gapBefore: 63.6, groupTy: '30px', cards: [{ img: axsMk2, z: 5, imgScale: 1.2 }, { img: axsMk1, z: 20, imgScale: 1.2 }, { img: axsMk3, z: 5, imgScale: 1.2 }] },
+  ];
+  // Fan each group out: first card leans left, last leans right, any middle
+  // cards sit near-upright.
+  const tiltFor = (i: number, len: number) => (i === 0 ? '-3deg' : i === len - 1 ? '3deg' : '1deg');
+  // Vertical stagger so cards float at different heights within a group.
+  const tyFor = (i: number, len: number) => (i === 0 ? '30px' : i === len - 1 ? '15px' : '-20px');
+  const loop = [...groups, ...groups];
+  return (
+    <div style={{ backgroundColor: '#0D0D0D', width: '100%', minHeight: '360px', paddingTop: '80px', paddingBottom: '80px' }}>
+      <p
+        style={{
+          fontFamily: F.sans,
+          color: '#EBEBE5',
+          fontSize: '13px',
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
+          opacity: 0.45,
+          textAlign: 'center',
+          margin: '0 0 40px 0',
+        }}
+      >
+        Explore my work
+      </p>
+      {/* Strip wrapper — clips only the X axis so off-screen duplicate groups
+          are hidden, while overflow-y stays visible so the vertically-staggered
+          cards (translateY) are never cut off at the top or bottom. No
+          max-width / margin / horizontal padding, so the strip spans the full
+          viewport width. */}
+      <div style={{ overflowX: 'clip', overflowY: 'visible', padding: '24px 0' }}>
+        <div className="marquee-track" style={{ display: 'flex', alignItems: 'center', width: 'max-content' }}>
+          {loop.map((g, gi) => {
+            const isPhone = g.type === 'phone';
+            const gapBefore = (g as { gapBefore?: number }).gapBefore ?? 32;
+            const groupTy = (g as { groupTy?: string }).groupTy ?? '0px';
+            const objectFit = (g as { fit?: string }).fit ?? 'cover';
+            const blend = (g as { blend?: string }).blend;
+            const overlapPct = (g as { overlapPct?: number }).overlapPct ?? 0.4;
+            const imgScale = (g as { imgScale?: number }).imgScale ?? 1;
+            const flat = (g as { flat?: boolean }).flat;
+            return (
+              <div key={gi} style={{ position: 'relative', display: 'flex', alignItems: 'center', flexShrink: 0, marginLeft: `${gapBefore}px`, transform: `translateY(${groupTy})` }}>
+                {g.cards.map((c, i) => {
+                  const card = c as { img: string; z: number; w?: number; h?: number; imgScale?: number; tx?: string };
+                  const w = card.w ?? (isPhone ? 140 : 240);
+                  const h = card.h ?? (isPhone ? 240 : 152);
+                  const cardImgScale = card.imgScale ?? imgScale;
+                  // Each card after the first slides back so part of it tucks
+                  // behind its neighbour; z-index decides which stays in front.
+                  const overlap = Math.round(w * overlapPct);
+                  return (
+                    <a
+                      key={i}
+                      href={g.slug}
+                      onClick={(e) => { e.preventDefault(); startTransition(g.slug); }}
+                      className="marquee-card"
+                      aria-label={`View ${g.name} case study`}
+                      style={{
+                        ['--tilt' as string]: flat ? '0deg' : tiltFor(i, g.cards.length),
+                        ['--ty' as string]: flat ? '0px' : tyFor(i, g.cards.length),
+                        ['--tx' as string]: card.tx ?? '0px',
+                        display: 'block',
+                        width: `${w}px`,
+                        height: `${h}px`,
+                        marginLeft: i === 0 ? 0 : `-${overlap}px`,
+                        zIndex: card.z,
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        // The card's z-index isolates the image's mix-blend-mode
+                        // in its own stacking context, so the blend has to land
+                        // on a backdrop INSIDE the card: this #0D0D0D fill (the
+                        // section colour) is what `lighten` keys the PNG's solid
+                        // black background against, dropping it to match.
+                        backgroundColor: blend ? '#0D0D0D' : undefined,
+                      }}
+                    >
+                      <img
+                        src={card.img}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        style={{ width: '100%', height: '100%', objectFit, display: 'block', transform: cardImgScale === 1 ? undefined : `scale(${cardImgScale})`, mixBlendMode: (blend ?? 'normal') as React.CSSProperties['mixBlendMode'] }}
+                      />
+                    </a>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Contact Section ─────────────────────────────────────────────────────────
 function ContactSection() {
   // Scramble the "Let's make / something / good." heading the first time it
@@ -1061,9 +1217,31 @@ function ContactSection() {
               </svg>
               Send an Email
             </a>
+
+            {/* Resume */}
+            <a
+              href="https://drive.google.com/file/d/1I0iHfzacQ1a814-kvFnClGSOZwdaoZDk/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={btnStyle}
+              onMouseEnter={onEnter}
+              onMouseLeave={onLeave}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6" />
+                <path d="M8 13h8" />
+                <path d="M8 17h8" />
+                <path d="M8 9h2" />
+              </svg>
+              Resume
+            </a>
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Marquee strip — sits at the bottom of the contact section */}
+      <MarqueeSection />
 
       {/* Footer */}
       <footer
@@ -1078,7 +1256,7 @@ function ContactSection() {
         className="max-md:!mx-6 max-lg:!mx-10"
       >
         <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: 0 }}>
-          © Leeyana. Designed in Figma. Built with Claude.
+          Designed by Leeyana. Built with Claude
         </p>
       </footer>
     </section>
