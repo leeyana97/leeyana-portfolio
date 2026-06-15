@@ -1299,7 +1299,7 @@ function Reflections() {
 // ─── 11. Prototype CTA ───────────────────────────────────────────────────────
 function PrototypeCTA() {
   return (
-    <section style={{ backgroundColor: C.problemBg, padding: '80px', textAlign: 'left' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+    <section style={{ backgroundColor: C.problemBg, padding: '80px 80px 32px', textAlign: 'left' }} className="max-md:!px-6 max-md:!py-16 max-md:!pb-8 max-lg:!px-10 max-lg:!py-14 max-lg:!pb-10">
       <h2 style={{ fontFamily: F.editorial, fontSize: 'clamp(32px, 4.5vw, 52px)', color: C.primary, margin: '0 0 20px 0', lineHeight: 1.1, letterSpacing: '-0.02em', fontWeight: 400 }}>
         Experience TripSync.
       </h2>
@@ -1343,6 +1343,81 @@ function NextProject() {
   );
 }
 
+// ─── Work marquee ─────────────────────────────────────────────────────────────
+// Two stacked rows of TripSync phone mockups scrolling in opposite directions:
+// row 1 drifts left with each phone leaning left (-12deg), row 2 drifts right
+// (the same `marquee-scroll` keyframe played in `reverse`) with each phone
+// leaning right (+12deg). Cards are plain, non-clickable divs. Each row tiles
+// its 5 images into two identical halves so translateX(0 ↔ -50%) loops
+// seamlessly; the 32px gap sits on each card's LEFT so there's no margin on the
+// track's right end, and the tile count keeps one half wider than the viewport
+// so no black gap ever shows.
+function WorkMarquee() {
+  const row1 = [
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_7_rzdprb.png',
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_10_ccyeur.png',
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_9_nemqxo.png',
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_8_fldeq7.png',
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_6_wsg37p.png',
+  ];
+  const row2 = [
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_3_ah86wb.png',
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_4_uwdrko.png',
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_1_wcciii.png',
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_5_zkew6q.png',
+    'https://res.cloudinary.com/dvunn40le/image/upload/Tripsync_carousel_2_n5digv.png',
+  ];
+  // 4 copies of the 5 images = 20 cards = two identical 10-card halves. One half
+  // (~1720px) stays wider than the content column on normal screens, so the
+  // strip never reveals a black gap during the loop.
+  const COPIES = 4;
+  const renderRow = (imgs: string[], rotate: number, reverse: boolean) => (
+    // Each row has its own overflow:hidden wrapper; the vertical padding gives
+    // the 12deg-rotated phones (already perspective-tilted in the source art)
+    // enough room so their tops/bottoms are never clipped.
+    <div style={{ overflow: 'hidden', padding: '12px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', width: 'max-content', animation: `marquee-scroll 35s linear infinite${reverse ? ' reverse' : ''}` }}>
+        {Array.from({ length: imgs.length * COPIES }, (_, i) => (
+          <div
+            key={i}
+            style={{
+              flexShrink: 0,
+              width: '140px',
+              height: '240px',
+              overflow: 'hidden',
+              background: 'transparent',
+              marginLeft: '32px',
+              // Vertical inset so the phone never sits flush against the card's
+              // top/bottom edge — keeps transparent breathing room so a tilted
+              // phone top/bottom is never read as clipped. No horizontal padding
+              // so cover still fills the width (side-crop) and sizes the phone.
+              padding: '18px 0',
+              boxSizing: 'border-box',
+              transform: `rotate(${rotate}deg)`,
+            }}
+          >
+            <img
+              src={imgs[i % imgs.length]}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+  return (
+    <section style={{ backgroundColor: '#0D0D0D', padding: '12px 0 60px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+        {renderRow(row1, -12, false)}
+        {renderRow(row2, 12, true)}
+      </div>
+    </section>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 const sidebarItems: SidebarItem[] = [
   { id: 'overview', label: 'Overview' },
@@ -1378,6 +1453,7 @@ export function TripSyncPage() {
           <FadeUp id="impact"><Impact /></FadeUp>
           <FadeUp id="reflections"><Reflections /></FadeUp>
           <FadeUp><PrototypeCTA /></FadeUp>
+          <WorkMarquee />
           <FadeUp><NextProject /></FadeUp>
         </div>
       </div>
