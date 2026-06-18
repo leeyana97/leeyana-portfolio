@@ -1375,33 +1375,45 @@ function WorkMarquee() {
     // Each row has its own overflow:hidden wrapper; the vertical padding gives
     // the 12deg-rotated phones (already perspective-tilted in the source art)
     // enough room so their tops/bottoms are never clipped.
-    <div style={{ overflow: 'hidden', padding: '12px 0' }}>
+    <div style={{ overflow: 'hidden', padding: '6px 0' }}>
       <div style={{ display: 'flex', alignItems: 'center', width: 'max-content', animation: `marquee-scroll 35s linear infinite${reverse ? ' reverse' : ''}` }}>
         {Array.from({ length: imgs.length * COPIES }, (_, i) => (
           <div
             key={i}
             style={{
               flexShrink: 0,
-              width: '140px',
-              height: '240px',
+              width: '189px',
+              height: '325px',
               overflow: 'hidden',
               background: 'transparent',
-              marginLeft: '32px',
+              marginLeft: '16px',
               // Vertical inset so the phone never sits flush against the card's
-              // top/bottom edge — keeps transparent breathing room so a tilted
-              // phone top/bottom is never read as clipped. No horizontal padding
-              // so cover still fills the width (side-crop) and sizes the phone.
-              padding: '18px 0',
+              // top/bottom edge. Combined with the wrapper padding this clears the
+              // ~20px lift of the 12deg-rotated corners, so tops/bottoms are never
+              // clipped. No horizontal padding so cover still fills the width.
+              padding: '8px 0',
               boxSizing: 'border-box',
               transform: `rotate(${rotate}deg)`,
             }}
           >
             <img
-              src={imgs[i % imgs.length]}
+              // e_trim removes the wide transparent background around each
+              // (tilted) phone so object-fit:cover frames the phone instead of
+              // cropping its top. Without it, cover scaled the landscape source
+              // up and the tilted phone's top edge fell in the cropped zone.
+              // c_scale,w_1100 first downscales the huge (~24MP) sources so e_trim
+              // stays under Cloudinary's transform limit (a couple 400'd raw).
+              src={imgs[i % imgs.length].replace('/upload/', '/upload/c_scale,w_1100/e_trim/')}
               alt=""
               loading="lazy"
               decoding="async"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              // The source mockups fill their canvas edge-to-edge (no margin) and
+              // are pre-tilted, so scale the phone down a touch to leave transparent
+              // breathing room — guarantees the added rotation never clips a corner,
+              // regardless of each image's built-in tilt.
+              // contain (on the e_trim'd image) shows the whole phone — cover would
+              // still crop the tilted phone's extreme top corner to the card aspect.
+              style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
             />
           </div>
         ))}
@@ -1411,8 +1423,8 @@ function WorkMarquee() {
   return (
     <section style={{ backgroundColor: '#0D0D0D', padding: '12px 0 60px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
-        {renderRow(row1, -12, false)}
-        {renderRow(row2, 12, true)}
+        {renderRow(row1, -4, false)}
+        {renderRow(row2, 4, true)}
       </div>
     </section>
   );
