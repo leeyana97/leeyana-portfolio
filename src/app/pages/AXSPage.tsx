@@ -6,6 +6,7 @@ import { CaseStudySidebar, type SidebarItem } from '../components/CaseStudySideb
 import { FadeUp, StaggerCards, AnimatedQuote, AnimatedLine, staggerContainer, fadeUpItem, ease } from '../components/Animate';
 import { useImagesLoaded } from '../components/useImagesLoaded';
 import { MobileCarouselWrap } from '../components/MobileCarouselWrap';
+import { VaultPhoneShowcase } from '../components/VaultPhoneShowcase';
 // All three carousel phones loaded from Cloudinary so the images can be
 // updated without redeploying. (Previously they were bundled by Vite
 // from src/imports/.)
@@ -1510,6 +1511,18 @@ function PrototypeCTA() {
   );
 }
 
+// ─── Phone showcase strip ────────────────────────────────────────────────────
+// Two transparent image layers (top + bottom phone rows) that fly in and settle
+// into the approved composition — see the reusable VaultPhoneShowcase component.
+// This wrapper supplies the page's dark padding/background around the strip.
+function ShowcaseStripSection() {
+  return (
+    <section style={{ width: '100%', background: '#0D0D0D', padding: '8px 48px', boxSizing: 'border-box' }} className="max-md:!px-5 max-md:!py-2 max-lg:!px-8">
+      <VaultPhoneShowcase />
+    </section>
+  );
+}
+
 function NextProject() {
   const navigate = useNavigate();
   return (
@@ -1560,6 +1573,7 @@ export function AXSPage() {
           <FadeUp id="impact"><Impact /></FadeUp>
           <FadeUp id="reflections"><Reflections /></FadeUp>
           <FadeUp><PrototypeCTA /></FadeUp>
+          <ShowcaseStripSection />
           <FadeUp><NextProject /></FadeUp>
         </div>
       </div>

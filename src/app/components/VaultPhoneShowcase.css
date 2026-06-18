@@ -1,0 +1,87 @@
+.vault-phone-showcase {
+  position: relative;
+  width: 100%;
+  height: 530px;
+  overflow: hidden;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(120, 130, 150, 0.18), transparent 42%),
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.05), transparent 28%),
+    linear-gradient(135deg, #202327 0%, #121417 44%, #050505 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* Vignette — darkens the edges for a cinematic, contained scene. */
+.vault-phone-showcase::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 44%, rgba(0, 0, 0, 0.42) 100%);
+}
+
+.vault-phone-collage {
+  position: absolute;
+  inset: 0;
+  transform-origin: center center;
+}
+
+/* Every card is the SAME size and shares one transform, so all phone screens
+   render identically sized — a uniform dense lattice, not a perspective fan. */
+.vault-phone-card {
+  position: absolute;
+  width: 168px;
+  height: 356px;
+  border-radius: 34px;
+  overflow: hidden;
+
+  /* No device body/bezel — the screen is the slab. The 2D rotate is applied by
+     motion (composes with the float-in y animation) and stays pixel-crisp; the
+     soft drop shadow makes each one read as floating. */
+  transform-origin: center center;
+
+  box-shadow:
+    0 32px 60px rgba(0, 0, 0, 0.70),
+    0 14px 30px rgba(0, 0, 0, 0.50),
+    0 4px 10px rgba(0, 0, 0, 0.40);
+}
+
+.vault-phone-card img {
+  width: 100%;
+  height: 100%;
+  border-radius: 34px;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Darkening overlay over the screen so bright shots blend into the dark scene. */
+.vault-phone-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 34px;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.18)),
+    radial-gradient(circle at 50% 20%, transparent 40%, rgba(0, 0, 0, 0.18) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.30);
+}
+
+@media (max-width: 768px) {
+  .vault-phone-showcase {
+    height: 380px;
+  }
+
+  .vault-phone-collage {
+    transform: scale(0.7);
+    transform-origin: center center;
+  }
+}

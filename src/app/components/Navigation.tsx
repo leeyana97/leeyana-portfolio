@@ -77,7 +77,7 @@ export function Navigation({ showBack = false }: NavigationProps) {
         {/* Left: monogram, then Back link on its right (case study pages) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           {/* NL Monogram */}
-          <Link to="/" style={{ textDecoration: 'none' }}>
+          <Link to="/" style={{ textDecoration: 'none' }} onClick={() => window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })}>
             <span
               style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -98,6 +98,7 @@ export function Navigation({ showBack = false }: NavigationProps) {
           {showBack && (
             <Link
               to="/"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })}
               style={{
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: '15px',
