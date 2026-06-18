@@ -58,6 +58,10 @@ export function VaultPhoneShowcase() {
             animate={inView ? { y: 0, opacity: 1 } : undefined}
             transition={{ duration: 0.9, delay: 0.035 * (index % COLS), ease: [0.22, 1, 0.36, 1] }}
           >
+            <span className="vp-btn vp-btn-action" aria-hidden="true" />
+            <span className="vp-btn vp-btn-volup" aria-hidden="true" />
+            <span className="vp-btn vp-btn-voldown" aria-hidden="true" />
+            <span className="vp-btn vp-btn-power" aria-hidden="true" />
             <img
               src={phoneScreens[phone.screenIndex]}
               alt=""

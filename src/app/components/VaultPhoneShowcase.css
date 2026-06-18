@@ -25,15 +25,21 @@
   position: absolute;
   width: 168px;
   height: 356px;
-  border-radius: 34px;
-  overflow: hidden;
-
-  /* No device body/bezel — the screen is the slab. The 2D rotate is applied by
-     motion (composes with the float-in y animation) and stays pixel-crisp; the
-     soft drop shadow makes each one read as floating. */
+  border-radius: 36px;
+  /* No overflow:hidden — the screenshot is clipped by its own border-radius, so
+     the side buttons can stick out past the frame without being clipped. */
   transform-origin: center center;
 
+  /* iPhone bezel matched to the TripSync case-study mockups: brushed-metal frame
+     gradient, a 1.5px white edge highlight + ~4px black inner ring (inset
+     shadows), with the screenshot inset by the bezel padding. */
+  background: linear-gradient(135deg, #45464a 0%, #2e2f33 50%, #1e1f22 100%);
+  padding: 8px;
+  box-sizing: border-box;
+
   box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.08),
+    inset 0 0 0 4px #0a0a0a,
     0 32px 60px rgba(0, 0, 0, 0.70),
     0 14px 30px rgba(0, 0, 0, 0.50),
     0 4px 10px rgba(0, 0, 0, 0.40);
@@ -42,28 +48,41 @@
 .vault-phone-card img {
   width: 100%;
   height: 100%;
-  border-radius: 34px;
+  border-radius: 25px;
   object-fit: cover;
   object-position: top center;
   display: block;
+  background: #000;
   user-select: none;
   pointer-events: none;
 }
 
-/* Darkening overlay over the screen so bright shots blend into the dark scene. */
+/* Side buttons (power right; action + volume up/down left) — matched to the
+   TripSync mockups, scaled to the small card. They stick out past the frame. */
+.vault-phone-card .vp-btn {
+  position: absolute;
+  width: 2px;
+  background: linear-gradient(180deg, #55565a 0%, #3a3b3f 50%, #25262a 100%);
+  z-index: 0;
+}
+.vault-phone-card .vp-btn-power { right: -1px; top: 24%; height: 17%; border-radius: 1px 2px 2px 1px; }
+.vault-phone-card .vp-btn-action { left: -1px; top: 14%; height: 6%; border-radius: 2px 1px 1px 2px; }
+.vault-phone-card .vp-btn-volup { left: -1px; top: 23%; height: 9%; border-radius: 2px 1px 1px 2px; }
+.vault-phone-card .vp-btn-voldown { left: -1px; top: 34%; height: 9%; border-radius: 2px 1px 1px 2px; }
+
+/* Dynamic island — black pill in the status-bar area (matched to the mockups). */
 .vault-phone-card::before {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: 34px;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 49px;
+  height: 15px;
+  background: #000;
+  border-radius: 10px;
+  z-index: 3;
   pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.18)),
-    radial-gradient(circle at 50% 20%, transparent 40%, rgba(0, 0, 0, 0.18) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.30);
 }
 
 @media (max-width: 768px) {
