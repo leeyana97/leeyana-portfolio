@@ -80,8 +80,11 @@
     height: 380px;
   }
 
+  /* Anchor the mobile scale to the left edge so both rows start flush at the
+     left and the phones read end-to-end (scaling from centre left the
+     offset bottom row with an empty gap on the lower-left). */
   .vault-phone-collage {
     transform: scale(0.7);
-    transform-origin: center center;
+    transform-origin: left center;
   }
 }
