@@ -1517,7 +1517,7 @@ function PrototypeCTA() {
 // This wrapper supplies the page's dark padding/background around the strip.
 function ShowcaseStripSection() {
   return (
-    <section style={{ width: '100%', background: '#0D0D0D', padding: '8px 48px', boxSizing: 'border-box' }} className="max-md:!px-5 max-md:!py-2 max-lg:!px-8">
+    <section style={{ width: '100%', background: '#0D0D0D', padding: '130px 48px', boxSizing: 'border-box', position: 'relative', zIndex: 5, overflowX: 'clip' }} className="max-md:!px-5 max-md:!py-24 max-lg:!px-8">
       <VaultPhoneShowcase />
     </section>
   );
