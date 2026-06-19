@@ -435,8 +435,19 @@ function HeroSection() {
 }
 
 // ─── About Section ──────────────────────────────────────────────────────────
+type Skill = { label: string; imgUrl?: string; tiIcon?: string };
+const skillsData: Skill[] = [
+  { label: 'Figma', imgUrl: 'https://res.cloudinary.com/dvunn40le/image/upload/Figma_icon_nlxj3g.png' },
+  { label: 'Claude AI', imgUrl: 'https://res.cloudinary.com/dvunn40le/image/upload/Claude_icon_de4eor.png' },
+  { label: 'User Research', tiIcon: 'ti-users' },
+  { label: 'Usability Testing', tiIcon: 'ti-clipboard-check' },
+  { label: 'Affinity Mapping', tiIcon: 'ti-sitemap' },
+  { label: 'Prototyping', tiIcon: 'ti-device-mobile' },
+  { label: 'UIUX Design', tiIcon: 'ti-wand' },
+  { label: 'Healthcare Background', tiIcon: 'ti-heart-rate-monitor' },
+];
+
 function AboutSection() {
-  const skills = ['UIUX Design', 'Affinity mapping', 'Prototyping','User Research', 'Usability Testing','Figma','Claude AI', 'Healthcare Background'];
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -562,19 +573,25 @@ function AboutSection() {
               ))}
             </div>
 
-            {/* Skill tags */}
-            <motion.div
-              variants={fadeUpItem}
-              style={{
-                marginTop: '32px',
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '10px',
-              }}
-            >
-              {skills.map(skill => (
-                <TagPill key={skill} label={skill} />
-              ))}
+            {/* Skills Ticker */}
+            <motion.div variants={fadeUpItem} style={{ position: 'relative', overflow: 'hidden', marginTop: '2.5rem' }}>
+              <div className="skills-ticker-track">
+                {[...skillsData, ...skillsData].map((skill, i) => (
+                  <div key={i} className="skills-ticker-item">
+                    <div className="skills-ticker-icon">
+                      {skill.imgUrl ? (
+                        <img src={skill.imgUrl} alt={skill.label} />
+                      ) : (
+                        <i className={`ti ${skill.tiIcon}`} aria-hidden="true" />
+                      )}
+                    </div>
+                    <span className="skills-ticker-label">{skill.label}</span>
+                    <div className="skills-ticker-dot" />
+                  </div>
+                ))}
+              </div>
+              <div className="skills-ticker-fade-l" />
+              <div className="skills-ticker-fade-r" />
             </motion.div>
           </motion.div>
         </div>

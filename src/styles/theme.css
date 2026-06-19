@@ -783,3 +783,83 @@
   }
 }
 
+
+/* ─── About: skills ticker ──────────────────────────────────────────────── */
+@keyframes skillsTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.skills-ticker-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: skillsTicker 20s linear infinite;
+}
+
+.skills-ticker-track:hover {
+  animation-play-state: paused;
+}
+
+.skills-ticker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2rem;
+  white-space: nowrap;
+}
+
+.skills-ticker-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.skills-ticker-icon img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.skills-ticker-icon .ti {
+  font-size: 18px;
+  color: rgba(235, 235, 229, 0.45);
+}
+
+.skills-ticker-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: rgba(235, 235, 229, 0.75);
+  letter-spacing: 0.01em;
+}
+
+.skills-ticker-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(235, 235, 229, 0.2);
+  flex-shrink: 0;
+  margin: 0 0.5rem;
+}
+
+.skills-ticker-fade-l {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 80px;
+  background: linear-gradient(to right, #0D0D0D 30%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.skills-ticker-fade-r {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 80px;
+  background: linear-gradient(to left, #0D0D0D 30%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
