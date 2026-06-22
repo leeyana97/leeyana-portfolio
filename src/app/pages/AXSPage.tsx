@@ -1301,7 +1301,10 @@ function Iterations() {
       </div>
 
       {/* ── Desktop stacked layout ── */}
-      <div className="max-md:!hidden" style={{ display: 'flex', flexDirection: 'column', gap: '80px' }}>
+      {/* paddingBottom matches the 80px inter-issue rhythm so the following
+          "Other Iterations" divider sits 80px below the last issue's mockups
+          instead of hugging them. Desktop-only (this block is max-md:!hidden). */}
+      <div className="max-md:!hidden" style={{ display: 'flex', flexDirection: 'column', gap: '80px', paddingBottom: '80px' }}>
         {issues.map((issue, i) => {
           const mockLeft = i % 2 === 1;
           return (
