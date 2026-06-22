@@ -24,14 +24,21 @@ import { VaultPhoneShowcase } from '../components/VaultPhoneShowcase';
 const axsHero1 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_image_1_1_rhxmqb.png';
 const axsHero2 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_casestudy_2_1_n0mulz.png';
 const axsHero3 = 'https://res.cloudinary.com/dvunn40le/image/upload/w_900,q_auto,f_auto/AXS_hero_casestudy_3_rcc9kp.png';
-// Journey maps served from Cloudinary at 3200px wide. These are
-// text-heavy infographics that users click to open at full size and
-// zoom in to read fine touchpoint/quote text — 3200px keeps that text
-// legible even under zoom. q_auto preserves text edges; f_auto serves
-// WebP/AVIF where supported, falling back to PNG.
-const marcusJourneyMap = 'https://res.cloudinary.com/dvunn40le/image/upload/w_3200,q_auto,f_auto/AXS_marcus_journey_map_q785vx.png';
-const hanaJourneyMap = 'https://res.cloudinary.com/dvunn40le/image/upload/w_3200,q_auto,f_auto/AXS_hana_journey_map_cw95jo.png';
-const firdausJourneyMap = 'https://res.cloudinary.com/dvunn40le/image/upload/w_3200,q_auto,f_auto/AXS_firdaus_journey_map_wvncnk.png';
+// Journey maps are text-heavy infographics. Each has two sizes:
+//   - `display`: w_1200, used for the inline <img>. The map renders at
+//     ~340px wide on mobile / ~640px on desktop, so 1200px is already a
+//     retina-grade source — w_3200 inline meant phones downloaded ~290 KB
+//     each (~870 KB total) to paint a thumbnail, the main mobile-scroll lag.
+//   - `full`: w_3200, used only on the click-to-zoom <a href> so users can
+//     still open the map and read fine touchpoint/quote text under zoom.
+// q_auto preserves text edges; f_auto serves WebP/AVIF where supported.
+const cloudinaryMap = (publicId: string) => ({
+  display: `https://res.cloudinary.com/dvunn40le/image/upload/w_1200,q_auto,f_auto/${publicId}`,
+  full: `https://res.cloudinary.com/dvunn40le/image/upload/w_3200,q_auto,f_auto/${publicId}`,
+});
+const marcusJourneyMap = cloudinaryMap('AXS_marcus_journey_map_q785vx.png');
+const hanaJourneyMap = cloudinaryMap('AXS_hana_journey_map_cw95jo.png');
+const firdausJourneyMap = cloudinaryMap('AXS_firdaus_journey_map_wvncnk.png');
 
 const C = {
   bg: '#0D0D0D',
@@ -517,7 +524,7 @@ function AXSHeroCarousel() {
                 alt=""
                 loading="eager"
                 decoding="async"
-                fetchPriority="high"
+                fetchpriority="high"
                 draggable={false}
                 style={{
                   width: `${dims.phoneWidth}px`,
@@ -865,7 +872,7 @@ function UserJourneyMaps() {
               <h3 style={{ fontFamily: F.sans, fontSize: '18px', fontWeight: 600, color: C.primary, margin: '0 0 6px 0', lineHeight: 1.3 }}>{p.label}</h3>
               <p style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, margin: '0 0 20px 0', lineHeight: 1.5 }}>{p.caption}</p>
               <a
-                href={p.image}
+                href={p.image.full}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Open ${p.label}'s journey map in a new tab to view at full size`}
@@ -879,7 +886,7 @@ function UserJourneyMaps() {
                 }}
               >
                 <img
-                  src={p.image}
+                  src={p.image.display}
                   alt={p.alt}
                   loading="lazy"
                   decoding="async"
@@ -1368,7 +1375,7 @@ function Iterations() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <ScreenPlaceholder
-                imgSrc="https://res.cloudinary.com/dvunn40le/image/upload/Screenshot_2026-05-19_at_4.44.56_PM_kme8ug.png"
+                imgSrc="https://res.cloudinary.com/dvunn40le/image/upload/w_1400,q_auto,f_auto/Screenshot_2026-05-19_at_4.44.56_PM_kme8ug.png"
                 imgAlt="AXS app home screen with History tile in the bottom-left of the action grid"
                 captionBelow="History moved to home screen"
                 // History tile is in the second row, first column of the
