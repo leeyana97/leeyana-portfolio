@@ -44,8 +44,11 @@ const C = {
   secondary: '#888884',
   border: '#2A2A2A',
   cardBorder: '#222222',
-  statsBg: '#161616',
-  problemBg: '#111111',
+  // Section bands flattened to base black for a uniform background across
+  // all case studies (were #161616 / #111111). Kept as named tokens so the
+  // banding can be reintroduced in one place if ever wanted.
+  statsBg: '#0D0D0D',
+  problemBg: '#0D0D0D',
 };
 const F = {
   editorial: "'Playfair Display', Georgia, serif",
@@ -267,7 +270,7 @@ function CaseStudyHero() {
             aria-hidden={p.id !== 4}
             loading="eager"
             decoding="async"
-            fetchPriority="high"
+            fetchpriority="high"
             initial={{ opacity: p.initialOpacity, x: p.initialX, y: '-50%' }}
             // Switched from `whileInView` → `animate` so the entrance can be
             // gated on `imagesReady`. When images are still downloading we
@@ -379,7 +382,7 @@ function CaseStudyHero() {
               alt={phone.alt}
               loading="eager"
               decoding="async"
-              fetchPriority="high"
+              fetchpriority="high"
               initial={{ opacity: phone.initialOpacity, x: phone.initialX }}
               // Hold each phone at its initial offscreen position until the
               // images are fully decoded, then flip the animate target so

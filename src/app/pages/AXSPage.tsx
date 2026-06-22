@@ -46,8 +46,11 @@ const C = {
   secondary: '#888884',
   border: '#2A2A2A',
   cardBorder: '#222222',
-  statsBg: '#161616',
-  problemBg: '#111111',
+  // Section bands flattened to base black for a uniform background across
+  // all case studies (were #161616 / #111111). Kept as named tokens so the
+  // banding can be reintroduced in one place if ever wanted.
+  statsBg: '#0D0D0D',
+  problemBg: '#0D0D0D',
 };
 const F = {
   editorial: "'Playfair Display', Georgia, serif",

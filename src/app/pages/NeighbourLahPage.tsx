@@ -23,8 +23,11 @@ const C = {
   secondary: '#888884',
   border: '#2A2A2A',
   cardBorder: '#222222',
-  statsBg: '#161616',
-  problemBg: '#111111',
+  // Section bands flattened to base black for a uniform background across
+  // all case studies (were #161616 / #111111). Kept as named tokens so the
+  // banding can be reintroduced in one place if ever wanted.
+  statsBg: '#0D0D0D',
+  problemBg: '#0D0D0D',
 };
 const F = {
   editorial: "'Playfair Display', Georgia, serif",
@@ -256,7 +259,7 @@ function CaseStudyHero() {
           aria-hidden="true"
           loading="eager"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
           initial={{ x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
           animate={imagesReady
             ? { x: `calc(-50% - ${sideOffsetPct}%)`, y: '-50%', scale: sideScale, opacity: 1 }
@@ -291,7 +294,7 @@ function CaseStudyHero() {
           alt="NeighbourLah app overview"
           loading="eager"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
           initial={{ x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
           animate={imagesReady
             ? { x: '-50%', y: '-50%', scale: centreScale, opacity: 1 }
@@ -317,7 +320,7 @@ function CaseStudyHero() {
           aria-hidden="true"
           loading="eager"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
           initial={{ x: '-50%', y: '-50%', scale: initialScale, opacity: 0 }}
           animate={imagesReady
             ? { x: `calc(-50% + ${sideOffsetPct}%)`, y: '-50%', scale: sideScale, opacity: 1 }
@@ -347,7 +350,7 @@ function CaseStudyHero() {
           NeighbourLah
         </motion.h1>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: 'clamp(17px, 2vw, 20px)', color: C.secondary, margin: '0 0 24px 0', lineHeight: 1.5 }}>
-          A Community App That Helps Neighbours Actually Be Neighbours
+          A community app that makes your estate feel like home
         </motion.p>
         <motion.p variants={fadeUpItem} style={{ fontFamily: F.sans, fontSize: '14px', color: C.secondary, letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0, display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap', gap: '4px' }}>
           <span>Tools: Claude AI&nbsp;&nbsp;·&nbsp;&nbsp;Platform:&nbsp;</span>
@@ -376,6 +379,7 @@ function StatsStrip() {
     { number: '5', label: 'Users Tested' },
     { number: '5', label: 'Tasks Tested' },
     { number: '5', label: 'Core Features' },
+    { number: '3', label: 'Team Members' },
   ];
   return (
     <div
