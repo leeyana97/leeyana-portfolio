@@ -435,47 +435,9 @@ function HeroSection() {
 }
 
 // ─── About Section ──────────────────────────────────────────────────────────
-type Skill = { label: string; imgUrl?: string; tiIcon?: string };
-const skillsData: Skill[] = [
-  { label: 'Figma', imgUrl: 'https://res.cloudinary.com/dvunn40le/image/upload/Figma_icon_nlxj3g.png' },
-  { label: 'Claude AI', imgUrl: 'https://res.cloudinary.com/dvunn40le/image/upload/Claude_icon_de4eor.png' },
-  { label: 'User Research', tiIcon: 'ti-users' },
-  { label: 'Usability Testing', tiIcon: 'ti-clipboard-check' },
-  { label: 'Affinity Mapping', tiIcon: 'ti-sitemap' },
-  { label: 'Prototyping', tiIcon: 'ti-device-mobile' },
-  { label: 'UIUX Design', tiIcon: 'ti-wand' },
-  { label: 'Healthcare Background', tiIcon: 'ti-heart-rate-monitor' },
-];
 
 function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    const content = contentRef.current;
-    if (!section || !content) return;
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        content,
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top 80%',
-            toggleActions: 'play none none none',
-          },
-        }
-      );
-    });
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section
@@ -483,75 +445,126 @@ function AboutSection() {
       id="about"
       style={{
         backgroundColor: C.bg,
-        paddingTop: '120px',
-        paddingBottom: '120px',
+        paddingTop: '130px',
+        paddingBottom: '130px',
+        position: 'relative',
       }}
-      className="max-md:!py-20 max-lg:!py-16"
+      className="max-md:!py-16"
     >
+      {/* ── Sidebar: ABOUT / 02 / vertical rule – absolute at left:0, matching Work sidebar position ── */}
       <div
-        ref={contentRef}
-        style={{ maxWidth: '1400px', margin: '0 auto', paddingLeft: '80px', paddingRight: '80px', willChange: 'transform, opacity' }}
+        aria-hidden="true"
+        className="max-lg:!hidden"
+        style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '132px', paddingBottom: '130px' }}
+      >
+        <p style={{ fontFamily: F.sans, fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.secondary, margin: '0 0 18px 0', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>About</p>
+        <p style={{ fontFamily: F.editorial, fontSize: '52px', color: 'rgba(235,235,229,0.12)', margin: '0 0 18px 0', fontWeight: 400, lineHeight: 1 }}>02</p>
+        <div style={{ flex: 1, width: '1px', backgroundColor: C.border }} />
+      </div>
+
+      <div
+        style={{ maxWidth: '1400px', margin: '0 auto', paddingLeft: '80px', paddingRight: '80px' }}
         className="max-md:!px-6 max-lg:!px-10"
       >
-        <SectionLabel text="About" />
-
-        {/* Two-column layout */}
+        {/* 3-column: narrow gutter placeholder | photo | content */}
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '45% 55%',
-            gap: '80px',
-            alignItems: 'center',
-          }}
-          className="max-md:!grid-cols-1 max-md:!gap-10 max-lg:!grid-cols-1 max-lg:!gap-12"
+          style={{ display: 'grid', gridTemplateColumns: '56px 1fr 1.65fr', columnGap: '64px', alignItems: 'stretch' }}
+          className="max-lg:!block"
         >
-          {/* Left: Photo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 1.04 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 1.1, ease }}
-            className="about-photo-wrap"
-            style={{ position: 'relative', overflow: 'hidden', aspectRatio: '3/4' }}
-          >
-            <img
-              src={leeyanaPhoto}
-              alt="Leeyana, UI/UX Designer"
-              loading="lazy"
-              decoding="async"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                objectPosition: 'center top',
-                display: 'block',
-              }}
-            />
-          </motion.div>
+          {/* Empty placeholder – preserves photo/content positions; visible sidebar is absolute above */}
+          <div className="max-lg:!hidden" />
 
-          {/* Right: Content */}
+          {/* ── Photo ── */}
+          <div style={{ position: 'relative' }} className="max-lg:!mb-10">
+            {/* Diffuse warm aura — extends beyond the photo column to create a
+                cinematic ambient glow that bleeds into the surrounding background */}
+            <div aria-hidden="true" style={{
+              position: 'absolute',
+              top: '-18%', left: '-22%', right: '5%', bottom: '-12%',
+              background: [
+                'radial-gradient(ellipse at 52% 50%, rgba(125,64,24,0.60) 0%, rgba(95,48,18,0.28) 32%, rgba(65,32,10,0.08) 58%, transparent 72%)',
+              ].join(', '),
+              pointerEvents: 'none',
+              zIndex: 0,
+            }} />
+
+            {/* Portrait — CSS mask creates feathered organic edges so the photo
+                dissolves into the background rather than sitting on top of it */}
+            <motion.div
+              initial={{ opacity: 0, scale: 1.03 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 1.2, ease }}
+              style={{
+                height: '100%',
+                minHeight: '441px',
+                position: 'relative',
+                zIndex: 1,
+                // Wide 75% horizontal axis + gradual stops create a broad atmospheric
+                // fade rather than a tight spotlight oval. Center shifted to 26% to
+                // keep face/hijab in the opaque core; bottom fades well above the waist.
+                WebkitMaskImage: 'radial-gradient(ellipse 75% 88% at 50% 26%, black 20%, rgba(0,0,0,0.90) 36%, rgba(0,0,0,0.68) 54%, rgba(0,0,0,0.36) 70%, rgba(0,0,0,0.08) 84%, transparent 94%)',
+                maskImage: 'radial-gradient(ellipse 75% 88% at 50% 26%, black 20%, rgba(0,0,0,0.90) 36%, rgba(0,0,0,0.68) 54%, rgba(0,0,0,0.36) 70%, rgba(0,0,0,0.08) 84%, transparent 94%)',
+              }}
+              className="max-md:!min-h-[380px]"
+            >
+              <img
+                src={leeyanaPhoto}
+                alt="Leeyana, UI/UX Designer"
+                loading="lazy"
+                decoding="async"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 6%', display: 'block' }}
+              />
+            </motion.div>
+
+            {/* "View my work" pill */}
+            <button
+              onClick={() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' })}
+              style={{
+                position: 'absolute', bottom: '36px', left: '28px',
+                zIndex: 2,
+                display: 'inline-flex', alignItems: 'center', gap: '10px',
+                padding: '13px 26px',
+                border: '1px solid rgba(220,200,175,0.40)',
+                borderRadius: '100px',
+                background: 'rgba(13,11,10,0.62)',
+                backdropFilter: 'blur(14px)',
+                color: C.primary,
+                fontFamily: F.sans,
+                fontSize: '14px',
+                cursor: 'pointer',
+                letterSpacing: '0.01em',
+                boxShadow: '0 2px 20px rgba(0,0,0,0.35)',
+              }}
+            >
+              View my work <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          {/* ── Content ── */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '-60px' }}
+            style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
           >
             <motion.h2
               variants={fadeUpItem}
               style={{
                 fontFamily: F.editorial,
-                fontSize: 'clamp(32px, 3.5vw, 42px)',
+                fontSize: 'clamp(44px, 4.8vw, 68px)',
                 color: C.primary,
-                margin: '0 0 32px 0',
-                lineHeight: 1.2,
-                letterSpacing: '-0.01em',
+                margin: '0 0 52px 0',
+                lineHeight: 1.14,
+                letterSpacing: '-0.025em',
                 fontWeight: 400,
               }}
             >
-              From bedside to interface.
+              From bedside<br />to interface.
             </motion.h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', marginBottom: '52px' }}>
               {[
                 "I started my career as a nurse, learning early that the gap between what people need and what they're given is almost always a design problem.",
                 "In the public healthcare sector, I then spent years turning dense healthcare information into something people could actually understand and act on, through websites, outreach materials, and training programmes for SG Healthcare Corps volunteers.",
@@ -560,38 +573,35 @@ function AboutSection() {
                 <motion.p
                   key={i}
                   variants={fadeUpItem}
-                  style={{
-                    fontFamily: F.sans,
-                    fontSize: '17px',
-                    color: C.primary,
-                    lineHeight: 1.7,
-                    margin: 0,
-                  }}
+                  style={{ fontFamily: F.sans, fontSize: '16px', color: 'rgba(235,235,229,0.68)', lineHeight: 1.82, margin: 0 }}
                 >
                   {para}
                 </motion.p>
               ))}
             </div>
 
-            {/* Skills Ticker */}
-            <motion.div variants={fadeUpItem} style={{ position: 'relative', overflow: 'hidden', marginTop: '2.5rem' }}>
-              <div className="skills-ticker-track">
-                {[...skillsData, ...skillsData].map((skill, i) => (
-                  <div key={i} className="skills-ticker-item">
-                    <div className="skills-ticker-icon">
-                      {skill.imgUrl ? (
-                        <img src={skill.imgUrl} alt={skill.label} />
-                      ) : (
-                        <i className={`ti ${skill.tiIcon}`} aria-hidden="true" />
-                      )}
-                    </div>
-                    <span className="skills-ticker-label">{skill.label}</span>
-                    <div className="skills-ticker-dot" />
-                  </div>
-                ))}
-              </div>
-              <div className="skills-ticker-fade-l" />
-              <div className="skills-ticker-fade-r" />
+            {/* Divider */}
+            <div style={{ height: '1px', backgroundColor: C.border, marginBottom: '40px' }} />
+
+            {/* Outer div fades left+right edges; img fades top+bottom — nested masks create a 4-sided blend */}
+            <motion.div
+              variants={fadeUpItem}
+              style={{
+                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%)',
+                maskImage: 'linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%)',
+              }}
+            >
+              <img
+                src="https://res.cloudinary.com/dvunn40le/image/upload/q_auto,f_auto/Screenshot_2026-07-30_at_4.24.40_PM_vtxomj.png"
+                alt="Skills: User Research, Information Architecture, Wireframing, Prototyping, Figma, Claude AI, Affinity Mapping, Healthcare Background"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  display: 'block',
+                  WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 82%, transparent 100%)',
+                  maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 82%, transparent 100%)',
+                }}
+              />
             </motion.div>
           </motion.div>
         </div>
@@ -864,48 +874,56 @@ function ProjectsSection() {
       style={{ backgroundColor: C.bg, paddingTop: '120px' }}
       className="max-md:!pt-16"
     >
-      <div
-        style={{ maxWidth: '1400px', margin: '0 auto', paddingLeft: '80px', paddingRight: '80px' }}
-        className="max-md:!px-6"
-      >
-        <SectionLabel text="Selected Work" />
-      </div>
+      {/* Flex row: single sticky sidebar + cards feed – sidebar is independent of card flip animations */}
+      <div style={{ display: 'flex' }}>
+        {/* ── Sidebar: WORK / 01 / vertical rule – sticky, never affected by card flips ── */}
+        <div
+          aria-hidden="true"
+          className="max-lg:!hidden"
+          style={{ width: '80px', flexShrink: 0, position: 'sticky', top: '105px', alignSelf: 'flex-start', height: 'calc(100vh - 105px)', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '2px' }}
+        >
+          <p style={{ fontFamily: F.sans, fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase', color: C.secondary, margin: '0 0 18px 0', writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>Work</p>
+          <p style={{ fontFamily: F.editorial, fontSize: '52px', color: 'rgba(235,235,229,0.12)', margin: '0 0 18px 0', fontWeight: 400, lineHeight: 1 }}>01</p>
+          <div style={{ flex: 1, width: '1px', backgroundColor: C.border }} />
+        </div>
 
-      <div className="project-cards-feed">
-        {projects.map((project, i) => (
-          <div
-            key={project.slug}
-            className="project-card-sticky"
-            style={{
-              position: 'sticky',
-              top: '105px',
-              height: '100vh',
-              zIndex: i + 1,
-              display: 'flex',
-              alignItems: 'flex-start',
-              justifyContent: 'center',
-              paddingLeft: '80px',
-              paddingRight: '80px',
-              backgroundColor: C.bg,
-              perspective: '1200px',
-            }}
-          >
+        <div className="project-cards-feed" style={{ flex: 1 }}>
+          {projects.map((project, i) => (
             <div
-              ref={el => { cardRefs.current[i] = el; }}
-              className="project-card-inner"
+              key={project.slug}
+              className="project-card-sticky"
               style={{
-                width: '100%',
-                maxWidth: '1240px',
-                height: 'calc(100vh - 105px)',
-                willChange: 'transform',
+                position: 'sticky',
+                top: '105px',
+                height: '100vh',
+                zIndex: i + 1,
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                paddingLeft: '0',
+                paddingRight: '80px',
+                backgroundColor: C.bg,
+                perspective: '1200px',
+                overflow: 'hidden',
               }}
             >
-              <ProjectCard project={project} />
+              <div
+                ref={el => { cardRefs.current[i] = el; }}
+                className="project-card-inner"
+                style={{
+                  width: '100%',
+                  maxWidth: '1240px',
+                  height: 'calc(100vh - 105px)',
+                  willChange: 'transform',
+                }}
+              >
+                <ProjectCard project={project} />
+              </div>
             </div>
-          </div>
-        ))}
-        {/* Spacer so the last card has sticky time before the section unsticks */}
-        <div className="project-cards-spacer" style={{ height: '100vh' }} aria-hidden="true" />
+          ))}
+          {/* Spacer so the last card has sticky time before the section unsticks */}
+          <div className="project-cards-spacer" style={{ height: '100vh' }} aria-hidden="true" />
+        </div>
       </div>
     </section>
   );
@@ -1257,9 +1275,6 @@ function ContactSection() {
         </motion.div>
       </div>
 
-      {/* Marquee strip — sits at the bottom of the contact section */}
-      <MarqueeSection />
-
       {/* Footer */}
       <footer
         style={{
@@ -1286,8 +1301,8 @@ export function HomePage() {
     <div style={{ backgroundColor: C.bg, minHeight: '100vh' }}>
       <Navigation />
       <HeroSection />
-      <AboutSection />
       <ProjectsSection />
+      <AboutSection />
       <ContactSection />
     </div>
   );

@@ -5,6 +5,25 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Debounced refresh called by FadeUp / StaggerCards after they mount.
+// Batches all the individual mounts into one ScrollTrigger.refresh() so GSAP
+// re-evaluates which triggers are already past their start point — fixing the
+// mobile gap where users scroll quickly past elements before GSAP initialises.
+let _refreshTimer: ReturnType<typeof setTimeout> | null = null;
+function scheduleRefresh() {
+  if (_refreshTimer) clearTimeout(_refreshTimer);
+  _refreshTimer = setTimeout(() => {
+    ScrollTrigger.refresh();
+    _refreshTimer = null;
+  }, 100);
+}
+
+// Also refresh after all images / fonts have loaded so trigger positions
+// reflect final page height (images shift layout on slow mobile connections).
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+}
+
 // ─── Easing curves ───────────────────────────────────────────────────────────
 export const ease = [0.25, 0.1, 0.25, 1] as const;
 export const easeSnap = [0.16, 1, 0.3, 1] as const;
@@ -44,10 +63,12 @@ export function FadeUp({
           trigger: el,
           start: 'top 80%',
           toggleActions: 'play none none none',
+          invalidateOnRefresh: true,
         },
       });
     });
 
+    scheduleRefresh();
     return () => ctx.revert();
   }, [delay]);
 
@@ -92,14 +113,15 @@ export function StaggerCards({
           trigger,
           start: 'top 80%',
           toggleActions: 'play none none none',
+          invalidateOnRefresh: true,
         },
         onComplete: () => {
-          // Drop will-change once the animation has played
           cards.forEach(c => { c.style.willChange = 'auto'; });
         },
       });
     });
 
+    scheduleRefresh();
     return () => ctx.revert();
   }, []);
 
@@ -203,6 +225,7 @@ export function AnimatedQuote({
           trigger: el,
           start: 'top 80%',
           toggleActions: 'play none none none',
+          invalidateOnRefresh: true,
         },
       });
       tl.to(borderEl, { scaleY: 1, duration: 0.4, ease: 'power2.out' });
