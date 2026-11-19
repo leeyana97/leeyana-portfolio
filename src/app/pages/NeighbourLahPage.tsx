@@ -1,3 +1,4 @@
+import { RoleBlock, DecisionCards, Callout } from '../components/CaseStudyAdditions';
 import { motion, useInView } from 'motion/react';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -366,6 +367,11 @@ function CaseStudyHero() {
         className="max-md:!order-3"
       >
         <StatsStrip />
+        <RoleBlock rows={[
+          ['Role', 'UX designer, team of 3'],
+          ['My part', 'Interviews, competitive analysis, prototyping and usability testing, where I moderated 2 of the 5 sessions'],
+          ['How we worked', "We didn't split into separate tracks. All three of us worked across every phase, from research to design to testing."],
+        ]} />
       </motion.div>
     </section>
   );
@@ -379,7 +385,6 @@ function StatsStrip() {
     { number: '5', label: 'Users Tested' },
     { number: '5', label: 'Tasks Tested' },
     { number: '5', label: 'Core Features' },
-    { number: '3', label: 'Team Members' },
   ];
   return (
     <div
@@ -423,6 +428,7 @@ function Challenge() {
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
         NeighbourLah rebuilds that infrastructure for today's HDB estates. The app surfaces relevant events nearby, connects neighbours over shared interests, and provides a trusted channel for everyday exchanges of help, items, and services.
       </p>
+      <Callout>This one was close to home. At the Agency for Integrated Care, my department, the Silver Generation Office, had a team that worked with volunteers to run community activities at Active Ageing Centres. Those activities were well attended, but they were only for seniors. When I asked around, younger residents especially told me they didn't join neighbourhood activities because none matched their interests, and they didn't know where to find ones that suited their interests and age group.</Callout>
       {/* Skip-ahead button for confident readers who want to see the
           working artefact before reading the design narrative. Pill-
           shaped, filled with the case study's accent (picked up via
@@ -969,6 +975,38 @@ function ResearchFindings() {
   );
 }
 
+function KeyDecisions() {
+  return (
+    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Key Decisions" />
+      <DecisionCards
+        intro="The calls we made before testing, and what each one cost."
+        items={[
+          {
+            tag: 'Scope trade-off',
+            title: 'Scope everything to one estate',
+            rows: [
+              ['Options', "A town-wide feed like PA's Community and GoodHood, which means more content and more users. Or everything scoped to one estate."],
+              ['We chose', 'One estate. Research showed bigger asks need trust first, and living in the same estate is the trust signal residents already have.'],
+              ['Debate', 'We went back and forth on this as a team. The hard part was where to draw the line: what happens when someone from a neighbouring estate wants to join an estate group?'],
+              ['Cost', 'Estate boundaries are messy. Not every estate has its own community club, and smaller estates may not have enough activity to feel alive.'],
+            ],
+          },
+          {
+            tag: 'Fit and privacy',
+            title: "Show who's going, by household and language",
+            rows: [
+              ['Situation', 'Residents weren\'t sure whether events were "for them".'],
+              ['We chose', 'An attendee breakdown by household type and language spoken, so residents can judge fit before they commit.'],
+              ['Cost', "Showing who's attending raises privacy concerns. We show names and block numbers, never unit numbers, and residents can hide their block number in settings."],
+            ],
+          },
+        ]}
+      />
+    </section>
+  );
+}
+
 function DesignDecisions() {
   // Layout mirrors TripSync's Design Decisions block: two overlapping
   // phone mockups on the left (slightly rotated for depth) and a 2-col
@@ -1004,7 +1042,7 @@ function DesignDecisions() {
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Design Decisions" />
+      <SectionLabel text="What We Designed" />
       <div
         style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '80px', alignItems: 'center' }}
         className="max-md:!grid-cols-1 max-md:!gap-12 max-lg:!grid-cols-1 max-lg:!gap-12"
@@ -1085,7 +1123,7 @@ function UsabilityTesting() {
   // where they become evidence for strategic claims, not findings to
   // restate.
   const insights = [
-    'The Market was the most intuitive feature, matching the patterns users already knew from Carousell.',
+    'The Market was the most intuitive feature, because it matched patterns users already knew from other marketplace apps.',
     "Events and Groups confused 3 of 5 participants because both surfaced interest-based content without a clear distinction between a one-off and an ongoing commitment.",
   ];
   return (
@@ -1095,7 +1133,7 @@ function UsabilityTesting() {
       {/* Subheader — names who was tested and ties recruitment back to
           the target group from research. */}
       <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0' }}>
-        Usability testing was conducted with 5 HDB residents who are keen to be closer to their neighbourhood.
+        We tested with 5 HDB residents who are keen to be closer to their neighbourhood. I moderated 2 of the sessions.
       </p>
 
       {/* Test Plan — 3-card grid mirroring AXS so the case studies
@@ -1186,7 +1224,7 @@ function Iterations() {
     {
       label: 'Groups and Events felt overlapping',
       problem: "Users couldn't distinguish between a one-off event and an ongoing group as both felt interest-based.",
-      solution: 'Surfaced a one-time tooltip on first visit to guide users on exploring the app. Also added a header description on the Events and Groups tabs in Explore to orient users when they land there.',
+      solution: 'We kept Events and Groups separate on purpose. Groups are interest groups that ask for an ongoing commitment, while events are one-off and open to anyone. So instead of merging them, we added a first-visit tooltip and header descriptions on both tabs to make the difference clear.',
       imgBefore: 'https://res.cloudinary.com/dvunn40le/image/upload/task2p3_before_mba3fp.png',
       videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/task_2_afternew_dhh9gb.mp4',
     },
@@ -1351,7 +1389,7 @@ function FinalScreens() {
       videoSrc: 'https://res.cloudinary.com/dvunn40le/video/upload/finalscreen4_rl5w3n.mp4',
       highlights: [
         { heading: 'Request and Offer', text: 'Post requests for help or items to borrow, or offer things you no longer need to neighbours nearby.' },
-        { heading: 'Verified Residents Only', text: 'All exchanges happen between verified estate residents, reducing the friction and anxiety of asking a stranger for help.' },
+        { heading: 'Verified Residents Only', text: 'All exchanges happen between estate residents verified through their Singpass address. Users trusted the app more once they knew it was government-backed.' },
       ],
       imageFirst: true,
     },
@@ -1360,7 +1398,7 @@ function FinalScreens() {
       placeholderFor: 'Marketplace',
       videoSrc: 'https://res.cloudinary.com/dvunn40le/video/upload/finalscreen5_vlfvqi.mp4',
       highlights: [
-        { heading: 'Buy, Sell and Offer Services', text: 'List items for sale, give things away for free or offer local services like tutoring or dog walking to neighbours.' },
+        { heading: 'Buy, Sell and Offer Services', text: 'Listings follow familiar marketplace conventions, so residents can post and browse without learning anything new. Market was the most intuitive feature in testing.' },
         { heading: 'Proximity-Based Listings', text: 'All listings are scoped to your neighbourhood so handoffs stay convenient and the marketplace stays community-focused.' },
       ],
       imageFirst: false,
@@ -1471,7 +1509,8 @@ function Impact() {
   const outcomes = [
     { title: 'Interest-based connection is the right entry point.', desc: 'All 5 participants reached out more readily when a shared interest gave them a starting point. This confirmed the core thesis that connection in dense estates needs a softer on-ramp than direct introduction.' },
     { title: 'Trust signals carried more weight than expected.', desc: 'Comfort with the app rose sharply when users learned it was government-backed, while a small detail like a block number on a neighbour profile raised concern. Trust is not a single moment to design for, it is an accumulating signal that needs to be earned across the app.' },
-    { title: 'Familiarity drove adoption faster than novelty.', desc: 'The Market succeeded because it leaned on patterns users already knew from Carousell. Events and Groups failed because they introduced an unfamiliar IA model. For everyday community features, mirroring what users already know beats inventing new structure.' },
+    { title: 'Familiarity drove adoption faster than novelty.', desc: "The Market succeeded because it followed patterns users already knew. Events and Groups were harder because they introduced a structure users hadn't seen before. For everyday community features, building on what users already know beats inventing something new." },
+    { title: 'Residents control what neighbours see.', desc: 'Profiles show a resident\'s name and block number, but anyone can switch off their block number in settings so only their name appears.' },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
@@ -1479,11 +1518,32 @@ function Impact() {
         "I'll be, frankly speaking, feeling a bit awkward... unless there's a common interest."
       </AnimatedQuote>
       <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 auto 64px auto' }}>Usability Test Participant</p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '48px 56px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
         {outcomes.map((o) => (
           <div key={o.title}>
             <h4 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 12px 0', lineHeight: 1.3, fontWeight: 400 }}>{o.title}</h4>
             <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.secondary, margin: 0, lineHeight: 1.7 }}>{o.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Reflections() {
+  const cards = [
+    { number: '01', title: "What I'd do differently", body: 'Test how users understand Events and Groups before building on them. Market felt familiar from the start, but Events and Groups introduced a structure users hadn\'t seen before, and it was the one place users got lost. Next time I\'d run a quick card sort to see how users naturally group activities and what they\'d call them, then a tree test to check they can find them before designing screens.' },
+    { number: '02', title: "What I'd build next", body: 'A way for trust to grow over time. Neighbours would start with small requests and unlock bigger ones as they build a history of helping each other, which is what research finding #04 points to: bigger asks need trust that has to be built first.' },
+  ];
+  return (
+    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Reflections & Next Steps" />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
+        {cards.map((card) => (
+          <div key={card.number} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
+            <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 16px 0', letterSpacing: '0.08em' }}>{card.number}</p>
+            <h3 style={{ fontFamily: F.editorial, fontSize: '22px', color: C.primary, margin: '0 0 14px 0', lineHeight: 1.3, fontWeight: 400 }}>{card.title}</h3>
+            <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: 0, lineHeight: 1.6 }}>{card.body}</p>
           </div>
         ))}
       </div>
@@ -1537,11 +1597,13 @@ const sidebarItems: SidebarItem[] = [
   { id: 'competitive-analysis', label: 'Competitive Analysis' },
   { id: 'problem', label: 'Problem Statement' },
   { id: 'solution', label: 'Solution Statement' },
-  { id: 'design-decisions', label: 'Design Decisions' },
+  { id: 'design-decisions', label: 'What We Designed' },
+  { id: 'decisions', label: 'Key Decisions' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
   { id: 'final-screens', label: 'Final Screens' },
   { id: 'impact', label: 'Impact' },
+  { id: 'reflections', label: 'Reflections' },
 ];
 
 export function NeighbourLahPage() {
@@ -1559,10 +1621,12 @@ export function NeighbourLahPage() {
           <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="solution"><SolutionStatement /></FadeUp>
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
+          <FadeUp id="decisions"><KeyDecisions /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>
           <FadeUp id="final-screens"><FinalScreens /></FadeUp>
           <FadeUp id="impact"><Impact /></FadeUp>
+          <FadeUp id="reflections"><Reflections /></FadeUp>
           <FadeUp><PrototypeCTA /></FadeUp>
           <FadeUp><NextProject /></FadeUp>
         </div>
