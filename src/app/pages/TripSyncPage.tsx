@@ -1,3 +1,4 @@
+import { RoleBlock, DecisionCards, Prose } from '../components/CaseStudyAdditions';
 import { motion, useInView } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -418,6 +419,10 @@ function CaseStudyHero() {
         className="max-md:!order-3"
       >
         <StatsStrip />
+        <RoleBlock rows={[
+          ['Role', 'Solo. Research, synthesis, interaction design, prototyping and testing'],
+          ['Research', '10 interviews with families and friend groups, then 5 in-person usability tests with group trip planners'],
+        ]} />
       </motion.div>
     </section>
   );
@@ -505,6 +510,7 @@ function Challenge() {
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
         TripSync was designed to address this exact challenge. It turns the messy WhatsApp-and-spreadsheet sprawl of group trip planning into a structured experience, one that doesn't force everyone to agree but instead surfaces where they already do, and lets each person opt out of activities without disrupting the trip for the rest.
       </p>
+      <Prose top={24}>The obvious solution was group voting. Every planning app has polls, and every WhatsApp group already uses them. I decided against it early, because my interviews kept showing the same pattern: the loudest voice wins and quieter members stop replying. Voting would have made that faster, not fairer.</Prose>
       {/* Skip-ahead button for confident readers who want to see the
           working artefact before reading the design narrative. Pill-
           shaped, filled with the case study's accent (picked up via
@@ -636,7 +642,7 @@ function ResearchFindings() {
           />
         </div>
         <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#5A5A54', fontStyle: 'italic', margin: '16px 0 0 0', textAlign: 'center', lineHeight: 1.5 }}>
-          Synthesising user interview insights through affinity mapping.
+          My affinity map from 10 interviews.
         </p>
       </div>
 
@@ -761,6 +767,37 @@ function VisualDesignSystem() {
 }
 
 // ─── 5. Design Decisions ─────────────────────────────────────────────────────
+function DecisionsIMade() {
+  return (
+    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Decisions I Made" />
+      <DecisionCards
+        intro="Every call on this project was mine. These are the two that shaped it most, both made before testing."
+        items={[
+          {
+            tag: 'Trade-off',
+            title: "Don't make the group agree",
+            rows: [
+              ['Options', '(a) Group polls: familiar and fast, but the majority wins. (b) An AI-generated itinerary: fast, but nobody owns it. (c) Private preferences and an overlap dashboard, with opt-outs per activity.'],
+              ['I chose', '(c). It shows where the group already agrees and lets people decline one activity without leaving the trip.'],
+              ['Cost', 'Every member has to fill in a quiz before anything happens. That\'s real friction, so the quiz had to feel light. Testers called it "surprisingly fun", which told me the cost was worth it.'],
+            ],
+          },
+          {
+            tag: 'Trade-off',
+            title: 'Keep the final say with the planner',
+            rows: [
+              ['Options', 'Full group decision-making, or a planner who shortlists from the group\'s data.'],
+              ['I chose', 'The planner. In every group I interviewed, one person ended up booking everything anyway. Designing around that was more honest than pretending everyone decides equally.'],
+              ['Cost', 'Power sits with one person. The objection feature is the counterweight, so members can push back with an alternative instead of going quiet.'],
+            ],
+          },
+        ]}
+      />
+    </section>
+  );
+}
+
 function DesignDecisions() {
   const features = [
     {
@@ -798,7 +835,7 @@ function DesignDecisions() {
   ];
   return (
     <section style={{ backgroundColor: C.problemBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
-      <SectionLabel text="Design Decisions" />
+      <SectionLabel text="What I Designed" />
       {/* Solution statement — the strategic bet that frames the features
           below. Lives here (rather than as its own section) so the reader
           sees the bet immediately above the features that embody it. */}
@@ -939,7 +976,7 @@ function UsabilityTesting() {
       {/* Subheader — names who was tested and ties recruitment back to
           the target group from research. */}
       <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0' }}>
-        Usability testing was conducted with 5 members of the public who are the main planner of a group trip.
+        I tested in person with 5 members of the public, each the main planner of a group trip.
       </p>
 
       {/* Test Plan — 3-card grid mirroring AXS so the case studies
@@ -1007,14 +1044,14 @@ function Iterations() {
     {
       label: 'Group Profile Builder',
       problem: "Users questioned why planners filled in details for members who hadn't joined.",
-      solution: 'Each member now fills in their own profile upon joining.',
+      solution: "I reversed my own call. My first design had the planner fill in everyone's profile to save setup time, but members hadn't joined yet and the planner didn't know their details. Each member now fills in their own profile when they join. Setup is slower, but the details are accurate.",
       beforeImg: tripsyncProfileOldImg,
       afterImg: tripsyncProfileQuizImg,
     },
     {
       label: 'Activity Preferences',
       problem: 'Drag handles misled every participant into attempting to drag.',
-      solution: 'Replaced with tap-to-rank. Tap to assign priority, tap again to remove.',
+      solution: "Replaced with tap-to-rank. Ranking a short list doesn't need drag, so I dropped the richer interaction.",
       beforeImg: tripsyncPrefQuizOldImg,
       afterImg: tripsyncPrefQuizNewImg,
     },
@@ -1028,7 +1065,7 @@ function Iterations() {
     {
       label: 'Planner Shortlisting',
       problem: 'Users expected tap-to-include, not tap-to-exclude.',
-      solution: 'Flipped the model to match their mental model.',
+      solution: 'I flipped the model to tap-to-include, so planners build a shortlist instead of pruning one.',
       beforeImg: tripsyncActivityShortlistOldImg,
       afterImg: tripsyncActivityShortlistNewImg,
     },
@@ -1114,7 +1151,7 @@ function FinalScreens() {
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/Overlap-dashboard-final-screen_xjsodu.mp4',
       highlights: [
         { heading: 'Group Interest Ranking', text: 'Activities ranked by group interest percentage, colour-coded as High, Mixed, or Low.' },
-        { heading: 'Data-Driven Shortlisting', text: 'Planner taps to include activities for the itinerary based on group ratings, with the highest-rated items pre-highlighted.' },
+        { heading: 'Data-Driven Shortlisting', text: 'Tap to include, not tap to exclude. Users expected to build a shortlist, so I flipped my original model. The highest-rated activities are pre-highlighted.' },
         { heading: 'Planner Override', text: 'Planner can override any rating before confirming the shortlist.' },
       ],
       imageFirst: true,
@@ -1135,9 +1172,9 @@ function FinalScreens() {
       image: tripsyncOptOutImg,
       video: 'https://res.cloudinary.com/dvunn40le/video/upload/final-itinerary-final-screen_pzykkv.mp4',
       highlights: [
-        { heading: 'Day-by-Day View', text: 'Day-by-day view with time, location, duration, and opt-out indicators per activity.' },
+        { heading: 'Day-by-Day View', text: "Opt-outs show on each activity, so everyone knows who's coming without anyone having to announce it in the group chat." },
         { heading: 'Live Edit Mode for Planners', text: 'Planners can enter Edit Mode to swap or remove any activity or meal directly in the itinerary. All changes are broadcast to the group instantly via an in-app notification.' },
-        { heading: 'Smart Import Bookings', text: 'Planners can paste booking links to auto-fill flight and accommodation details.' },
+        { heading: 'Smart Import Bookings', text: 'Paste a booking link to fill in flights and stays. This replaces one of the 3 to 5 tools groups were juggling.' },
       ],
       imageFirst: true,
     },
@@ -1249,8 +1286,9 @@ function Impact() {
   // strategic claim; body carries the evidence.
   const outcomes = [
     { title: 'Structured preference collection is the right bet for group travel.', desc: 'All 5 participants completed the core journey, confirming the quiz-and-dashboard model can replace the WhatsApp back-and-forth groups currently default to.' },
-    { title: 'Three of four key screens were iterated from direct testing feedback.', desc: 'Every observed friction point was addressed in the final redesigns.' },
+    { title: 'I changed 3 of 4 key screens based on direct testing feedback.', desc: 'Every observed friction point was addressed in the final redesigns.' },
     { title: "Opt-out emerged as the design's most valuable move.", desc: 'By letting users decline a single activity without dropping out of the whole trip, it addressed a social problem other group-coordination tools ignore.' },
+    { title: "What I'd measure next.", desc: "Whether groups using the overlap dashboard reach a final plan in fewer days than groups on WhatsApp. That's the outcome the design is betting on, and 5 tests can't prove it yet." },
   ];
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '100px', paddingBottom: '100px', textAlign: 'center' }} className="max-md:!px-6 max-md:!py-20 max-lg:!px-10">
@@ -1264,7 +1302,7 @@ function Impact() {
           NeighbourLah and AXS. h4 title (Playfair 20px) carries the
           strategic claim, body (DM Sans 17px secondary) carries the
           evidence. Stacks to 1 column on tablet and mobile. */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '48px 56px', textAlign: 'left', maxWidth: '960px', margin: '0 auto' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
         {outcomes.map((o) => (
           <div key={o.title}>
             <h4 style={{ fontFamily: F.editorial, fontSize: '20px', color: C.primary, margin: '0 0 12px 0', lineHeight: 1.3, fontWeight: 400 }}>{o.title}</h4>
@@ -1279,9 +1317,9 @@ function Impact() {
 // ─── 10. Reflections ─────────────────────────────────────────────────────────
 function Reflections() {
   const cards = [
-    { number: '01', title: 'Edge Cases', body: 'Group travel has enormous variety. Trip size, duration, and social dynamics all need further iteration.' },
+    { number: '01', title: 'Edge Cases', body: "I designed for smaller groups of friends or family members. Larger groups and different social dynamics would stress the overlap dashboard, and that's where I'd test next." },
     { number: '02', title: 'Multi-Role Design', body: 'Syncing planner and joiner flows was the core challenge; future iterations will explore deeper role-specific features.' },
-    { number: '03', title: 'Iterative Testing', body: 'Continued testing with larger, more diverse groups will surface real-world edge cases for v2.' },
+    { number: '03', title: 'Iterative Testing', body: 'I only tested with planners. The next round needs joiners too, especially the quiet members the design is meant to protect.' },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
@@ -1439,7 +1477,8 @@ const sidebarItems: SidebarItem[] = [
   { id: 'challenge', label: 'Challenge' },
   { id: 'research', label: 'Research' },
   { id: 'problem', label: 'Problem Statement' },
-  { id: 'design-decisions', label: 'Design Decisions' },
+  { id: 'design-decisions', label: 'What I Designed' },
+  { id: 'decisions', label: 'Decisions' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
   { id: 'final-screens', label: 'Final Screens' },
@@ -1462,6 +1501,7 @@ export function TripSyncPage() {
           {/* Solution Statement inlined as Design Decisions lead-in. */}
           {/* Visual Design System hidden */}
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
+          <FadeUp id="decisions"><DecisionsIMade /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>
           <FadeUp id="final-screens"><FinalScreens /></FadeUp>

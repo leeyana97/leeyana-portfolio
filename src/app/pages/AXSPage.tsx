@@ -1,3 +1,4 @@
+import { RoleBlock, DecisionCards, Callout, Prose } from '../components/CaseStudyAdditions';
 import { motion, useInView } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -617,9 +618,13 @@ function CaseStudyHero() {
         {/* Quiet collaborators credit — sits directly under the stats
             strip in the same muted register so it reads as a footnote,
             not a featured element. */}
-        <p style={{ fontFamily: F.sans, fontSize: '13px', color: '#8A8A82', margin: '4px 0 0 0', lineHeight: 1.5 }}>
-          In collaboration with Kathlyn Teh and Sim Mirin.
-        </p>
+        <RoleBlock rows={[
+          ['Role', 'UX designer, team of 3 with Kathlyn Teh and Sim Mirin'],
+          ['Client', 'AXS, as a pro-bono capstone project with General Assembly'],
+          ['Brief', 'Help AXS reach first jobbers paying their first bill and young couples managing bills together for the first time, the life stages where long-term payment habits form'],
+          ['My part', 'User interviews, the first draft of the prototype, usability testing, facilitating the AXS design feedback workshop, refining the prototype, and the final presentation'],
+          ['How we worked', "We didn't split into separate tracks. All three of us worked across every phase, from research to design to testing."],
+        ]} />
       </motion.div>
     </section>
   );
@@ -633,7 +638,6 @@ function StatsStrip() {
     { number: '5', label: 'Users Tested' },
     { number: '6', label: 'Tasks Tested' },
     { number: '3', label: 'User Personas' },
-    { number: '3', label: 'Team Members' },
   ];
   return (
     <div
@@ -677,6 +681,7 @@ function Challenge() {
       <p style={{ fontFamily: F.sans, fontSize: '17px', color: C.primary, lineHeight: 1.7, margin: 0, maxWidth: '720px' }}>
         AXS Vault is the feature we designed to take that weight off. It turns a single-user payment app into a household bill management system, where the primary handler sets bills up once, partners see what's been paid without asking, and first jobbers get the inherited structure their parents never had a way to hand down.
       </p>
+      <Prose top={24}>AXS's brief named two moments where new users weren't entering its ecosystem: first jobbers paying their first bill, and young couples setting up their first home. Bank and telco apps already catch these users early, and a missed moment means a lost user. Within that brief, we focused on the moment a bill passes from one person to another: a parent handing bills to a first jobber, or one partner paying while the other wants to see. That's where our interviews showed payments being missed or made twice.</Prose>
       {/* Skip-ahead button for confident readers who want to see the
           working artefact before reading the design narrative. Pill-
           shaped, filled with the case study's accent (picked up via
@@ -837,6 +842,7 @@ function ResearchFindings() {
           </div>
         ))}
       </div>
+      <Callout>The finding that shaped Vault most was #04: couples don't want a joint account. They want to see what's been paid without changing who pays. So Vault lets people sort bills into individual or group folders, add their partner to a group, and see when each bill has been paid, so nobody pays twice. Payment itself still happens through My Favourites, as it does today.</Callout>
     </section>
   );
 }
@@ -868,6 +874,7 @@ function UserJourneyMaps() {
   return (
     <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="User Journey Maps" />
+      <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, margin: '-24px 0 40px 0', lineHeight: 1.6 }}>We built one map per persona: two from our young couple interviews and one from our first jobber interviews.</p>
       <MobileCarouselWrap count={personas.length}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '72px' }} className="mobile-card-carousel">
           {personas.map((p) => (
@@ -900,6 +907,29 @@ function UserJourneyMaps() {
           ))}
         </div>
       </MobileCarouselWrap>
+    </section>
+  );
+}
+
+function DecisionsIDefend() {
+  return (
+    <section style={{ backgroundColor: C.bg, padding: '80px', paddingTop: '80px', paddingBottom: '80px' }} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
+      <SectionLabel text="Key Decisions" />
+      <DecisionCards
+        intro="The product call we made before testing: what we chose, what we weighed, and what it cost."
+        items={[
+          {
+            tag: 'Product direction',
+            title: 'Shared visibility, not a joint account',
+            rows: [
+              ['Situation', "Couples manage bills informally and don't want a joint account app. When one partner can't see what the other has paid, bills get paid twice or missed (research findings #04 and #05)."],
+              ['Options', '(a) A shared payment account both partners pay from. (b) A visibility layer on top of the way they already pay.'],
+              ['We chose', '(b). People sort bills into individual or group folders, add their partner to a group, and see when each bill was paid and by whom. Payment still happens through My Favourites, as it does today.'],
+              ['Cost', 'Paying sits outside Vault. That gap showed up in testing: only 1 of 5 users could pay a bill after a handover (see Issues & Changes).'],
+            ],
+          },
+        ]}
+      />
     </section>
   );
 }
@@ -1028,7 +1058,7 @@ function UsabilityTesting() {
         <p style={{ fontFamily: F.sans, fontSize: '11px', color: C.secondary, margin: '0 0 14px 0', letterSpacing: '0.18em', textTransform: 'uppercase' }}>Internal Review</p>
         <h3 style={{ fontFamily: F.editorial, fontSize: 'clamp(24px, 2.6vw, 32px)', color: C.primary, margin: '0 0 18px 0', lineHeight: 1.25, fontWeight: 400, fontStyle: 'italic' }}>Round 1: Design Feedback Workshop</h3>
         <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 36px 0' }}>
-          Before testing with the public, the team ran a design feedback workshop with AXS staff across 5 tasks. Ease of Use ratings used a 1 to 5 scale (1 = Very Easy, 5 = Very Difficult).
+          Before public testing, we ran a design feedback workshop with AXS staff across 5 tasks, which I co-facilitated. Ease of Use ratings used a 1 to 5 scale (1 = Very Easy, 5 = Very Difficult).
         </p>
         {/* Staggered task cards — each fades up with a 100ms delay between cards.
             Subtle desaturated-gold left border + horizontal rating bar visualise
@@ -1154,7 +1184,7 @@ function UsabilityTesting() {
           Following the internal workshop, the team iterated on the 5 issues surfaced by AXS staff.
         </p>
         <p style={{ fontFamily: F.sans, fontSize: '15px', color: C.secondary, lineHeight: 1.7, margin: '0 0 40px 0' }}>
-          Usability testing was then conducted with 5 members of the public, including 2 first jobbers and 3 young couples, on their own devices.
+          We then tested with 5 members of the public, including 2 first jobbers and 3 young couples, on their own devices. I ran 2 of the sessions.
         </p>
 
         {/* Test Plan — describes the public usability test setup. */}
@@ -1224,7 +1254,7 @@ function Iterations() {
       task: "Task 1: You've just opened the app. Show me what's new that you'd want to explore.",
       successRate: '2/5 (40%)',
       problem: 'Multiple users skipped past the Vault onboarding pop-up because it looked like an advertisement, which meant they didn’t recognise Vault as the new feature.',
-      solution: 'Added a red "New" tag to the Vault tab in the bottom navigation so the feature stands out at first glance, even if users dismiss the introductory pop-up. The tag is dismissed automatically after the user’s first interaction with Vault.',
+      solution: <>We could have redesigned the pop-up. We chose a persistent red "New" tag on the Vault tab instead, because users dismiss anything that looks like an ad, so a better pop-up would have failed the same way. The tag disappears after the user’s first interaction with Vault.</>,
       videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_1_old_v3_qqijmh.mp4',
       videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_1_new_gevqwr.mp4',
     },
@@ -1233,7 +1263,7 @@ function Iterations() {
       task: 'Task 4: Your bills are all in Vault. Show me how you’d find out what’s due.',
       successRate: '1/5 (20%)',
       problem: 'The calendar icon’s purpose isn’t clear. Users found due dates via bill-card status indicators but rarely noticed the calendar at the top of Vault.',
-      solution: 'Replaced the plain calendar icon with a calendar-plus-clock to better signal "upcoming due dates." Surfaced the next upcoming due bill on the My Vault home page with a "View all" button. Added a sync icon inside the calendar to connect with Google, iPhone, and other external calendars.',
+      solution: <>Users found due dates through bill cards, not the calendar, so we brought the next due bill onto the My Vault home page with a "View all" button. That way we followed the path they already used instead of training them toward the icon. We also swapped in a calendar-plus-clock icon and added sync with Google and iPhone calendars.</>,
       videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_4_Calendar_old_apchnv.mp4',
       videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_4_new_jvgg5c.mp4',
     },
@@ -1242,7 +1272,7 @@ function Iterations() {
       task: 'Task 5: Your son just started his first job and can take over his Singtel bill. Show me how you’d hand it over to him in Vault.',
       successRate: '2/5 (40%)',
       problem: 'There is no way to share a single bill directly. Users have to create a new folder, move the bill in, then share the folder. This felt unintuitive and over-engineered for a one-bill share.',
-      solution: 'Allowed users to share individual bills directly rather than requiring them to create a folder first. Folder sharing remains available for grouping multiple bills.',
+      solution: 'Allowed users to share individual bills directly rather than requiring them to create a folder first. AXS staff had already flagged folder-first as unintuitive in the workshop. Trade-off: there are now two ways to share, so we kept folders for grouping several bills.',
       videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_5_old_ajua1b.mp4',
       videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_5_new_uhn7dk.mp4',
     },
@@ -1251,7 +1281,7 @@ function Iterations() {
       task: 'Task 6: You’re now the son. Your parent has just sent you a Singtel bill through Vault. Show me how you’d take it over and pay it.',
       successRate: '1/5 (20%)',
       problem: 'The handover experience breaks down at the point of payment. Once a shared bill is accepted, users have no clear in-Vault action to complete it, and must navigate away to Pay Bills and rebuild the transaction manually.',
-      solution: 'Added a grey helper note inside each bill detail page: "To make repayment, refer to the details above and go to Pay Bills or My Favourites." This bridges users to the existing payment flow without reworking the payment architecture.',
+      solution: 'Users wanted to pay inside Vault, but AXS preferred to keep payment in Pay Bills and My Favourites, where people are already used to paying. A second way to pay might confuse them. So we added a grey helper note on each bill pointing to Pay Bills or My Favourites. Trade-off: the view-to-pay loop is still open, and we flagged it as the next thing to fix.',
       videoBefore: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_6_old_wyudvr.mp4',
       videoAfter: 'https://res.cloudinary.com/dvunn40le/video/upload/q_auto,f_auto/Task_6_new_kbfewj.mp4',
     },
@@ -1453,7 +1483,7 @@ function Impact() {
             }}
           />
           <figcaption style={{ fontFamily: F.sans, fontSize: '12px', color: '#8A8A82', margin: '14px 0 0 0', lineHeight: 1.5 }}>
-            Walking AXS staff through the Vault feature flows during the design feedback workshop.
+            Walking AXS staff through the Vault flows in the design feedback workshop, which I co-facilitated.
           </figcaption>
         </figure>
         <figure style={{ margin: 0 }}>
@@ -1473,7 +1503,7 @@ function Impact() {
             }}
           />
           <figcaption style={{ fontFamily: F.sans, fontSize: '12px', color: '#8A8A82', margin: '14px 0 0 0', lineHeight: 1.5 }}>
-            Sharing the end-to-end process and final findings with the AXS team.
+            Presenting our findings to AXS. I presented the findings from the design feedback workshop, usability testing and the iterations we made after.
           </figcaption>
         </figure>
       </div>
@@ -1485,11 +1515,12 @@ function Reflections() {
   const cards = [
     { number: '01', title: 'Storage vs. Payment', body: "Vault is currently structured as a storage feature, but users perceive AXS as a payment platform. Closing the loop between viewing a bill in Vault and paying it through AXS would align the feature with the user's actual goal, and unlock the full value of what AXS already does well." },
     { number: '02', title: "Surfacing AXS's Advantage", body: "Many young users don't realise AXS removes the need to log into each biller's app. Surfacing this advantage through onboarding or marketing could reshape how the next generation sees the brand." },
+    { number: '03', title: "What I'd do differently", body: "Folders were new to the AXS app, so there was no user data on whether people would rather see bills first or folders first. It came down to what AXS wanted, and we only learned their preference, bills first and filed later, at the design feedback workshop. Next time, I'd run through early ideas with AXS before building the prototype, so we design around their direction from the start and spend less time reworking." },
   ];
   return (
     <section style={{ backgroundColor: C.statsBg, padding: '80px', paddingTop: '80px', paddingBottom: '80px', '--cs-section-bg': C.statsBg } as React.CSSProperties} className="max-md:!px-6 max-md:!py-16 max-lg:!px-10 max-lg:!py-14">
       <SectionLabel text="Reflections & Next Steps" />
-      <StaggerCards style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1">
+      <StaggerCards style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }} className="max-md:!grid-cols-1 max-lg:!grid-cols-1">
         {cards.map((card) => (
           <div key={card.number} style={{ border: `1px solid ${C.cardBorder}`, padding: '24px' }}>
             <p style={{ fontFamily: F.sans, fontSize: '13px', color: C.secondary, margin: '0 0 16px 0', letterSpacing: '0.08em' }}>{card.number}</p>
@@ -1502,7 +1533,7 @@ function Reflections() {
           below the reflection cards. No card treatment, just a plain
           paragraph in the same muted register as other secondary copy. */}
       <p style={{ fontFamily: F.sans, fontSize: '15px', color: '#8A8A82', fontStyle: 'italic', margin: '32px 0 0 0', lineHeight: 1.7 }}>
-        This was a collaborative project completed with Kathlyn Teh and Sim Mirin. All research, design decisions, and testing were conducted jointly as a team.
+        Designed with Kathlyn Teh and Sim Mirin. All three of us worked across research, design and testing. My part is listed at the top of this page.
       </p>
     </section>
   );
@@ -1561,6 +1592,7 @@ const sidebarItems: SidebarItem[] = [
   { id: 'journey-maps', label: 'Journey Maps' },
   { id: 'problem', label: 'Problem Statement' },
   { id: 'design-decisions', label: 'Solution Statement' },
+  { id: 'decisions', label: 'Key Decisions' },
   { id: 'usability-testing', label: 'Usability Testing' },
   { id: 'iterations', label: 'Issues & Changes' },
   { id: 'impact', label: 'Impact' },
@@ -1581,6 +1613,7 @@ export function AXSPage() {
           <FadeUp id="journey-maps"><UserJourneyMaps /></FadeUp>
           <FadeUp id="problem"><ProblemStatement /></FadeUp>
           <FadeUp id="design-decisions"><DesignDecisions /></FadeUp>
+          <FadeUp id="decisions"><DecisionsIDefend /></FadeUp>
           <FadeUp id="usability-testing"><UsabilityTesting /></FadeUp>
           <FadeUp id="iterations"><Iterations /></FadeUp>
           <FadeUp id="impact"><Impact /></FadeUp>

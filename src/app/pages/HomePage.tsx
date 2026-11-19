@@ -392,7 +392,7 @@ function HeroSection() {
               lineHeight: 1.6,
             }}
           >
-            UI/UX Designer
+            UI/UX Designer · 5 years in healthcare
           </p>
         </div>
       </div>
@@ -566,9 +566,10 @@ function AboutSection() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', marginBottom: '52px' }}>
               {[
-                "I started my career as a nurse, learning early that the gap between what people need and what they're given is almost always a design problem.",
-                "In the public healthcare sector, I then spent years turning dense healthcare information into something people could actually understand and act on, through websites, outreach materials, and training programmes for SG Healthcare Corps volunteers.",
-                "Now I design digital products. The through-line is the same: understand people deeply, then build something that works for them.",
+                "I started my career as a nurse in the hospital. On the ward, I learned what each patient preferred and tailored their care around it, so no two patients were cared for the same way. Good care always started with the person's own needs.",
+                "In the public healthcare sector, I then spent 3 years turning dense healthcare information into something people could understand and act on, through websites, outreach materials and training programmes for around 1,000 SG Healthcare Corps volunteers.",
+                "Now I design digital products, and I work the same way. I start with the individual, asking what people actually need before deciding what to build. Then I turn complex information into something they can understand and act on.",
+                "In team projects, I usually lead the research and design the prototype. When a direction isn't backed by what users showed us, I say so and bring the evidence.",
               ].map((para, i) => (
                 <motion.p
                   key={i}
@@ -613,7 +614,7 @@ function AboutSection() {
 // ─── Projects Section ────────────────────────────────────────────────────────
 const projects = [
   {
-    id: 'PRODUCT DESIGN',
+    id: 'CLIENT PROJECT · TEAM OF 3 · 3 WEEKS',
     slug: '/axs',
     name: 'AXS · Vault',
     description: 'Smart billing: split, track, and manage payments together, designed for individuals and couples.',
@@ -631,7 +632,7 @@ const projects = [
     nameSuffix: '· Vault',
   },
   {
-    id: 'PRODUCT DESIGN',
+    id: 'SOLO · 2 WEEKS',
     slug: '/tripsync',
     name: 'TripSync',
     description: 'A group travel companion app that makes planning together feel effortless.',
@@ -644,7 +645,7 @@ const projects = [
     screenImg: tripsyncScreenImg,
   },
   {
-    id: 'PRODUCT DESIGN',
+    id: 'TEAM OF 3 · 2 WEEKS',
     slug: '/neighbourlah',
     name: 'NeighbourLah',
     description: 'A digital space that helps neighbours connect, share, and look out for each other.',
@@ -655,7 +656,7 @@ const projects = [
     alt: 'NeighbourLah hero photo',
   },
   {
-    id: 'PRODUCT DESIGN',
+    id: 'SOLO · 2 WEEKS',
     slug: '/lumis',
     name: 'Lumis Skincare',
     description: 'A calm, considered shopping experience designed around how people actually discover and buy skincare.',
@@ -1198,10 +1199,10 @@ function ContactSection() {
               color: C.secondary,
               lineHeight: 1.7,
               margin: 0,
-              maxWidth: '360px',
+              maxWidth: '440px',
             }}
           >
-            Whether you're hiring, collaborating, or just want to talk design, I'd love to connect.
+            I'm looking for UX / product designer roles in Singapore, especially in healthcare, fintech or public services. If you're building something where understanding people comes first, I'd love to talk.
           </motion.p>
         </motion.div>
 
